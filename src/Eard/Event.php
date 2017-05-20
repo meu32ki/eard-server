@@ -30,12 +30,6 @@ use Eard\Menu;
 
 class Event implements Listener{
 
-/*
-	public function P(PlayerPreLoginEvent $e){
-		echo "ああああ\n";
-	}
-*/
-
 	public function C(PlayerLoginEvent $e){
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
@@ -64,8 +58,7 @@ class Event implements Listener{
 	}
 
 	public function Q(PlayerQuitEvent $e){
-		//すぽーんしていたら→whtelistでひっかかっていなかったら
-		if($e->getPlayer()->spawned){
+		if($e->getPlayer()->spawned){ //すぽーんしていたら→whtelistでひっかかっていなかったら
 			$playerData = Account::get($e->getPlayer());
 			if($playerData->getMenu()->isActive()){
 				$playerData->getMenu()->close();
@@ -84,7 +77,7 @@ class Event implements Listener{
 			case Menu::$menuItem:
 				$playerData->getMenu()->useMenu($e);
 			break;
-			case Item::BOOK:
+			case Item::BOOK: //dev用
 				Account::get($player)->dumpData();
 			break;
 		}
@@ -118,14 +111,8 @@ class Event implements Listener{
 						$z = $packet->z;
 						if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 							$e->setCancelled(true);
-							echo "cancelled";
 						}
 					break;
-/*
-					case PlayerActionPacket::ACTION_JUMP:
-						$playerData = Account::get($player);
-					break;
-*/
 				}
 			break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:

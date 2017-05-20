@@ -20,6 +20,10 @@ class AreaProtector{
 		return ceil( $xorz / (self::$section + 1) ) - 1;
 	}
 
+	public static function isOnGrid($xorz){
+		return $xorz % (self::$section + 1) == 0;
+	}
+
 	public static function viewSection($playerData){
 		$player = $playerData->getPlayer();
 		$level = $player->getLevel();
@@ -116,16 +120,12 @@ class AreaProtector{
 		return "{$minus}{$sectionA}{$sectionNoZ}";
 	}
 	
-	public static function isOnGrid($xorz){
-		return $xorz % (self::$section + 1) == 0;
-	}
-	
 	// return int (or -1) | ownerNo
 	public static function getOwnerFromCoordinate($x, $z){
 		//座標の情報 グリッドの上か
 		$number = 0;
-		if(self::isOnGrid($x) ) $number += 1;
-		if(self::isOnGrid($z) ) $number += 2;
+		if(self::isOnGrid(ceil($x)) ) $number += 1;
+		if(self::isOnGrid(ceil($z)) ) $number += 2;
 		switch($number){
 			case 0:
 				$sectionNoZ = self::calculateSectionNo($z);
@@ -183,27 +183,15 @@ class AreaProtector{
 			return false;
 		}else{
 			//echo self::$sections[$sectionNoX][$sectionNoZ][1];
-			if($result == Account::get($player)->getUniqueNo() && $ownerNo = getOwnerNoOfSection($sectionNoX,$sectionNoZ) && $result === $ownerNo){
+			$uniqueNo = Account::get($player)->getUniqueNo();
+			$ownerNo = self::getOwnerNoOfSection($sectionNoX,$sectionNoZ);
+			if($ownerNo && $uniqueNo && $uniqueNo === $ownerNo){
 				self::$sections[$sectionNoX][$sectionNoZ][1] = time();
 				return true;
 			}else{
+				//echo "result = ".$uniqueNo." Ownerno = ".$ownerNo."\n";
 				$player->sendMessage("他人の土地での設置破壊は許可されていません。");
 				return false;
-			}
-		}
-	}
-
-	//return array (section data)
-	public static function getSectionData($sectionNoX, $sectionNoZ){
-		if(isset(self::$sections[$sectionNoX][$sectionNoZ])){//is loaded
-			return self::$sections[$sectionNoX][$sectionNoZ];
-		}else{
-			$sectionData = self::readSectionFile($sectionNoX, $sectionNoZ);
-			if(0 <= $sectionData[0]){//owner情報
-				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
-				return $sectionData;
-			}else{
-				return [-1];
 			}
 		}
 	}
@@ -222,14 +210,28 @@ class AreaProtector{
 	}
 	//return int
 	public static function getDigLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[3]) ? self::getSectionData($sectionNoX, $sectionNoZ)[3] : self::$pileDefault;
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[3]) ? self::getSectionData($sectionNoX, $sectionNoZ)[3] : self::$digDefault;
 	}
 	//return int
 	public static function getPileLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::$digDefault;
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::$pileDefault;
 	}
-	
-	//param $y
+
+	//return array (section data)
+	public static function getSectionData($sectionNoX, $sectionNoZ){
+		if(isset(self::$sections[$sectionNoX][$sectionNoZ])){//is loaded
+			return self::$sections[$sectionNoX][$sectionNoZ];
+		}else{
+			$sectionData = self::readSectionFile($sectionNoX, $sectionNoZ);
+			if(0 <= $sectionData[0]){//owner情報
+				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
+				return $sectionData;
+			}else{
+				return [-1];
+			}
+		}
+	}
+
 	//return bool
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
 		$playerData = Account::get($player);
