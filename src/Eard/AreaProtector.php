@@ -172,14 +172,14 @@ class AreaProtector{
 		$sectionNoX = self::calculateSectionNo($x);
 		$sectionNoZ = self::calculateSectionNo($z);
 		if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-			$player->sendMessage("大深度地下では設置破壊が許可されていません。");
+			$player->sendPopup(self::makeWarning("大深度地下では設置破壊が許可されていません。"));
 			return false;
 		}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-			$player->sendMessage("領空では設置破壊が許可されていません。");
+			$player->sendPopup(self::makeWarning("領空では設置破壊が許可されていません。"));
 			return false;
 		}
 		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){// -1 … だれのでもない
-			$player->sendMessage("公共の土地では設置破壊は許可されていません。");
+			$player->sendPopup(self::makeWarning("公共の土地では設置破壊は許可されていません。"));
 			return false;
 		}else{
 			//echo self::$sections[$sectionNoX][$sectionNoZ][1];
@@ -190,10 +190,14 @@ class AreaProtector{
 				return true;
 			}else{
 				//echo "result = ".$uniqueNo." Ownerno = ".$ownerNo."\n";
-				$player->sendMessage("他人の土地での設置破壊は許可されていません。");
+				$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));
 				return false;
 			}
 		}
+	}
+
+	public static function makeWarning($txt){
+		return "§e！！！ §4{$txt} §e！！！";
 	}
 
 	//return int (ownerNo) or -1
