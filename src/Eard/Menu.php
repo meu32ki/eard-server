@@ -49,6 +49,7 @@ class Menu{
 		}else{
 			if($this->page === 0){
 				if($e instanceof PlayerInteractEvent){
+					$this->sendMenu(100);
 					$this->close();
 				}				
 			}else{
@@ -143,6 +144,11 @@ class Menu{
 					["§7住所 §f{$address} §7を",false],
 					["購入しました。",false],
 					["§f■ トップへ戻る",false],
+				];
+			break;
+			case 100:
+				$ar = [
+					["閉じています",false],
 				];
 			break;
 			default: //ページがない場合、反応せず。
