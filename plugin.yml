@@ -1,0 +1,26 @@
+name: Eard
+main: Eard\Main
+version: 0.0.1
+api: [2.0.0]
+load: STARTUP
+author: 32ki
+description: Seikatu Server
+website: http://muni.32ki.net/
+commands:
+ s:
+  description: ""
+  usage: "/s"
+  permission: muni
+ test:
+  description: ""
+  usage: "/s"
+  permission: muni
+  aliases: [test2, test3, test4, t, gready]
+permissions:
+ muni:
+  default: op
+  description: ""
+  children:
+   muni.command:
+    default: true
+    description: ""
