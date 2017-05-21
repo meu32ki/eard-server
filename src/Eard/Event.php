@@ -107,8 +107,9 @@ class Event implements Listener{
 				//壊し始めたとき
 				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
 					$x = $packet->x; $y = $packet->y; $z = $packet->z;
-					if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
-
+					if(!Settings::$allowBreakAnywhere){
+						AreaProtector::Edit($player, $x, $y, $z);
+						//キャンセルとかはさせられないので
 					}					
 				}
 			break;
