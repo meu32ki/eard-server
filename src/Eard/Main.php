@@ -1,5 +1,4 @@
 <?php
-
 namespace Eard;
 
 # Basic
@@ -20,6 +19,10 @@ use Eard\DB;
 use Eard\Event;
 use Eard\AreaProtector;
 
+/***
+*
+*	コマンド関係のみ
+*/
 class Main extends PluginBase implements Listener, CommandExecutor{
 
 

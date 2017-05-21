@@ -1,14 +1,17 @@
 <?php
-
 namespace Eard;
 
 # Basic
 use pocketmine\Player;
 
 use pocketmine\Server;
-//use pocketmine\level\particle\DustParticle;
 use pocketmine\network\protocol\UpdateBlockPacket;
 
+
+/***
+*
+*	土地保護、セクション分け
+*/
 class AreaProtector{
 
 	public static function init(){
@@ -97,7 +100,7 @@ class AreaProtector{
 				$pk->flags = UpdateBlockPacket::FLAG_NONE;//読み込まれていないチャンクに送り付ける時は注意が必要
 				$server->broadcastPacket($target, $pk);
 			}
-			echo "SENT ".time()."\n";
+			//echo "SENT ".time()."\n";
 
 			$playerData->setSentBlock($blocks);
 		}

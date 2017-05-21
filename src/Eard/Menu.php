@@ -1,5 +1,4 @@
 <?php
-
 namespace Eard;
 
 # Basic
@@ -16,6 +15,11 @@ use pocketmine\event\player\PlayerItemHeldEvent;
 use Eard\AreaProtector;
 use Eard\Account;
 
+
+/***
+*
+*	"セルフォン"
+*/
 class Menu{
 
 	public static $menuItem = Item::SUGAR; //プロパティ名はほかで使ってるぞ

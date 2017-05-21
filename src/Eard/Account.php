@@ -6,6 +6,11 @@ use pocketmine\utils\MainLogger;
 
 use Eard\Menu;
 
+
+/***
+*
+*	PlayerDataについて、プレイヤーデータの読み書き
+*/
 class Account{
 
 	//よくあるシングルトン

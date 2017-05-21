@@ -1,5 +1,4 @@
 <?php
-
 namespace Eard;
 
 # Basic
@@ -29,6 +28,11 @@ use Eard\AreaProtector;
 use Eard\Settings;
 use Eard\Menu;
 
+
+/***
+*
+*	言わずもがな。
+*/
 class Event implements Listener{
 
 	public function C(PlayerLoginEvent $e){
