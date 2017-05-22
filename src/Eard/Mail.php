@@ -30,7 +30,19 @@ class Mail {
     }
 
     // Main
-
+    
+    const MAIL_ID     = 0;
+    const FROM_UNIQUE = 1, TO_UNIQUE = 2;
+    const SUBJECT     = 3;
+    const BODY        = 4;
+    /*
+        [
+            MAIL_ID => id,
+            FROM_UNIQUE => uniqueid,
+            SUBJECT => 件名
+            BODY    => 本文
+        ]
+    */
     private $mails;
 
     private $name;
@@ -41,10 +53,42 @@ class Mail {
 
     public function getSentMails(int $uniqueId, int $start, int $end) {
         $count = $end - $start;
-        $sql = "SELECT * FROM mail WHERE name = ? order by MailId limit ? , ?";
+        $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
+        
+        /* DBが用意できるまでコメントアウト ( > < )
+        $db = DB::get();
 
-        // 未実装だよっ ( > < )
-        // メールを取得する処理を書く予定
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("sii", $uniqueId, $start, $end);
+
+        // 初期化
+        $mailId       = 0;
+        $fromUniqueId = 0;
+        $subject      = "";
+        $body         = "";
+
+        //えんど
+        $stmt->bind_result(
+            $mailId,
+            $fromUniqueId,
+            $subject,
+            $body
+        );
+
+        $stmt->execute();
+
+        $results = [];
+        while($stmt->fetch() === true) {
+            $results[] = [
+                self::MAIL_ID     => $mailId,
+                self::FROM_UNIQUE => $fromUniqueId,
+                self::SUBJECT     => $subject,
+                self::BODY        => $body
+            ];
+        }
+
+        return $results;
+        */
     }
 	
     
