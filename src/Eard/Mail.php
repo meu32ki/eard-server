@@ -24,8 +24,7 @@ class Mail {
         $name = strtolower($player->getName());
 
         if(empty(self::$mailAccounts[$name])) {
-            $mail = new Mail();
-            $mail->init($name);
+            $mail = new Mail($name);
             self::$mailAccounts[$name] = $mail;
         }
     }
@@ -36,11 +35,11 @@ class Mail {
 
     private $name;
 
-    private function __construct($name) {
+    private function __construct(String $name) {
         $this->name = $name;
     }
 
-    public function getSentMails($uniqueId, $start, $end) {
+    public function getSentMails(int $uniqueId, int $start, int $end) {
         $count = $end - $start;
         $sql = "SELECT * FROM mail WHERE name = ? order by MailId limit ? , ?";
 
