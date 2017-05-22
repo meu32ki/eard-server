@@ -1,6 +1,12 @@
 # eard-server
-- Eard Server (あーど鯖) lugin for PM-MP, gives economy, land, money. - we each have a home.
-- Welcome to commit from you!
+- Eard Server Plugin for PM-MP, gives economy, land, money. - This is an another world to come back.
+- Welcome committing from you! - about bugs, maybe?
+
+- あーど鯖は、PM-MP向けプラグインです。経済、土地、お金の概念を与えます。あなたが帰る、もう一つの世界。
+-　コミットしてくれると嬉しいです！バグ修正など…
+
+## PRについて
+- ジャンジャン送っちゃってください。世界観を変えるような新要素については、検討します…。
 
 ## プラグイン使用条件
 これはeard-serverのプロジェクトファイルに適用されるライセンスを要約したものです。

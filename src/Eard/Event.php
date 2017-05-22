@@ -63,13 +63,13 @@ class Event implements Listener{
 	}
 
 	public function Q(PlayerQuitEvent $e){
-		if($e->getPlayer()->spawned){ //すぽーんしていたら→whtelistでひっかかっていなかったら
+		if($e->getPlayer()->spawned){ //whitelistでひっかかっていなかったら
 			$playerData = Account::get($e->getPlayer());
 			if($playerData->getMenu()->isActive()){
 				$playerData->getMenu()->close();
 			}
 			$playerData->onUpdateTime();
-			$playerData->updateData(true);//最後
+			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。
 		}
 	}
 
@@ -83,7 +83,7 @@ class Event implements Listener{
 				$playerData->getMenu()->useMenu($e);
 			break;
 			case Item::BOOK: //dev用
-				Account::get($player)->dumpData();
+				Account::get($player)->dumpData(); //セーブデータの中身出力
 			break;
 		}
 	}
@@ -113,7 +113,7 @@ class Event implements Listener{
 					$x = $packet->x; $y = $packet->y; $z = $packet->z;
 					if(!Settings::$allowBreakAnywhere){
 						AreaProtector::Edit($player, $x, $y, $z);
-						//キャンセルとかはさせられないので
+						//キャンセルとかはさせられないので、表示を出すだけ。
 					}					
 				}
 			break;

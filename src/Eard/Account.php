@@ -116,9 +116,9 @@ class Account{
 	private $data = [];
 	private static $newdata = [
 		0, //no 二回目の入室以降から使える
-		[], //せくしょんず
+		[], //所持するせくしょんず
 		[0,0,0,0], //[初回ログイン,最終ログイン,ログイン累計時間,日数]
-		[], //じゅうしょ 例 [12, 13]いたいな
+		[], //じゅうしょ 例 [12, 13]　みたいな
 	];
 
 
@@ -194,6 +194,7 @@ class Account{
 					$data[0] = $row['no'];//noは、テーブルのものを上書き
 
 					//マージ thankyou @m0_83 !
+					// public sttaic $newdata のところと、かこのdbデータに違いがあった場合、形式が自動アップデートされる。
  					$changed = false;
 					$newData = self::$newdata;
 					foreach($newData as $key => $value){
@@ -219,7 +220,7 @@ class Account{
 
 					//読み込み格納
 					$this->data = $data; //メモリにコンニチハ
-					MainLogger::getLogger()->notice("§aAccount: {$name} data loaded");
+					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 				}else{
 					//れつがみつからなかった ＝　データがなかった初回
 					$this->saveData();
@@ -228,7 +229,7 @@ class Account{
 				MainLogger::getLogger()->error("Account: No results found, maybe the query failed?");
 			}
 		}else{
-			MainLogger::getLogger()->error("Account: DB had gone");
+			MainLogger::getLogger()->error("Account: DB has gone. You need restarting the server.");
 		}
 	
 	}
