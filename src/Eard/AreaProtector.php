@@ -14,10 +14,6 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 */
 class AreaProtector{
 
-	public static function init(){
-		self::loadListFile();
-	}
-
 	// return int | sectionno;
 	public static function calculateSectionNo($xorz){
 		return ceil( $xorz / (self::$section + 1) ) - 1;
@@ -261,8 +257,8 @@ class AreaProtector{
 			self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 			//オフラインリストに名前を保存
-			self::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
-			self::saveListFile();
+			Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
+			Account::saveListFile();
 
 			//購入時にセーブ
 			$playerData->addSection($sectionNoX, $sectionNoZ);
@@ -306,8 +302,8 @@ class AreaProtector{
 		if($no === -1){
 			return "グリッド上";
 		}else{
-			if(isset(self::$namelist[$no])){
-				return self::$namelist[$no];
+			if(isset(Account::$namelist[$no])){
+				return Account::$namelist[$no];
 			}else{
 				//echo "ERROR: ".$no;
 				//空き地が出るようにしているが、、。
@@ -316,31 +312,8 @@ class AreaProtector{
 		}
 	}
 
-	private static function loadListFile(){
-		$path = __DIR__."/sections/";
-		$filepath = "{$path}info.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$namelist = $data;
-				echo "AreaProtector: List Loaded";
-			}
-		}
-	}
-	//return bool
-	private static function saveListFile(){
-		$path = __DIR__."/sections/";
-		if(!file_exists($path)){
-			@mkdir($path);
-		}
-		$filepath = "{$path}info.sra";
-		$json = serialize(self::$namelist);
-		return file_put_contents($filepath, $json);
-	}
-
 	public static $section = 5;//区画の大きさ
 	public static $sections = [];//データ領域
-	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
 
 	public static $digDefault = 48;
 	public static $pileDefault = 80;

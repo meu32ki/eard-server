@@ -330,4 +330,34 @@ class Account{
     }
 */
 
+    public static function init(){
+    	self::loadListFile();
+    }
+
+	/*
+	*	オフライン用
+	*/
+	private static function loadListFile(){
+		$path = __DIR__."/sections/";
+		$filepath = "{$path}info.sra";
+		$json = @file_get_contents($filepath);
+		if($json){
+			if($data = unserialize($json)){
+				self::$namelist = $data;
+				MainLogger::getLogger()->notice("§aAccount: offline list has loaded (Listfile)");
+			}
+		}
+	}
+	//return bool
+	private static function saveListFile(){
+		$path = __DIR__."/sections/";
+		if(!file_exists($path)){
+			@mkdir($path);
+		}
+		$filepath = "{$path}info.sra";
+		$json = serialize(self::$namelist);
+		return file_put_contents($filepath, $json);
+	}
+	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
+
 }
