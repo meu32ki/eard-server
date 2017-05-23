@@ -88,6 +88,17 @@ class Account{
 	private $menu;
 
 
+	/* Chat
+	*/
+	public function setChatMode($chatmode){
+		$this->chatmode = $chatmode;
+	}
+	public function getChatMode(){
+		return $this->chatmode;
+	}
+	private $chatmode = 1;
+
+
 
 	/* Saved data
 	*/
