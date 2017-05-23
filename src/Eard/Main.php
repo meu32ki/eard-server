@@ -36,7 +36,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		#Muni関連
 		DB::mysqlConnect(true);
-		AreaProtector::init();
+		Account::init();
 		self::$instance = $this;
 	}
 

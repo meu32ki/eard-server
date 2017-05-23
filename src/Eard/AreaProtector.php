@@ -14,10 +14,6 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 */
 class AreaProtector{
 
-	public static function init(){
-		self::loadListFile();
-	}
-
 	// return int | sectionno;
 	public static function calculateSectionNo($xorz){
 		return ceil( $xorz / (self::$section + 1) ) - 1;
@@ -175,28 +171,46 @@ class AreaProtector{
 		$sectionNoX = self::calculateSectionNo($x);
 		$sectionNoZ = self::calculateSectionNo($z);
 		if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-			$player->sendPopup(self::makeWarning("大深度地下では設置破壊が許可されていません。"));
+			$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
 			return false;
 		}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-			$player->sendPopup(self::makeWarning("領空では設置破壊が許可されていません。"));
+			$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
 			return false;
 		}
-		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){// -1 … だれのでもない
-			$player->sendPopup(self::makeWarning("公共の土地では設置破壊は許可されていません。"));
+		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
+			// -1 … グリッド上
+			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
-			//echo self::$sections[$sectionNoX][$sectionNoZ][1];
-			$uniqueNo = Account::get($player)->getUniqueNo();
-			$ownerNo = self::getOwnerNoOfSection($sectionNoX,$sectionNoZ);
-			if($ownerNo && $uniqueNo && $uniqueNo === $ownerNo){
+			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
+			$no = Account::get($player)->getUniqueNo();
+			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
+			//echo "ownerNo: {$ownerNo} no :{$no}\n";
+			if($ownerNo && $no){
+				//1以上点所有者がいる
+				if($no === $ownerNo){
+					//所有者本人
+
+				}else{
+					//所有者本人でない。権限が、所有者から与えられているか。
+					$ownerName = self::getNameFromOwnerNo($ownerNo);
+					if($owner = Account::getByName($ownerName, true)){
+						if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
+							$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+							return false;
+						}
+					}
+				}
 				self::$sections[$sectionNoX][$sectionNoZ][1] = time();
 				return true;
 			}else{
-				//echo "result = ".$uniqueNo." Ownerno = ".$ownerNo."\n";
-				$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));
+				//0 …所有者なし
+				$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
 				return false;
 			}
 		}
+
+		return false;
 	}
 
 	public static function makeWarning($txt){
@@ -230,17 +244,18 @@ class AreaProtector{
 			return self::$sections[$sectionNoX][$sectionNoZ];
 		}else{
 			$sectionData = self::readSectionFile($sectionNoX, $sectionNoZ);
-			if(0 <= $sectionData[0]){//owner情報
+			if($sectionData){//owner情報 記録されていたら
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 				return $sectionData;
 			}else{
-				return [-1];
+				return [0];
 			}
 		}
 	}
 
 	//return bool
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
+		if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
 			$sectionData = [
@@ -251,8 +266,8 @@ class AreaProtector{
 			self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 			//オフラインリストに名前を保存
-			self::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
-			self::saveListFile();
+			Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
+			Account::saveListFile();
 
 			//購入時にセーブ
 			$playerData->addSection($sectionNoX, $sectionNoZ);
@@ -274,7 +289,7 @@ class AreaProtector{
 			}
 		}else{
 			//ふぁいるなんてなかった
-			return -1;//section no
+			return false;//section no
 		}
 	}
 	//return bool
@@ -296,8 +311,8 @@ class AreaProtector{
 		if($no === -1){
 			return "グリッド上";
 		}else{
-			if(isset(self::$namelist[$no])){
-				return self::$namelist[$no];
+			if(isset(Account::$namelist[$no])){
+				return Account::$namelist[$no];
 			}else{
 				//echo "ERROR: ".$no;
 				//空き地が出るようにしているが、、。
@@ -306,31 +321,8 @@ class AreaProtector{
 		}
 	}
 
-	private static function loadListFile(){
-		$path = __DIR__."/sections/";
-		$filepath = "{$path}info.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$namelist = $data;
-				echo "AreaProtector: List Loaded";
-			}
-		}
-	}
-	//return bool
-	private static function saveListFile(){
-		$path = __DIR__."/sections/";
-		if(!file_exists($path)){
-			@mkdir($path);
-		}
-		$filepath = "{$path}info.sra";
-		$json = serialize(self::$namelist);
-		return file_put_contents($filepath, $json);
-	}
-
 	public static $section = 5;//区画の大きさ
 	public static $sections = [];//データ領域
-	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
 
 	public static $digDefault = 48;
 	public static $pileDefault = 80;

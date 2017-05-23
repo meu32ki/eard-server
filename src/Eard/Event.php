@@ -11,6 +11,7 @@ use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
+use pocketmine\event\player\PlayerChatEvent;
 
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -35,13 +36,13 @@ use Eard\Menu;
 */
 class Event implements Listener{
 
-	public function C(PlayerLoginEvent $e){
+	public function L(PlayerLoginEvent $e){
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
 
 		//playerData関連の準備
 		$playerData->setPlayer($player);//	touitusuruna 
-		$playerData->loadData(true);
+		$playerData->loadData();
 		$playerData->onLoadTime();
 
 		#権限関係
@@ -135,6 +136,10 @@ class Event implements Listener{
 		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 			$e->setCancelled(true);
 		}
+	}
+
+	public function C(PlayerChatEvent $e){
+		Chat::chat($e->getPlayer(), $e);
 	}
 
 /*

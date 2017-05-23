@@ -52,11 +52,11 @@ PRIMARY KEY (no)
 		MainLogger::getLogger()->info("§aDB: DB setup DONE");
 	}
 
-	public static function turncate(){
+	public static function truncate(){
 		$sql = "TRUNCATE TABLE muni.data";
 		$db = self::get();
 		$db->query($sql);
-		MainLogger::getLogger()->info("§aDB: Turncate");
+		MainLogger::getLogger()->info("§aDB: Truncate");
 	}
 
 }
