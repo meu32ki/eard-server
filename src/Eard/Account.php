@@ -106,78 +106,14 @@ class Account{
 		return $this->data[0]; //0が返ってくる場合は何もできないように
 	}
 
-	private function getSectionArray(){
-		return $this->data[4];
+	//お金のやり取りはclass::Meuからのみ扱うこと。メソッドはあちらに記入。
+	//所持金参照の場合はここを使ってもよし。
+	public function getMeu(){
+		return $this->data[1];
 	}
-
-	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
-		if($this->data[4] === []){
-			//住所登録
-			$this->setAddress($sectionNoX, $sectionNoZ);
-		}
-		$this->data[4][$sectionNoX][$sectionNoZ] = $authority;
+	public function setMeu($meu){
+		$this->data[1] = $meu;
 	}
-	public function setAddress($sectionNoX, $sectionNoZ){
-		$this->data[3] = [$sectionNoX, $sectionNoZ];
-	}
-	public function getAddress(){
-		return $this->data[3];
-	}
-
-	public function hasLicense($licenseNo){
-		$r = isset($this->data[5][$licenseNo]) ? $this->data[5][$licenseNo][0] < time() : false;
-	}
-	public function addLicense($licenseNo, $validtime = 0){
-		$validtime = $validtime === 0 ? time() : $validtime;
-		$this->data[5][$licenseNo] = [$validtime, 1];
-		return true;
-	}
-	public function rankupLicense(){
-
-	}
-
-	// そのプレイヤーが自分の土地を壊せるようになる。土地共有。
-	// return bool
-	public function addSharePlayer($uniqueNo, $authority = 3){
-		if($uniqueNo){
-			$this->data[6][$uniqueNo] = $authority;
-			return true;
-		}
-		return false; 
-	}
-
-	//return bool
-	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
-		if($uniqueNo && isset($this->data[6][$uniqueNo])){
-			/*
-				authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
-				authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
-				もし、その土地のauthorityが、プレイヤーが持つauthorityよりも上であった場合、権限があるとみなし、破壊を許可。
-
-				例: 持っているsection 
-					[12, 14] => authority 1
-					[12, 15] => authority 3
-					32ki => authority 3
-					famima65535 => authority 2
-					の場合、32kiはどちらの土地でも設置破壊はできるが、famima65535は、[12,14]でのみ設置はかいができる。
-			*/
-			return $this->data[4][$sectionNoX][$sectionNoZ] <= $this->data[6][$uniqueNo];
-		}
-		return false; //破壊できない
-	}
-
-	private $data = [];
-	private static $newdata = [
-		0, // no 二回目の入室以降から使える
-		0, // 所持する金
-		[0,0,0,0], // [初回ログイン,最終ログイン,ログイン累計時間,日数]
-		[], // じゅうしょ 例 [12, 13]　みたいな
-		[], // 所持するせくしょんず
-		[], // らいせんす
-		[], // 土地の共有設定
-	];
-
-
 
 	/* 時間関係 
 	*/
@@ -232,6 +168,78 @@ class Account{
 	private $inTime = 0;
 
 
+	public function getAddress(){
+		return $this->data[3];
+	}
+	public function setAddress($sectionNoX, $sectionNoZ){
+		$this->data[3] = [$sectionNoX, $sectionNoZ];
+	}
+
+	private function getSectionArray(){
+		return $this->data[4];
+	}
+	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
+		if($this->data[4] === []){
+			//住所登録
+			$this->setAddress($sectionNoX, $sectionNoZ);
+		}
+		$this->data[4][$sectionNoX][$sectionNoZ] = $authority;
+	}
+
+	public function hasLicense($licenseNo){
+		$r = isset($this->data[5][$licenseNo]) ? $this->data[5][$licenseNo][0] < time() : false;
+	}
+	public function addLicense($licenseNo, $validtime = 0){
+		$validtime = $validtime === 0 ? time() : $validtime;
+		$this->data[5][$licenseNo] = [$validtime, 1];
+		return true;
+	}
+	public function rankupLicense(){
+
+	}
+
+	// そのプレイヤーが自分の土地を壊せるようになる。土地共有。
+	// return bool
+	public function addSharePlayer($uniqueNo, $authority = 3){
+		if($uniqueNo){
+			$this->data[6][$uniqueNo] = $authority;
+			return true;
+		}
+		return false; 
+	}
+
+	//return bool
+	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
+		if($uniqueNo && isset($this->data[6][$uniqueNo])){
+			/*
+				authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
+				authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
+				もし、その土地のauthorityが、プレイヤーが持つauthorityよりも上であった場合、権限があるとみなし、破壊を許可。
+
+				例: 持っているsection 
+					[12, 14] => authority 1
+					[12, 15] => authority 3
+					32ki => authority 3
+					famima65535 => authority 2
+					の場合、32kiはどちらの土地でも設置破壊はできるが、famima65535は、[12,14]でのみ設置はかいができる。
+			*/
+			return $this->data[4][$sectionNoX][$sectionNoZ] <= $this->data[6][$uniqueNo];
+		}
+		return false; //破壊できない
+	}
+
+
+
+	private $data = [];
+	private static $newdata = [
+		0, // no 二回目の入室以降から使える
+		0, // 所持する金
+		[0,0,0,0], // [初回ログイン,最終ログイン,ログイン累計時間,日数]
+		[], // じゅうしょ 例 [12, 13]　みたいな
+		[], // 所持するせくしょんず
+		[], // らいせんす
+		[], // 土地の共有設定
+	];
 
 	/* save / load
 	*/
