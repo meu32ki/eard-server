@@ -171,20 +171,23 @@ class AreaProtector{
 		$sectionNoX = self::calculateSectionNo($x);
 		$sectionNoZ = self::calculateSectionNo($z);
 		if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-			$player->sendPopup(self::makeWarning("大深度地下では設置破壊が許可されていません。"));
+			$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
 			return false;
 		}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-			$player->sendPopup(self::makeWarning("領空では設置破壊が許可されていません。"));
+			$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
 			return false;
 		}
-		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){// -1 … だれのでもない
-			$player->sendPopup(self::makeWarning("公共の土地では設置破壊は許可されていません。"));
+		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
+			// -1 … グリッド上
+			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
-			//echo self::$sections[$sectionNoX][$sectionNoZ][1];
+			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
 			$no = Account::get($player)->getUniqueNo();
 			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
+			//echo "ownerNo: {$ownerNo} no :{$no}\n";
 			if($ownerNo && $no){
+				//1以上点所有者がいる
 				if($no === $ownerNo){
 					//所有者本人
 
@@ -200,8 +203,13 @@ class AreaProtector{
 				}
 				self::$sections[$sectionNoX][$sectionNoZ][1] = time();
 				return true;
+			}else{
+				//0 …所有者なし
+				$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
+				return false;
 			}
 		}
+
 		return false;
 	}
 
@@ -236,17 +244,18 @@ class AreaProtector{
 			return self::$sections[$sectionNoX][$sectionNoZ];
 		}else{
 			$sectionData = self::readSectionFile($sectionNoX, $sectionNoZ);
-			if(0 <= $sectionData[0]){//owner情報
+			if($sectionData){//owner情報 記録されていたら
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 				return $sectionData;
 			}else{
-				return [-1];
+				return [0];
 			}
 		}
 	}
 
 	//return bool
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
+		if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
 			$sectionData = [
@@ -280,7 +289,7 @@ class AreaProtector{
 			}
 		}else{
 			//ふぁいるなんてなかった
-			return -1;//section no
+			return false;//section no
 		}
 	}
 	//return bool
