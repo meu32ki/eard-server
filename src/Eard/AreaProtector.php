@@ -186,17 +186,27 @@ class AreaProtector{
 			return false;
 		}else{
 			//echo self::$sections[$sectionNoX][$sectionNoZ][1];
-			$uniqueNo = Account::get($player)->getUniqueNo();
-			$ownerNo = self::getOwnerNoOfSection($sectionNoX,$sectionNoZ);
-			if($ownerNo && $uniqueNo && $uniqueNo === $ownerNo){
+			$no = Account::get($player)->getUniqueNo();
+			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
+			if($ownerNo && $no){
+				if($no === $ownerNo){
+					//所有者本人
+
+				}else{
+					//所有者本人でない。権限が、所有者から与えられているか。
+					$ownerName = self::getNameFromOwnerNo($ownerNo);
+					if($owner = Account::getByName($ownerName, true)){
+						if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
+							$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+							return false;
+						}
+					}
+				}
 				self::$sections[$sectionNoX][$sectionNoZ][1] = time();
 				return true;
-			}else{
-				//echo "result = ".$uniqueNo." Ownerno = ".$ownerNo."\n";
-				$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));
-				return false;
 			}
 		}
+		return false;
 	}
 
 	public static function makeWarning($txt){

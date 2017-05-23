@@ -31,13 +31,23 @@ class Account{
     	}
     	return self::$accounts[$name];
     }
-	public static function getByName($name){
+    // @param $name : String | name
+    // @param $forceload : bool | オフライン時でも、読ませる必要があるか。
+	public static function getByName($name, $forceLoad = false){
 		$name = strtolower($name);
     	if(!isset(self::$accounts[$name])){
+    		if($forceLoad){
+    			//オフライン用のデータようにしか使っていない。
+    			// todo 20170523 このままでは、サバ内にいないプレイヤーが所有する土地で設置破壊するたびにでーたをnewしてしまうので、なんとかしなくては。
+	    		$account = new Account();
+	    		self::$accounts[$name] = $account;
+				$account->loadData($name);
+    		}
     		return null;
     	}
     	return self::$accounts[$name];
     }
+
 
 
 
@@ -90,12 +100,12 @@ class Account{
 		return $this->data[1];
 	}
 
-	public function addSection($sectionNoX, $sectionNoZ){
+	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
 		if($this->data[1] == []){
 			//住所登録
 			$this->data[3] = [$sectionNoX, $sectionNoZ];
 		}
-		$this->data[1][$sectionNoX][$sectionNoZ] = 1;
+		$this->data[1][$sectionNoX][$sectionNoZ] = $authority;
 	}
 	public function getAddress(){
 		return $this->data[3];
@@ -113,6 +123,36 @@ class Account{
 
 	}
 
+	// そのプレイヤーが自分の土地を壊せるようになる。土地共有。
+	// return bool
+	public function addSharePlayer($uniqueNo, $authority = 3){
+		if($uniqueNo){
+			$this->data[5][$uniqueNo] = $authority;
+			return true;
+		}
+		return false; 
+	}
+
+	//return bool
+	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
+		if($uniqueNo && isset($this->data[5][$uniqueNo])){
+			/*
+				authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
+				authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
+				もし、その土地のauthorityが、プレイヤーが持つauthorityよりも上であった場合、権限があるとみなし、破壊を許可。
+
+				例: 持っているsection 
+					[12, 14] => authority 1
+					[12, 15] => authority 3
+					32ki => authority 3
+					famima65535 => authority 2
+					の場合、32kiはどちらの土地でも設置破壊はできるが、famima65535は、[12,14]でのみ設置はかいができる。
+			*/
+			return $this->data[1][$sectionNoX][$sectionNoZ] <= $this->data[5][$uniqueNo];
+		}
+		return false; //破壊できない
+	}
+
 	private $data = [];
 	private static $newdata = [
 		0, //no 二回目の入室以降から使える
@@ -120,6 +160,7 @@ class Account{
 		[0,0,0,0], //[初回ログイン,最終ログイン,ログイン累計時間,日数]
 		[], //じゅうしょ 例 [12, 13]　みたいな
 		[], //らいせんす
+		[], // 土地の共有設定
 	];
 
 
@@ -180,9 +221,9 @@ class Account{
 
 	/* save / load
 	*/
-    public function loadData(){
-    	$player = $this->player;
-    	$name = strtolower($player->getName());
+    public function loadData($name = ""){
+    	if(!$name) $name = strtolower($this->player->getName());
+
 		$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
 		$db = DB::get();
 		if($db){
