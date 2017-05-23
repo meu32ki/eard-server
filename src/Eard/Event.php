@@ -41,7 +41,7 @@ class Event implements Listener{
 
 		//playerData関連の準備
 		$playerData->setPlayer($player);//	touitusuruna 
-		$playerData->loadData(true);
+		$playerData->loadData();
 		$playerData->onLoadTime();
 
 		#権限関係
