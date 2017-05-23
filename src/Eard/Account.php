@@ -50,7 +50,6 @@ class Account{
 
 
 
-
 	/* Player
 	*/
 	public function setPlayer(Player $player){
@@ -97,26 +96,29 @@ class Account{
 	}
 
 	private function getSectionArray(){
-		return $this->data[1];
+		return $this->data[4];
 	}
 
 	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
-		if($this->data[1] == []){
+		if($this->data[4] === []){
 			//住所登録
-			$this->data[3] = [$sectionNoX, $sectionNoZ];
+			$this->setAddress($sectionNoX, $sectionNoZ);
 		}
-		$this->data[1][$sectionNoX][$sectionNoZ] = $authority;
+		$this->data[4][$sectionNoX][$sectionNoZ] = $authority;
+	}
+	public function setAddress($sectionNoX, $sectionNoZ){
+		$this->data[3] = [$sectionNoX, $sectionNoZ];
 	}
 	public function getAddress(){
 		return $this->data[3];
 	}
 
 	public function hasLicense($licenseNo){
-		$r = isset($this->data[4][$licenseNo]) ? $this->data[4][$licenseNo][0] < time() : false;
+		$r = isset($this->data[5][$licenseNo]) ? $this->data[5][$licenseNo][0] < time() : false;
 	}
 	public function addLicense($licenseNo, $validtime = 0){
 		$validtime = $validtime === 0 ? time() : $validtime;
-		$this->data[4][$licenseNo] = [$validtime, 1];
+		$this->data[5][$licenseNo] = [$validtime, 1];
 		return true;
 	}
 	public function rankupLicense(){
@@ -127,7 +129,7 @@ class Account{
 	// return bool
 	public function addSharePlayer($uniqueNo, $authority = 3){
 		if($uniqueNo){
-			$this->data[5][$uniqueNo] = $authority;
+			$this->data[6][$uniqueNo] = $authority;
 			return true;
 		}
 		return false; 
@@ -135,7 +137,7 @@ class Account{
 
 	//return bool
 	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
-		if($uniqueNo && isset($this->data[5][$uniqueNo])){
+		if($uniqueNo && isset($this->data[6][$uniqueNo])){
 			/*
 				authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
 				authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
@@ -148,18 +150,19 @@ class Account{
 					famima65535 => authority 2
 					の場合、32kiはどちらの土地でも設置破壊はできるが、famima65535は、[12,14]でのみ設置はかいができる。
 			*/
-			return $this->data[1][$sectionNoX][$sectionNoZ] <= $this->data[5][$uniqueNo];
+			return $this->data[4][$sectionNoX][$sectionNoZ] <= $this->data[6][$uniqueNo];
 		}
 		return false; //破壊できない
 	}
 
 	private $data = [];
 	private static $newdata = [
-		0, //no 二回目の入室以降から使える
-		[], //所持するせくしょんず
-		[0,0,0,0], //[初回ログイン,最終ログイン,ログイン累計時間,日数]
-		[], //じゅうしょ 例 [12, 13]　みたいな
-		[], //らいせんす
+		0, // no 二回目の入室以降から使える
+		0, // 所持する金
+		[0,0,0,0], // [初回ログイン,最終ログイン,ログイン累計時間,日数]
+		[], // じゅうしょ 例 [12, 13]　みたいな
+		[], // 所持するせくしょんず
+		[], // らいせんす
 		[], // 土地の共有設定
 	];
 
