@@ -142,13 +142,22 @@ class Menu{
 				$sectionNoX = AreaProtector::calculateSectionNo($x);
 				$sectionNoZ = AreaProtector::calculateSectionNo($z);
 				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
-				AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
-				$ar = [
-					["§2[[ 完了 ]]",false],
-					["§7住所 §f{$address} §7を",false],
-					["購入しました。",false],
-					["§f■ トップへ戻る",false],
-				];
+				$result = AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
+				if($result){
+					$ar = [
+						["§2[[ 完了 ]]",false],
+						["§7住所 §f{$address} §7を",false],
+						["購入しました。",false],
+						["§f■ トップへ戻る",false],
+					];
+				}else{
+					$ar = [
+						["§2[[ 失敗 ]]",false],
+						["§7サーバーに再ログインし",false],
+						["て購入してください。",false],
+						["§f■ トップへ戻る",false],
+					];
+				}
 			break;
 			case 100:
 				$ar = [
