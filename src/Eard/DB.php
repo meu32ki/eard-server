@@ -40,16 +40,30 @@ class DB{
 		//		CREATE USER muni@fp76f0b73c.knge106.ap.nuro.jp identified by '83yvbqov01-92v8@mn';
 		// 		grant all privileges on muni.* to muni@fp76f0b73c.knge106.ap.nuro.jp;
 		//		CREATE DATABASE muni CHARACTER SET utf8;
+/*
 $sql = "
 CREATE TABLE muni.data (
 no INT(10) AUTO_INCREMENT,
 name varchar(24),
-host LONGTEXT,
+base64 LONGTEXT,
 date datetime DEFAULT '0000-00-00 00:00:00',
 PRIMARY KEY (no)
 );";
 		//select user,host from mysql.user
 		MainLogger::getLogger()->info("§aDB: DB setup DONE");
+
+$sql = "
+CREATE TABLE muni.mail (
+MailId INT(10) AUTO_INCREMENT,
+FromUniqueId INT(10), 
+ToUniqueId INT(10),
+Subject TINYTEXT,
+Body LONGTEXT,
+Date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+PRIMARY KEY (MailId)
+);
+";
+*/
 	}
 
 	public static function truncate(){

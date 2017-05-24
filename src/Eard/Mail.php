@@ -11,20 +11,16 @@ use pocketmine\Player;
 *   Playerのオブジェクトは持たず, 結果だけを返す
 */
 
-/** db table name: mail **
+/** db table **
 * MailId       : int(20)  auto_increment
 * FromUniqueId : int(10)  送信者
 * ToUniqueId   : int(10)  受信者
-* Subject      : str(50)  見出し
-* Body         : str(300) 本文
-*/
-
-/** uniqueIdList **
-* Id: 0       Broadcast System
-* Id: 100000  Government
-* Id: 100001~ Company
+* Subject      : str(50)  見出し 256バイト
+* Body         : str(300) 本文 65536バイト
+* Date         :　timestamp
 */
 class Mail {
+
 
     // Static Data
     public static $mailAccounts       = null;
