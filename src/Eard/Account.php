@@ -357,7 +357,7 @@ class Account{
 	*	オフライン用
 	*/
 	private static function loadListFile(){
-		$path = __DIR__."/sections/";
+		$path = __DIR__."/data/";
 		$filepath = "{$path}info.sra";
 		$json = @file_get_contents($filepath);
 		if($json){
@@ -369,7 +369,7 @@ class Account{
 	}
 	//return bool
 	private static function saveListFile(){
-		$path = __DIR__."/sections/";
+		$path = __DIR__."/data/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
