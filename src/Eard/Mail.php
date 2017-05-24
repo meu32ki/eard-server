@@ -46,9 +46,9 @@ class Mail {
 
         $db = DB::get();
 
-        $sql = "INSERT INTO mail (FromUniqueId, ToUniqueId, Subject, Body) VALUES (0, 0, ?, ?)";
+        $sql = "INSERT INTO mail (FromUniqueId, ToUniqueId, Subject, Body, Date) VALUES (0, 0, ?, ?, now())";
 
-        /* DBが用意できるまでコメントアウト ( > < )
+        
         $db = DB::get();
 
         $stmt = $db->prepare($sql);
@@ -56,12 +56,28 @@ class Mail {
 
         $stmt->execute();
 
-        */
+        
 
     }
 
-    public static function noifyToPlayer($players = []) {
 
+    // 通知処理
+    public static function noifyToPlayer($uniqueIds = []) {
+
+        $accounts = Account::getOnlineUsers();
+
+        foreach($uniqueIds as $uniqueId) {
+
+            foreach($accounts as $account) {
+
+                if($account->getUniqueNo() == $uniqueId) {
+                    
+                    $account->getPlayer()->sendTip("§ainfo: §fメールが受信されました!");
+                }
+            }
+
+        }
+        
     }
 
     // Main
@@ -137,6 +153,8 @@ class Mail {
             ];
         }
 
+        $stmt->close();
+
         return $results;
         
     }
@@ -180,6 +198,8 @@ class Mail {
             ];
         }
 
+        $stmt->close();
+
         return $results;
         
     }
@@ -203,6 +223,8 @@ class Mail {
         }
 
         $stmt->close();
+
+        Mail::noifyToPlayer($toUniqueIds);
 
     }
 }
