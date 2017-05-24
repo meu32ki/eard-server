@@ -1,5 +1,8 @@
 <?php
+
 namespace Eard;
+
+use pocketmine\Player;
 
 
 /****
@@ -8,25 +11,61 @@ namespace Eard;
 *   Playerのオブジェクトは持たず, 結果だけを返す
 */
 
-/** db table **
+/** db table name: mail **
 * MailId       : int(20)  auto_increment
 * FromUniqueId : int(10)  送信者
 * ToUniqueId   : int(10)  受信者
 * Subject      : str(50)  見出し
 * Body         : str(300) 本文
 */
+
+/** uniqueIdList **
+* Id: 0       Broadcast System
+* Id: 100000  Government
+* Id: 100001~ Company
+*/
 class Mail {
 
     // Static Data
-    public static $mailAccounts = null;
+    public static $mailAccounts       = null;
+    public static $companyMailAccount = null;
 
-    public static function getMailAccount(Player $Player) : Mail{
+    public static function getMailAccount(Player $player) : Mail{
         $name = strtolower($player->getName());
 
-        if(empty(self::$mailAccounts[$name])) {
-            $mail = new Mail($name);
+        if(!isset(self::$mailAccounts[$name])) {
+            $mail = new Mail($name, Mail::TYPE_PLAYER);
+            $mail->setAccount(Account::get($player));
             self::$mailAccounts[$name] = $mail;
         }
+
+        return self::$mailAccounts[$name];
+    }
+
+    public static function getCompanyMailAccount($id) : Mail {
+        
+    }
+
+    public static function broadcastMail($subject, $body) {
+
+        $db = DB::get();
+
+        $sql = "INSERT INTO mail (FromUniqueId, ToUniqueId, Subject, Body) VALUES (0, 0, ?, ?)";
+
+        /* DBが用意できるまでコメントアウト ( > < )
+        $db = DB::get();
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ss", $subject, $body);
+
+        $stmt->execute();
+
+        */
+
+    }
+
+    public static function noifyToPlayer($players = []) {
+
     }
 
     // Main
@@ -35,6 +74,7 @@ class Mail {
     const FROM_UNIQUE = 1, TO_UNIQUE = 2;
     const SUBJECT     = 3;
     const BODY        = 4;
+    const DATE        = 5;
     /*
         [
             MAIL_ID => id,
@@ -43,19 +83,33 @@ class Mail {
             BODY    => 本文
         ]
     */
+
+    const TYPE_PLAYER  = 0;
+    const TYPE_COMPANY = 1;
+
     private $mails;
+    private $type; // Player ? or Company ?
+    private $account; 
 
     private $name;
 
-    private function __construct(String $name) {
+    private function __construct(String $name, int $type) {
         $this->name = $name;
+        $this->type = $type;
     }
 
-    public function getSentMails(int $uniqueId, int $start, int $end) {
+    public function setAccount($account) {
+        $this->account = $account;
+    }
+
+    public function getReceivedMails(int $uniqueId, int $start, int $end) : array { 
         $count = $end - $start;
-        $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
-        
-        /* DBが用意できるまでコメントアウト ( > < )
+        if($this->type === Mail::TYPE_PLAYER)
+            $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ?, ToUniqueId = 0 order by MailId limit ? , ?"; // To UniqueId 0 is Broadcast
+        else if ($this->type === Mail::TYPE_COMPANY)
+            $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
+
+
         $db = DB::get();
 
         $stmt = $db->prepare($sql);
@@ -88,11 +142,71 @@ class Mail {
         }
 
         return $results;
-        */
+        
     }
-	
-    
+
+    public function getSentMails(int $start, int $end) : array {
+        $count = $end - $start;
+
+        $sql = "SELECT MailId, FromUniqueId, Subject, Body, Date FROM mail WHERE fromUniqueId = ? order by MailId limit ? , ?"; 
+
+        $db = DB::get();
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("sii", $this->account->getUniqueNo(), $start, $end);
+
+        // 初期化
+        $mailId       = 0;
+        $fromUniqueId = 0;
+        $subject      = "";
+        $body         = "";
+        $date         = 0;
+
+        //えんど
+        $stmt->bind_result(
+            $mailId,
+            $fromUniqueId,
+            $subject,
+            $body,
+            $date
+        );
+
+        $stmt->execute();
+
+        $results = [];
+        while($stmt->fetch() === true) {
+            $results[] = [
+                self::MAIL_ID     => $mailId,
+                self::FROM_UNIQUE => $fromUniqueId,
+                self::SUBJECT     => $subject,
+                self::BODY        => $body,
+                self::DATE        => $date
+            ];
+        }
+
+        return $results;
+        
+    }
+
+    public function sendMail($toUniqueIds, $subject, $body) {
+        
+        $sql = "INSERT INTO mail (FromUniqueId, ToUniqueId, Subject, Body, Date) VALUES (?, ?, ?, ?, now())";
+
+        $db = DB::get();
+        
+        $stmt = $db->prepare($sql);
+
+        if($this->type === Mail::TYPE_PLAYER)
+            $fromUniqueId = $this->account->getUniqueNo();
 
 
+        $stmt->bind_param("iiss", $fromUniqueId, $toUniqueId, $subject, $body);
 
+        foreach($toUniqueIds as $toUniqueId) {
+            $stmt->execute();
+        }
+
+        $stmt->close();
+
+    }
 }
