@@ -36,17 +36,17 @@ class Chat {
 				$e->setCancelled(true);
 				if($targets = self::searchTarget($player)){
 					//じぶんもふくめてsearchTargetしている
-					$msg = self::format($player->getDisplayName(), "§f周囲", "§f".$e->getMessage());
+					$msg = self::Format($player->getDisplayName(), "§f周囲", "§f".$e->getMessage());
 					foreach($targets as $e){
 						$e->sendMessage($msg);
 					}
 				}else{
-					$msg = self::format("§8システム", "周囲に誰もいません: ".$e->getMessage());
+					$msg = self::Format("§8システム", "周囲に誰もいません: ".$e->getMessage());
 					$player->sendMessage($msg);
 				}
 			break;
 			case self::CHATMODE_ALL:
-				$msg = self::format($player->getDisplayName(), "§f全体", $e->getMessage());
+				$msg = self::Format($player->getDisplayName(), "§f全体", $e->getMessage());
 				$e->setMessage($msg);
 			break;
 			case self::CHATMODE_PLAYER:
@@ -58,7 +58,7 @@ class Chat {
 		}
 	}
 
-	public static function format($arg1, $arg2 = "", $arg3 = ""){
+	public static function Format($arg1, $arg2 = "", $arg3 = ""){
 		$out = "{$arg1} §7>";
 		if(!$arg3){
 			$out .= " {$arg2}";
