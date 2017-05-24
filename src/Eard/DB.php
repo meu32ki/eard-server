@@ -57,9 +57,9 @@ CREATE TABLE muni.mail (
 MailId INT(10) AUTO_INCREMENT,
 FromUniqueId INT(10), 
 ToUniqueId INT(10),
-Subject varchar(128),
+Subject TINYTEXT,
 Body LONGTEXT,
-date datetime DEFAULT '0000-00-00 00:00:00',
+Date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
 PRIMARY KEY (MailId)
 );
 ";

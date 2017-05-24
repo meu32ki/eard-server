@@ -12,8 +12,9 @@ namespace Eard;
 * MailId       : int(20)  auto_increment
 * FromUniqueId : int(10)  送信者
 * ToUniqueId   : int(10)  受信者
-* Subject      : str(50)  見出し
-* Body         : str(300) 本文
+* Subject      : str(50)  見出し 256バイト
+* Body         : str(300) 本文 65536バイト
+* Date         :　timestamp
 */
 class Mail {
 
@@ -35,12 +36,14 @@ class Mail {
     const FROM_UNIQUE = 1, TO_UNIQUE = 2;
     const SUBJECT     = 3;
     const BODY        = 4;
+    const DATE        = 5;
     /*
         [
             MAIL_ID => id,
             FROM_UNIQUE => uniqueid,
             SUBJECT => 件名
             BODY    => 本文
+            DATE    => 送信時間
         ]
     */
     private $mails;
@@ -53,7 +56,7 @@ class Mail {
 
     public function getSentMails(int $uniqueId, int $start, int $end) {
         $count = $end - $start;
-        $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
+        $sql = "SELECT MailId, FromUniqueId, Subject, Body, Date FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
         
         /* DBが用意できるまでコメントアウト ( > < )
         $db = DB::get();
@@ -66,13 +69,15 @@ class Mail {
         $fromUniqueId = 0;
         $subject      = "";
         $body         = "";
+        $date         = 0;
 
         //えんど
         $stmt->bind_result(
             $mailId,
             $fromUniqueId,
             $subject,
-            $body
+            $body,
+            $date,
         );
 
         $stmt->execute();
@@ -83,7 +88,8 @@ class Mail {
                 self::MAIL_ID     => $mailId,
                 self::FROM_UNIQUE => $fromUniqueId,
                 self::SUBJECT     => $subject,
-                self::BODY        => $body
+                self::BODY        => $body,
+                self::DATE        => $date,
             ];
         }
 
