@@ -1,6 +1,7 @@
 <?php
 namespace Eard;
 
+
 # Basic
 use pocketmine\Player;
 use pocketmine\Server;
@@ -18,6 +19,7 @@ use pocketmine\command\CommandSender;
 use Eard\DB;
 use Eard\Event;
 use Eard\AreaProtector;
+use Eard\BlockObject\BlockObjectManager;
 
 
 /***
@@ -36,8 +38,16 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		#Muni関連
 		DB::mysqlConnect(true);
-		Account::init();
+		Account::load();
+		BlockObjectManager::load();
 		self::$instance = $this;
+	}
+
+	public function onDisable(){
+
+		#Muni関連
+		BlockObjectManager::save();	
+		Account::save();
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){

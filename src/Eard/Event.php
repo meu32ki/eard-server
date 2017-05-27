@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 use Eard\AreaProtector;
 use Eard\Settings;
 use Eard\Menu;
-
+use Eard\BlockObject\BlockObjectManager;
 
 /***
 *
@@ -87,6 +87,25 @@ class Event implements Listener{
 				Account::get($player)->dumpData(); //セーブデータの中身出力
 			break;
 		}
+
+		$block = $e->getBlock();
+		if($e->getAction() == 3 or $e->getAction() == 0){
+			//長押し
+			$x = $block->x; $y = $block->y; $z = $block->z;
+			if($x && $y && $z){
+				//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
+				/*
+				if(Settings::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
+					//キャンセルとかはさせられないので、表示を出すだけ。
+					$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+				}*/
+				//　↑　これだすと、長押しのアイテムが使えなくなる
+				blockObjectManager::startBreak($x, $y, $z, $player);
+			}
+		}else{
+			//ふつうにたっぷ
+			$e->setCancelled( blockObjectManager::tap($block, $player) );
+		}
 	}
 
 	public function IE(PlayerItemHeldEvent $e){
@@ -107,16 +126,25 @@ class Event implements Listener{
 		$packet = $e->getPacket();
 		$player = $e->getPlayer();
 		$name = $player->getName();
+		//$x = $packet->x; $y = $packet->y; $z = $packet->z;
 		switch($packet::NETWORK_ID){
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				//壊し始めたとき
-				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
+/*				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
 					$x = $packet->x; $y = $packet->y; $z = $packet->z;
 					if(!Settings::$allowBreakAnywhere){
 						AreaProtector::Edit($player, $x, $y, $z);
 						//キャンセルとかはさせられないので、表示を出すだけ。
-					}					
+					}else{
+						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+					}
 				}
+*/
+
+				//echo "AKPK: {$x}, {$y}, {$z}, {$packet->action}\n";
+			break;
+			case ProtocolInfo::REMOVE_BLOCK_PACKET:
+				//echo "RMPK: {$x}, {$y}, {$z}\n";				
 			break;
 		}
 	}
@@ -127,14 +155,20 @@ class Event implements Listener{
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 			$e->setCancelled(true);
+		}else{
+			$e->setCancelled( blockObjectManager::place($block, $player) );
 		}
 	}
+
 	public function BB(BlockBreakEvent $e){
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 			$e->setCancelled(true);
+		}else{
+			echo "bb: ";
+			$e->setCancelled( blockObjectManager::break($block, $player) );
 		}
 	}
 
