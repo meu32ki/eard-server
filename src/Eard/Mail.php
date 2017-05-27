@@ -72,7 +72,7 @@ class Mail {
 
                 if($account->getUniqueNo() == $uniqueId) {
                     
-                    $account->getPlayer()->sendTip("§ainfo: §fメールが受信されました!");
+                    $account->getPlayer()->sendTip("§ainfo: §fメールを受信しました!");
                 }
             }
 
@@ -87,6 +87,7 @@ class Mail {
     const SUBJECT     = 3;
     const BODY        = 4;
     const DATE        = 5;
+    const FROM        = 6;
     /*
         [
             MAIL_ID => id,
@@ -117,9 +118,29 @@ class Mail {
     public function getReceivedMails(int $uniqueId, int $start, int $end) : array { 
         $count = $end - $start;
         if($this->type === Mail::TYPE_PLAYER)
-            $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ?, ToUniqueId = 0 order by MailId limit ? , ?"; // To UniqueId 0 is Broadcast
+            $sql = 
+            "SELECT 
+                mail.MailId, mail.FromUniqueId, data.name, mail.Subject, mail.Body 
+            FROM 
+                mail, data 
+            WHERE 
+                (mail.ToUniqueId = ? OR mail.ToUniqueId = 0) AND mail.ToUniqueId = data.no
+            order by 
+                mail.MailId 
+            limit 
+                ? , ?"; // To UniqueId 0 is Broadcast
         else if ($this->type === Mail::TYPE_COMPANY)
-            $sql = "SELECT MailId, FromUniqueId, Subject, Body FROM mail WHERE ToUniqueId = ? order by MailId limit ? , ?";
+            $sql = 
+            "SELECT 
+                mail.MailId, mail.FromUniqueId, data.name, mail.Subject, mail.Body 
+            FROM 
+                mail, data 
+            WHERE 
+                mail.ToUniqueId = ? AND mail.ToUniqueId = data.no
+            order by 
+                mail.MailId 
+            limit 
+                ? , ?";
 
 
         $db = DB::get();
@@ -130,6 +151,7 @@ class Mail {
         // 初期化
         $mailId       = 0;
         $fromUniqueId = 0;
+        $from         = "";
         $subject      = "";
         $body         = "";
 
@@ -137,6 +159,7 @@ class Mail {
         $stmt->bind_result(
             $mailId,
             $fromUniqueId,
+            $from,
             $subject,
             $body
         );
@@ -149,7 +172,8 @@ class Mail {
                 self::MAIL_ID     => $mailId,
                 self::FROM_UNIQUE => $fromUniqueId,
                 self::SUBJECT     => $subject,
-                self::BODY        => $body
+                self::BODY        => $body,
+                self::FROM        => $from
             ];
         }
 
