@@ -25,8 +25,11 @@ class Menu{
 	public static $menuItem = Item::SUGAR; //プロパティ名はほかで使ってるぞ
 	public static $selectItem = 351;
 
+	private $mailPage;
+
 	public function __construct($playerData){
 		$this->playerData = $playerData;
+		$this->mailPage = 0;
 	}
 
 	public function isActive(){
@@ -68,6 +71,7 @@ class Menu{
 	public function useSelect($damageId){//dyeがたたかれたら
 		if($this->isActive()){
 			$no = self::getNo($damageId); //0帰ってくる可能性もあるが、0でもぞっこう
+			var_dump($this->pageData);			
 			$pageNo = $this->pageData[$no];
 			if(0 <= $pageNo){
 				$this->sendMenu($pageNo);
@@ -89,7 +93,7 @@ class Menu{
 					["§7[[ メニュー ]]",false],
 					["ステータス照会",2],
 					["GPS (座標情報)",3],
-					["メール",6],
+					["メール",10],
 					//["オンラインショップ",5],
 					//["ヘルプ",6],
 					["§f■ メニューを閉じる",false],
@@ -160,6 +164,51 @@ class Menu{
 					];
 				}
 			break;
+
+			case 7: 
+				//Mail menu
+				$ar = [];
+			break;
+
+
+
+			case 9: //前のページ
+			case 11: //次のページ
+
+			$result = $no - 10;
+
+			$this->mailPage += $result;
+
+			var_dump($this->mailPage);
+
+			$this->sendMenu(10);
+			return;
+			break;
+
+			// Mail list (Received)
+			case 10:
+
+			$page = $this->mailPage;	
+
+			$start = $page * 5;
+			$playerMail = Mail::getMailAccount($player);
+			$mails = $playerMail->getReceivedMails($this->playerData->getUniqueNo(), $start, 5);
+
+			
+			$ar = [];
+			$cnt = 12;
+			foreach($mails as $mailData) {
+				$ar[] = [++$start . "-" . $mailData[Mail::FROM] . " : " . $mailData[Mail::SUBJECT], $cnt++];
+			}
+
+			if($page > 0)   $ar[] = ["§a前のページへ", 9]; //最初のページでなければ 
+			if($cnt === 17) $ar[] = ["§a次のページへ", 11]; //要素が0でなければ
+			$ar[] = ["§f■ トップへ戻る",false];
+
+			break;
+
+			// case 12 - 16: mail
+
 			case 100:
 				$ar = [
 					["閉じています",false],
@@ -243,15 +292,15 @@ class Menu{
 		return "                            ";
 	}
 	private static function getColor($no){
-		$ar = ["c","6","e","a","b","d"];
+		$ar = ["c","6","e","a","b","d","1"];
 		return isset($ar[$no]) ? "§".$ar[$no] : "§f";
 	}
 	private static function getMeta($no){
-		$ar = [1,14,11,10,12,13];
+		$ar = [1,14,11,10,12,13,4];
 		return isset($ar[$no]) ? $ar[$no] : 0;
 	}
 	public static function getNo($meta){
-		$ar = [1 => 0, 14 => 1, 11 => 2, 10 => 3, 12 => 4, 13 => 5];
+		$ar = [1 => 0, 14 => 1, 11 => 2, 10 => 3, 12 => 4, 13 => 5, 4 => 6];
 		return isset($ar[$meta]) ? $ar[$meta] : -1;
 	}
 	public static function getMenuItem(){

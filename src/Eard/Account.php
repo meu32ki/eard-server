@@ -3,6 +3,7 @@ namespace Eard;
 
 
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 use Eard\Menu;
@@ -48,6 +49,18 @@ class Account{
     	}
     	return self::$accounts[$name];
     }
+
+	public static function getOnlineUsers() : array {
+		$players = Server::getInstance()->getOnlinePlayers();
+
+		$accounts = [];
+
+		foreach($players as $player) {
+			$accounts[] = Account::get($player);
+		}
+
+		return $accounts;
+	}
 
 
 
