@@ -107,13 +107,11 @@ class Account{
 		return $this->data[0]; //0が返ってくる場合は何もできないように
 	}
 
-	//お金のやり取りはclass::Meuからのみ扱うこと。メソッドはあちらに記入。
-	//所持金参照の場合はここを使ってもよし。
 	public function getMeu(){
-		return $this->data[1];
+		return Meu::get($this->data[1], $this);
 	}
-	public function setMeu($meu){
-		$this->data[1] = $meu;
+	public function setMeu(Meu $meu){
+		$this->data[1] = $meu->getAmount();
 	}
 
 	/* 時間関係 
