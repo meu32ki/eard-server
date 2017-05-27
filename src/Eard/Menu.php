@@ -97,12 +97,13 @@ class Menu{
 			break;
 			case 2:
 				$name = $player->getName();
+				$meu = $playerData->getMeu()->getName();
+				$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
 				$day = $playerData->getTotalLoginDay();
 				$time = Account::calculateTime($playerData->getTotalTime());
-				$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
 				$ar = [
 					["§7[[ §l§f{$name}さん§r§7 ]]",false],
-					["§7§l所持金§r §d0 §e0 §33000",false],
+					["§7§l所持金§r {$meu}",false],
 					["§7§l自宅§r {$address}",false],
 					["§7§lプレイ§r {$time} {$day}日目",false],
 					["§f■ 戻る",false],
