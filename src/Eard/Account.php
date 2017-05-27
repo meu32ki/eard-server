@@ -350,16 +350,13 @@ class Account{
     }
 */
 
-    public static function init(){
-    	self::loadListFile();
-    }
 
 	/*
 	*	オフライン用
 	*/
-	private static function loadListFile(){
+	public static function load(){
 		$path = __DIR__."/data/";
-		$filepath = "{$path}info.sra";
+		$filepath = "{$path}Account.sra";
 		$json = @file_get_contents($filepath);
 		if($json){
 			if($data = unserialize($json)){
@@ -369,12 +366,12 @@ class Account{
 		}
 	}
 	//return bool
-	private static function saveListFile(){
+	public static function save(){
 		$path = __DIR__."/data/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
-		$filepath = "{$path}info.sra";
+		$filepath = "{$path}Account.sra";
 		$json = serialize(self::$namelist);
 		return file_put_contents($filepath, $json);
 	}

@@ -16,14 +16,14 @@ class DB{
 	}
 
 	public static function mysqlConnect($isFromServer = false){
-		MainLogger::getLogger()->info("§aConnecting to the database...");
+		MainLogger::getLogger()->notice("§aDB: Connecting to the database...");
 		$address = $isFromServer ? 'mcpe.jp' : '127.0.0.1';
 		$mysqli = new \mysqli($address, 'muni', '83yvbqov01-92v8@mn', 'muni');
 		if($mysqli->connect_errno){
 			MainLogger::getLogger()->error($mysqli->connect_error."(".$mysqli->connect_errno.")");
 			self::$mysqli = null;
 		}else{
-			MainLogger::getLogger()->info("§aSuccessfully connected!");
+			MainLogger::getLogger()->notice("§aDB: Successfully connected!");
 			self::$mysqli = $mysqli;
 		}
 	}
