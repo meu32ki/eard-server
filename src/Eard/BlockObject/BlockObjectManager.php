@@ -142,7 +142,7 @@ class BlockObjectManager {
 	}
 
 	public static $objects = [];
-	public static $index = [];
+	public static $index = []; //外部からgetはしてもいいがsetはするな
 	public static $indexNo = 0;
 
 

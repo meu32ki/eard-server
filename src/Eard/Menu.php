@@ -1,6 +1,7 @@
 <?php
 namespace Eard;
 
+
 # Basic
 use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;
@@ -33,16 +34,17 @@ class Menu{
 		return $this->page < 0 ? false : true;
 	}
 
-	public function close(){//最初のページなら、元のインヴェントリに戻す
+	public function close(){ //最初のページなら、元のインヴェントリに戻す
 		$this->page = -1;
 		Main::getInstance()->getServer()->getScheduler()->cancelTask($this->task->getTaskId());
 		$inv = $this->playerData->getPlayer()->getInventory()->setContents($this->items);
 		$this->items = [];
 	}
 
-	public function useMenu($e){//そのアイテムがたたかれたら
+	public function useMenu($e){//さとうがたたかれたら
 		$inv = $this->playerData->getPlayer()->getInventory();
 		if(!$this->isActive()){
+			//初回
 			if($e instanceof PlayerInteractEvent){
 				$this->items = $inv->getContents();
 
@@ -51,6 +53,7 @@ class Menu{
 				Main::getInstance()->getServer()->getScheduler()->scheduleRepeatingTask($this->task, 5*20);
 			}
 		}else{
+			//「閉じる」「戻る」操作に当たる。
 			if($this->page === 0){
 				if($e instanceof PlayerInteractEvent){
 					$this->sendMenu(100);
@@ -65,8 +68,9 @@ class Menu{
 		return true;
 	}
 
-	public function useSelect($damageId){//dyeがたたかれたら
+	public function useSelect($damageId){ //dyeがたたかれたら
 		if($this->isActive()){
+			//「進む」動作に当たる。
 			$no = self::getNo($damageId); //0帰ってくる可能性もあるが、0でもぞっこう
 			$pageNo = $this->pageData[$no];
 			if(0 <= $pageNo){

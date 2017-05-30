@@ -1,6 +1,7 @@
 <?php
 namespace Eard\BlockObject;
 
+
 use pocketmine\Player;
 use pocketmine\item\Item;
 
@@ -10,14 +11,14 @@ interface BlockObject {
 
 	/**
 	*	ブロックが置かれた時
-	*	trueが帰ると、キャンセルされる
+	*	trueが帰ると、BlockPlaceEventがキャンセルされる
 	*	@return bool
 	*/
 	public function Place(Player $player);
 
 	/**
 	*	ブロックがタップされた時
-	*	trueが帰ると、キャンセルされる
+	*	trueが帰ると、PlayerInteractEventがキャンセルされる
 	*	@param Item そのブロックをタップしたアイテム
 	*	@return bool
 	*/
@@ -32,7 +33,7 @@ interface BlockObject {
 
 	/**
 	*	ブロック長押しされ続け、壊された時
-	*	trueが帰ると、キャンセルされる
+	*	trueが帰ると、DestroyBlockEventがキャンセルされる
 	*	@param $x, $y, $z | 座標
 	*	@param Item そのブロックをタップしたアイテム
 	*	@return bool
