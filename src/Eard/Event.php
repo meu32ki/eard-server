@@ -10,6 +10,7 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\event\player\PlayerChatEvent;
@@ -65,12 +66,20 @@ class Event implements Listener{
 */
 	}
 
+	public function J(PlayerJoinEvent $e){
+		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
+	}
+
 	public function Q(PlayerQuitEvent $e){
-		if($e->getPlayer()->spawned){ //whitelistでひっかかっていなかったら
-			$playerData = Account::get($e->getPlayer());
+		$player = $e->getPlayer();
+		if($player->spawned){ //whitelistでひっかかっていなかったら
+			$playerData = Account::get($player);
 			if($playerData->getMenu()->isActive()){
 				$playerData->getMenu()->close();
 			}
+
+			$e->setQuitMessage(Chat::getQuitMessage($player->getDisplayName()));
+
 			$playerData->onUpdateTime();
 			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。
 		}

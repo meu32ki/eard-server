@@ -69,6 +69,12 @@ class Chat {
 	}
 
 	
+	public static function getJoinMessage($name){
+		return self::Format("§8システム", "{$name} がEardにやって来た");
+	}
+	public static function getQuitMessage($name){
+		return self::Format("§8システム", "{$name} が地球へ戻っていった");
+	}
 
 	const CHATMODE_VOICE = 1;//30マスいない
 	const CHATMODE_ALL = 2;//全体
