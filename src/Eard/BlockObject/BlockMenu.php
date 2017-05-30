@@ -95,7 +95,7 @@ trait BlockMenu {
 
 	private function getAddPacket($text){
 		$pk = new AddEntityPacket();
-		$pk->eid = 900000 + $this->objNo;
+		$pk->eid = 900000 + $this->getObjNo();
 		$pk->type = ItemEntity::NETWORK_ID;
 
 		//echo $this->x, $this->y, $this->z;
@@ -121,7 +121,7 @@ trait BlockMenu {
 
 	public function getRemovePacket(){
 		$pk = new RemoveEntityPacket;
-		$pk->eid = 900000 + $this->objNo;
+		$pk->eid = 900000 + $this->getObjNo();
 		return $pk;
 	}
 
