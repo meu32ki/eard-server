@@ -6,6 +6,7 @@ use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 use Eard\Menu;
+use Eard\Chat;
 
 
 /***
@@ -93,12 +94,56 @@ class Account{
 	*/
 	public function setChatMode($chatmode){
 		$this->chatmode = $chatmode;
+		if($this->getChatObject()) $this->removeChatObject();
+		if($this->getChatTarget()) $this->removeChatTarget();
+		if($this->getPlayer()){
+			switch($chatmode){
+				case Chat::CHATMODE_VOICE: $name = "§a周囲"; break;
+				case Chat::CHATMODE_ALL: $name = "§b全体"; break;
+				case Chat::CHATMODE_PLAYER: $name = "§6指定プレイヤー"; break;
+				case Chat::CHATMODE_ENTER: $name = "§eシステム"; break;
+			}
+			$this->getPlayer()->sendMessage(Chat::Format("§8システム", "§eチャット発言先が §f「 {$name} §f」 §eに切り替わりました。"));
+		}
+		return true;
 	}
 	public function getChatMode(){
 		return $this->chatmode;
 	}
 	private $chatmode = 1;
 
+
+	/**
+	*	playerのチャットをそのオブジェクトに入力(とばしたい)させたい時は
+	*	setChatObjectをつかう。setChatModeではなく。
+	*	@param $obj | should use ChatInterface
+	*/
+	public function setChatObject($obj){
+		$this->chatObj = $obj;
+		return true;
+	}
+	public function getChatObject(){
+		return $this->chatObj;
+	}
+	public function removeChatObject(){
+		$this->chatObj = null;
+		return true;
+	}
+	private $chatObj;
+
+
+	public function setChatTarget(Player $player){
+		$this->chatTarget = $player;
+		return true;
+	}
+	public function getChatTarget(){
+		return $this->chatTarget;
+	}
+	public function removeChatTarget(){
+		$this->chatTarget = null;
+		return true;
+	}
+	private $chatTarget;
 
 
 	/* Saved data

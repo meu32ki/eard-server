@@ -3,6 +3,8 @@ namespace Eard;
 
 
 # Basic
+use pocketmine\Server;
+use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;
 use pocketmine\plugin\PluginBase;
@@ -15,13 +17,15 @@ use pocketmine\event\player\PlayerItemHeldEvent;
 # Muni
 use Eard\AreaProtector;
 use Eard\Account;
+use Eard\Chat;
+use Eard\BlockObject\ChatInput;
 
 
 /***
 *
 *	"セルフォン"
 */
-class Menu{
+class Menu implements ChatInput {
 
 	public static $menuItem = Item::SUGAR; //プロパティ名はほかで使ってるぞ
 	public static $selectItem = 351;
@@ -60,6 +64,10 @@ class Menu{
 					$this->close();
 				}				
 			}else{
+				if($this->page === 9 && $this->playerData->getChatMode() === Chat::CHATMODE_ENTER){
+					//9の画面を閉じたとき、まだシステムだったら、システムあてではなくする
+					$this->playerData->setChatMode(Chat::CHATMODE_VOICE);			
+				}
 				if($e instanceof PlayerItemHeldEvent){
 					$this->sendMenu(0);
 				}
@@ -79,9 +87,39 @@ class Menu{
 		}
 	}
 
+	public function Chat(Player $player, String $txt){
+		switch($this->page){
+			case 9:
+				$target = Server::getInstance()->getPlayer($txt);
+				if($target){
+					if($target !== $player){
+						$playerData = $this->playerData;
+						$playerData->setChatMode(Chat::CHATMODE_PLAYER);
+						$playerData->setChatTarget($target);
+					}else{
+						$msg = Chat::Format("§8システム", "§c自分自身を指定することはできないめう。");
+						$player->sendMessage($msg);
+					}
+				}else{
+					$msg = Chat::Format("§8システム", "§c{$txt} という名のプレイヤーはいないめう。入力しなおすめう。");
+					$player->sendMessage($msg);
+				}
+				return true;
+			break;
+			default:
+
+			break;
+		}
+	}
+
 	//メニューを送る、内部のセットもやる
 	public function sendMenu($no = -1){// -1のときはtickerから
-		if($no === -1) $no = $this->page;
+		if($no === -1){
+			$no = $this->page; //tickerからであれば前回と同じものを送る
+			$isFirst = false;
+		}else{
+			$isFirst = true;
+		}
 		$playerData = $this->playerData;
 		$player = $playerData->getPlayer();
 		$inv = $player->getInventory();
@@ -93,8 +131,8 @@ class Menu{
 					["§7[[ メニュー ]]",false],
 					["ステータス照会",2],
 					["GPS (座標情報)",3],
-					["メール",6],
-					//["オンラインショップ",5],
+					["チャット",6],
+					//["メール",6],
 					//["ヘルプ",6],
 					["§f■ メニューを閉じる",false],
 				];
@@ -164,6 +202,58 @@ class Menu{
 					];
 				}
 			break;
+			case 6:
+				$ar = [
+					["§7[[ チャットモード ]]",false],
+					["周囲",7],
+					["全体",8],
+					["指定プレイヤー(tell)",9],
+					["§f■ トップへ戻る",false],
+				];
+			break;
+			case 7:
+				if($isFirst){
+					$playerData->setChatMode(Chat::CHATMODE_VOICE);
+				}
+				$ar = [
+					["§2[[ チャットモード ]]",false],
+					["チャットを「周囲」に発言",false],
+					["に設定しました。",false],
+					["§f■ 戻る",false],
+				];
+			break;
+			case 8:
+				if($isFirst){
+					$playerData->setChatMode(Chat::CHATMODE_ALL);
+				}
+				$ar = [
+					["§2[[ チャットモード ]]",false],
+					["チャットを「全体」に発言",false],
+					["に設定しました。",false],
+					["§f■ 戻る",false],
+				];
+			break;
+			case 9:
+				if($isFirst){
+					$playerData->setChatMode(Chat::CHATMODE_ENTER);
+					$playerData->setChatObject($this);
+				}
+				$ar = [
+					["§7[[ チャットモード ]]",false],
+					["プレイヤー名を入力してください",false],
+					["(チャット画面で打って送信)",false],
+					["§f■ やめる",false],
+				];
+			break;
+			case 10:
+				$targetName = $playerData->getChatTarget()->getDisplayName();
+				$ar = [
+					["§4[[ チャットモード ]]",false],
+					["チャットを{$targetName}さんに",false],
+					["直接送信します",false],
+					["§f■ 戻る",false],
+				];
+			break;
 			case 100:
 				$ar = [
 					["閉じています",false],
@@ -191,6 +281,13 @@ class Menu{
 
 			//おくるもの
 			$this->sendItems($cnt, $inv);
+
+			//インベントリホットバーきれいに
+
+			if($isFirst){
+				$inv = $player->getInventory();
+				$inv->setHeldItemIndex(8, true);
+			}
 		}
 	}
 
@@ -214,7 +311,6 @@ class Menu{
 		}
 		return $out;
 	}
-
 
 	public function test($args){// -1のときはtickerから
 		if(isset($args[0])){

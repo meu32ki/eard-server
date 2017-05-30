@@ -179,7 +179,10 @@ class Event implements Listener{
 			$e->setCancelled(true);
 		}else{
 			echo "bb: ";
-			$e->setCancelled( blockObjectManager::break($block, $player) );
+			$r = blockObjectManager::break($block, $player);
+			echo $r ? "true" : "false";
+			$e->setCancelled( $r );
+			echo "\n";
 		}
 	}
 

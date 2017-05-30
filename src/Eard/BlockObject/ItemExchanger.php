@@ -11,7 +11,7 @@ use Eard\Account;
 use Eard\Chat;
 
 
-class ItemExchanger implements BlockObject {
+class ItemExchanger implements BlockObject, ChatInput {
 
 
 /********************
@@ -56,6 +56,11 @@ class ItemExchanger implements BlockObject {
 
 	public function getObjNo(){
 		return $this->objNo;
+	}
+
+
+	public function Chat(Player $player, String $txt){
+
 	}
 
 /********************
@@ -201,7 +206,7 @@ class ItemExchanger implements BlockObject {
 				$player2 = $this->transaction[$name2][0]->getPlayer();
 
 				$playerData2 = Account::get($player2);
-				foreach($this->transaction[$name1][1]){
+				foreach($this->transaction[$name1][1] as $item){
 					if($item instanceof Item){
 						$playerData2->getPlayer()->getInventory()->addItem($item);
 					}elseif($item instanceof Meu){
@@ -210,7 +215,7 @@ class ItemExchanger implements BlockObject {
 				}
 
 				$playerData1 = Account::get($player1);
-				foreach($this->transaction[$name2][1]){
+				foreach($this->transaction[$name2][1] as $item){
 					if($item instanceof Item){
 						$playerData2->getPlayer()->getInventory()->addItem($item);
 					}elseif($item instanceof Meu){
