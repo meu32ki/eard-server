@@ -1,7 +1,10 @@
 name: Eard
 main: Eard\Main
 version: 0.0.1
-api: [2.0.0]
+api:
+  - 2.0.0
+  - 3.0.0
+  - 3.0.0-ALPHA5 #pmmp/PocketMine-MP
 load: STARTUP
 author: 32ki
 description: Seikatu Server

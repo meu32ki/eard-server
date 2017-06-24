@@ -5,8 +5,8 @@ namespace Eard\BlockObject;
 # TextParticle
 use pocketmine\entity\Item as ItemEntity;
 use pocketmine\entity\Entity;
-use pocketmine\network\protocol\RemoveEntityPacket;
-use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 
 
 trait BlockMenu {

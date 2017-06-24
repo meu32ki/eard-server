@@ -5,8 +5,9 @@ namespace Eard;
 use pocketmine\Player;
 
 use pocketmine\Server;
-use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 
+use pocketmine\utils\MainLogger;
 
 /***
 *
