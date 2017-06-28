@@ -49,6 +49,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		#Muni関連
 		BlockObjectManager::save();	
 		Account::save();
+		AreaProtector::saveAllObjects();
 		AreaProtector::save();
 	}
 

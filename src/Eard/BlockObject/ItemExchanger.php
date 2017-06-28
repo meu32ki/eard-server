@@ -42,14 +42,13 @@ class ItemExchanger implements BlockObject, ChatInput {
 	}
 
 	public function Delete(){
-		$this->backItem();
+		$this->backItemAll();
 		$this->removeTextParticleAll();
 	}
 
 	public function getData(){
-		return [self::$kind];
+		return [];
 	}
-
 	public function setData($data){
 		return true;
 	}

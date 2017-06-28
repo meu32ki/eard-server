@@ -125,25 +125,21 @@ class BlockObjectManager {
 
 	public static function getObject($indexNo){
 		if(!isset(self::$objects[$indexNo])){
-			if($data = self::loadObjectData($indexNo) ){
-				echo $indexNo; print_r($data);
-				switch($data[0]){
+			if($objData = self::loadObjectData($indexNo) ){
+				echo $indexNo; print_r($objData);
+				switch($objData[0]){
 					case 1: $obj = new ItemExchanger(); break;
 				}
+				$obj->setData($objData[1]);
 				self::$objects[$indexNo] = $obj;
 			}else{
 				//インデックスはあるが、オブジェクトの保存データがHDD上にない
-				return null;
+				return null; //読みだせずにエラー
 			}
 		}
 		return self::$objects[$indexNo];
 	}
 
-	public static function closeAll(){
-		foreach(self::$objects as $obj){
-			$data = $obj->getData();
-		}
-	}
 
 	public static $objects = [];
 	public static $index = []; //外部からgetはしてもいいがsetはするな
@@ -151,27 +147,63 @@ class BlockObjectManager {
 
 
 
+
+/*
+	//この関数は作る必要がない
+	//いきなりすべての読み込みはしないから
+
+	public static function loadAllObjects(){
+	}
+*/
+	public static function saveAllObjects(){
+		foreach(self::$objects as $indexNo => $obj){
+			$data = $obj->getData();
+			self::saveObjectData($indexNo, $data);
+		}
+	}
+
+	/**
+	*	@param int | $indexNo = self::index[$x][$y][$z]の中身
+	*	@return array $objData
+	*/
 	public static function loadObjectData($indexNo){
 		$path = __DIR__."/../data/obj/";
 		$filepath = "{$path}{$indexNo}.sra";
 		$json = @file_get_contents($filepath);
 		if($json){
-			if($data = unserialize($json)){
-				self::$indexNo = $data[0];
-				self::$index = $data[1];
+			if($objData = unserialize($json)){
+				/*
+					array => [
+						0 => int,
+						1 => array => [
+							ばばばばば
+						]
+					]
+				*/
+				return $objData;
 			}
 		}
 	}
-	public static function saveObjectData($indexNo){
+
+	/**
+	*	@param int | $indexNo = self::index[$x][$y][$z]の中身
+	*	@param array | $objData BlockObjectのgetDataしたもの
+	*	@return bool
+	*/
+	public static function saveObjectData($indexNo, $data){
 		$path = __DIR__."/../data/obj/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
 		$filepath = "{$path}{$indexNo}.sra";
-		$json = serialize([self::$indexNo, self::$index]);
+		$json = serialize([$kind, $data]);
 		return file_put_contents($filepath, $json);
 	}
 
+
+	/*
+	*	このBlockObjectmanagerクラスで使っている変数を保存
+	*/
 	public static function load(){
 		$path = __DIR__."/../data/";
 		$filepath = "{$path}blockObject.sra";
