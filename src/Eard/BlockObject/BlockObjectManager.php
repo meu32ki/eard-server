@@ -100,6 +100,10 @@ class BlockObjectManager {
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if( isset(self::$index[$x][$y][$z]) ){
 			$result = self::getObject(self::$index[$x][$y][$z])->Break($player);
+
+			//重要、これがないと、処理が重かった場合に死ぬ
+			$player->lastBreak = $player->lastBreak - 1.4;
+			
 			if(!$result){
 				self::getObject(self::$index[$x][$y][$z])->Delete();
 				self::Delete($x, $y, $z);
