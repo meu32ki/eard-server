@@ -62,6 +62,34 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 				AreaProtector::cal($player);
 				return true;
 			break;
+			case "ap":
+				if(isset($a[0])){
+					switch($a[0]){
+						case "afs":
+							if(0 < (int) $a[1]){
+								AreaProtector::setAffordableSection($a[1]);
+								$out = Chat::Format("システム", "販売セクション数を{$a[1]}に設定しました。");
+								$s->sendMessage($out);
+								return true;
+							}else{
+								return false;
+							}
+						    break;
+                        case "lfs":
+                            $leftSection = AreaProtector::$leftSection;
+                            $affordableSection = AreaProtector::$affordableSection;
+                            $out = Chat::Format("システム", "販売可能土地数: {$leftSection} / {$affordableSection}");
+                            $s->sendMessage($out);
+                            break;
+						default:
+							return false;
+						    break;
+					}
+				}else{
+					$out = "/ap afs <int> : 販売するセクションをせってい";
+                    $s->sendMessage($out);
+					return false;
+				}
 			default:
 				return true;
 			break;
