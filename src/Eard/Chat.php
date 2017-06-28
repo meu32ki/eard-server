@@ -69,7 +69,7 @@ class Chat {
 					$msg = self::Format("§8システム", "§c指定の相手はいないようです。");
 					$consoleMsg = self::Format($player->getDisplayName(), "§8システム", "§c指定の相手はいないようです。");
 					$player->sendMessage($msg);
-					$playerData->setChatMode(self::CHATMODE_VOICE);
+					$playerData->setChatMode(self::CHATMODE_VOICE); //きりかえ
 				}
 				break;
 			case self::CHATMODE_ENTER:

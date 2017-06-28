@@ -93,7 +93,7 @@ class Menu implements ChatInput {
 
 	public function Chat(Player $player, String $txt){
 		switch($this->page){
-			case 9:
+			case 23:
 				$target = Server::getInstance()->getPlayer($txt);
 				if($target){
 					if($target !== $player){
