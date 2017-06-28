@@ -104,18 +104,22 @@ class Event implements Listener{
 			//長押し
 			$x = $block->x; $y = $block->y; $z = $block->z;
 			if($x && $y && $z){
-				//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
 				/*
 				if(Settings::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
 					//キャンセルとかはさせられないので、表示を出すだけ。
 					$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
 				}*/
 				//　↑　これだすと、長押しのアイテムが使えなくなる
+				//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
 				blockObjectManager::startBreak($x, $y, $z, $player);
 			}
 		}else{
-			//ふつうにたっぷ
-			$e->setCancelled( blockObjectManager::tap($block, $player) );
+			$x = $block->x; $y = $block->y; $z = $block->z;
+			//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
+			//ふつうにたっぷ]
+			$r = blockObjectManager::tap($block, $player);
+			//echo $r ? "true\n" : "false\n";
+			$e->setCancelled( $r );
 		}
 	}
 
@@ -137,7 +141,6 @@ class Event implements Listener{
 		$packet = $e->getPacket();
 		$player = $e->getPlayer();
 		$name = $player->getName();
-		//$x = $packet->x; $y = $packet->y; $z = $packet->z;
 		switch($packet::NETWORK_ID){
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				//壊し始めたとき
@@ -151,7 +154,7 @@ class Event implements Listener{
 					}
 				}
 */
-
+				$x = $packet->x; $y = $packet->y; $z = $packet->z;
 				//echo "AKPK: {$x}, {$y}, {$z}, {$packet->action}\n";
 			break;
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
@@ -178,11 +181,10 @@ class Event implements Listener{
 		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 			$e->setCancelled(true);
 		}else{
-			echo "bb: ";
+			//echo "BB: ";
 			$r = blockObjectManager::break($block, $player);
-			echo $r ? "true" : "false";
+			//echo $r ? "true\n" : "false\n";
 			$e->setCancelled( $r );
-			echo "\n";
 		}
 	}
 

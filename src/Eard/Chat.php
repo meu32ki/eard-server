@@ -22,7 +22,7 @@ class Chat {
 		$e = [];
 		foreach($player->getLevel()->getPlayers() as $ent){//同じレベルからプレイヤー全員分取得
 			$dis = sqrt(pow($player->x-$ent->x, 2)+pow($player->y-$ent->y, 2)+pow($player->z-$ent->z, 2));
-			if($d > $dis && $ent->isAlive()){
+			if($d > $dis && $ent->isAlive() && $ent !== $player){
 				$e[] = $ent;
 			}
 		}

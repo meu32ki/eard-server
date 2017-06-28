@@ -336,8 +336,8 @@ class Menu implements ChatInput {
 		}
 
 		//送る
-		$player->sendTitle("", $this->getText($ar));
-		if(0 <= $no){//tickerでない(最初の一回)
+		$player->addTitle("", $this->getText($ar));
+		if($isFirst){//tickerでない(最初の一回)
 			// どのアイテムをたたいたら、どのページを表示するかを記憶
 			$pd = [];
 			$cnt = 0;
