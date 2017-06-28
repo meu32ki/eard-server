@@ -47,9 +47,9 @@ class AreaProtector{
 				//違う位置にいるので、前送ったブロックを戻済パケットを送る
 				foreach($oldData as $d){
 					$pk = new UpdateBlockPacket();
-					$pk->x = $d[0];
-					$pk->z = $d[2];
-					$pk->y = $d[1];
+					$pk->x = (int) $d[0];
+					$pk->z = (int) $d[2];
+					$pk->y = (int) $d[1];
 					$pk->blockId = $level->getBlockIdAt($d[0], $d[1], $d[2]);
 					$pk->blockData = $level->getBlockDataAt($d[0], $d[1], $d[2]);
 					$server->broadcastPacket($target, $pk);
@@ -89,9 +89,9 @@ class AreaProtector{
 
 			foreach($blocks as $key => $d){
 				$pk = new UpdateBlockPacket();
-				$pk->x = $d[0];
-				$pk->z = $d[2];
-				$pk->y = $d[1];
+				$pk->x = (int) $d[0];
+				$pk->z = (int) $d[2];
+				$pk->y = (int) $d[1];
 				$pk->blockId = $d[3];
 				$pk->blockData = $d[4];
 				$pk->flags = UpdateBlockPacket::FLAG_NONE;//読み込まれていないチャンクに送り付ける時は注意が必要

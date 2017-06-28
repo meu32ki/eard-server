@@ -95,23 +95,21 @@ trait BlockMenu {
 
 	private function getAddPacket($text){
 		$pk = new AddEntityPacket();
-		$pk->eid = 900000 + $this->getObjNo();
+		$pk->entityRuntimeId = 900000 + $this->getObjNo();
 		$pk->type = ItemEntity::NETWORK_ID;
-
-		//echo $this->x, $this->y, $this->z;
-		$pk->x = $this->x + 0.5;
-		$pk->y = $this->y + 0.25;
-		$pk->z = $this->z + 0.5;
+		$pk->x = $this->x;
+		$pk->y = $this->y - 0.75;
+		$pk->z = $this->z;
 		$pk->speedX = 0;
 		$pk->speedY = 0;
 		$pk->speedZ = 0;
 		$pk->yaw = 0;
 		$pk->pitch = 0;
-		$flags = 0;
-		$flags |= 1 << Entity::DATA_FLAG_INVISIBLE;
-		$flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;
-		$flags |= 1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG;
-		$flags |= 1 << Entity::DATA_FLAG_IMMOBILE;
+		$flags = (
+			(1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG) |
+			(1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG) |
+			(1 << Entity::DATA_FLAG_IMMOBILE)
+		);
 		$pk->metadata = [
 			Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
 			Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $text],
