@@ -16,9 +16,13 @@ commands:
   permission: muni
  test:
   description: ""
-  usage: "/s"
+  usage: "/test"
   permission: muni
-  aliases: [test2, test3, test4, t, gready]
+  aliases: [test2, test3, test4, t]
+ ap:
+  description: "AreaProtector"
+  usage: "/ap [afs| ]"
+  permission: muni
 permissions:
  muni:
   default: op
