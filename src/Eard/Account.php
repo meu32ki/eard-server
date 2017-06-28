@@ -232,7 +232,7 @@ class Account{
 		$this->data[3] = [$sectionNoX, $sectionNoZ];
 	}
 
-	private function getSectionArray(){
+	public function getSectionArray(){
 		return $this->data[4];
 	}
 	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
@@ -240,7 +240,7 @@ class Account{
 			//住所登録
 			$this->setAddress($sectionNoX, $sectionNoZ);
 		}
-		$this->data[4][$sectionNoX][$sectionNoZ] = $authority;
+		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = $authority;
 	}
 
 	public function hasLicense($licenseNo){

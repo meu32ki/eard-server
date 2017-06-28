@@ -8,11 +8,12 @@ namespace Eard;
 */
 class Meu {
 
+	//いまんとこplayerdataを入れておくメリットをあまり感じない 20170616
+
 	/**
-	*	ブロックが置かれた時
 	*	@param Int $amount
 	*	@param Account $playerData
-	*	@return void
+	*	@return class Meu
 	*/
 	public static function get($amount, $playerData){
 		$meu = new Meu();
@@ -42,6 +43,13 @@ class Meu {
 	public function marge($meu){
 		$this->amount = $this->amount + $meu->getAmount();
 		return true;
+	}
+
+	/*
+	*	amount以上あるか
+	*/
+	public function sufficient($amount){
+		return $amount <= $this->amount;
 	}
 
 	private $amount, $playerData;

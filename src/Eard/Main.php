@@ -38,6 +38,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		#Muni関連
 		DB::mysqlConnect(true);
+		AreaProtector::load();
 		Account::load();
 		BlockObjectManager::load();
 		self::$instance = $this;
@@ -48,6 +49,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		#Muni関連
 		BlockObjectManager::save();	
 		Account::save();
+		AreaProtector::save();
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){

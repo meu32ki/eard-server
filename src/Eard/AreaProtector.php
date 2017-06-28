@@ -238,6 +238,15 @@ class AreaProtector{
 	public static function getPileLimit($sectionNoX, $sectionNoZ){
 		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::$pileDefault;
 	}
+	//return int or -1
+	public static function getPriceOf($sectionNoX, $sectionNoZ){
+		/*
+			-1..... 誰も持っていない
+			0...... 誰かが所持している、だが、非売品状態。
+			1以上... その価格で売れる
+		*/
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[5]) ? self::getSectionData($sectionNoX, $sectionNoZ)[5] : -1;
+	}
 
 	//return array (section data)
 	public static function getSectionData($sectionNoX, $sectionNoZ){
@@ -255,26 +264,54 @@ class AreaProtector{
 	}
 
 	//return bool
+	//買うときのすべての処理をここで行う
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
-		if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
+		//if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
+			//購入できるか確認
+
+				//かねがあるか
+				$price = self::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+				if($price <= 0){
+					$player->sendMessage(Chat::Format("政府", "その土地は売買が許可されていないようです。"));
+					return false;
+				}
+				if(!$playerData->getMeu()->sufficient($price)){
+					$player->sendMessage(Chat::Format("政府", "お持ちのお金({$playerData->getMeu()->getName()})では購入はできないようですが…。"));
+					return false;
+				}
+
+				//土地が余っているか
+				if(self::$leftSection <= 0){
+					$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
+					return false;
+				}
+
+            //新規セクションデーター
 			$sectionData = [
 				$uniqueNo,
 				0,//時間に置きかわる
-				( $player->getY() - 1 ),
+				( $player->getY() - 1 ),//べーすとなる座標
+				0 //プレイヤーの売却価格に置き換わる
 			];
 			self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
+			//残りの数を減らす 販売数
+            --self::$leftSection;
+
 			//オフラインリストに名前を保存
 			Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
-			Account::saveListFile();
+			Account::save();
 
 			//購入時にセーブ
 			$playerData->addSection($sectionNoX, $sectionNoZ);
 			$playerData->updateData();
 			self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
 			return true;
+		}else{
+			//ログイン
+			$player->sendMessage(Chat::Format("政府", "ログインしなおしてから購入してください。"));
 		}
 		return false;		
 	}
@@ -322,10 +359,84 @@ class AreaProtector{
 		}
 	}
 
+/*
+	購入するときの価格について
+*/
+
+
+	/*
+		0が帰る場合は、販売できないということに。
+	*/
+	public static function getTotalPrice(Account $playerData, $sectionNoX, $sectionNoZ){
+		$pofs = self::getPriceOf($sectionNoX, $sectionNoZ);
+		if($pofs == 0) return 0;
+		//priceが0の場合は、うらない。
+		//いまんとこ、pofsはつかわないので、この変数はどこでもつあっていない。将来的には、土地を譲ることができるようになった場合、使うかもしれない。
+
+		$taxBase = 20000; //さいていでもこのきんがくかかるよ
+		$percentage = (self::$affordableSection - self::$leftSection) / self::$affordableSection; // 残っている土地の数によって価格が変わるよ
+		$taxChangeable = $taxBase * $percentage * 4; // かかくは、初期 = $taxbase, 最後 = $taxbase * 4;
+
+		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getSectionArray()); //すでに購入してる人は高くなるよ
+
+        if($pofs == -1){
+            //誰も持っていない土地
+            return $taxChangeable + $taxUpToPerson;
+        }else{
+            //誰かの土地
+            return $taxUpToPerson;
+        }
+	}
+
+	//　設定：購入可能なセクションの数を$amount個に変更する
+	public static function setAffordableSection($amount){
+		$increase = $amount - self::$affordableSection;//マイナスかもしれない
+		$newLeft = self::$leftSection + $increase;
+		if($newLeft < 0){
+			//売れている土地までは回収できないから、0より低くなることを防ぐ
+			return false;
+		}
+		self::$leftSection = $newLeft;
+		self::$affordableSection = $amount;
+		return true;
+	}
+
+	public static function load(){
+		$path = __DIR__."/data/";
+		$filepath = "{$path}Section.sra";
+		$json = @file_get_contents($filepath);
+		if($json){
+			if($data = unserialize($json)){
+				self::$affordableSection = $data[0];
+				self::$leftSection = $data[1];
+				MainLogger::getLogger()->notice("§aAreaProtector: data has been loaded");
+			}
+		}
+	}
+	//return bool
+	public static function save(){
+		// ぶち切りした場合 土地と そうでないところの差が出るから saveはいれるな
+		$path = __DIR__."/data/";
+		if(!file_exists($path)){
+			@mkdir($path);
+		}
+		$filepath = "{$path}Section.sra";
+		$json = serialize(
+				[self::$affordableSection, self::$leftSection]
+			);
+		MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
+		return file_put_contents($filepath, $json);
+	}
+
+
 	public static $section = 5;//区画の大きさ
 	public static $sections = [];//データ領域
 
 	public static $digDefault = 48;
 	public static $pileDefault = 80;
+
+
+	public static $affordableSection = 0;
+	public static $leftSection = 0;
 
 }

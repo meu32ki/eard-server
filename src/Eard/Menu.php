@@ -168,16 +168,20 @@ class Menu implements ChatInput {
 			case 3:
 				AreaProtector::viewSection($playerData); //セクション可視化
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
-				$address = AreaProtector::getSectionCode(AreaProtector::calculateSectionNo($x), AreaProtector::calculateSectionNo($z));
+				$sectionNoX = AreaProtector::calculateSectionNo($x);
+				$sectionNoZ = AreaProtector::calculateSectionNo($z);
+				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
 				$ownerNo = AreaProtector::getOwnerFromCoordinate($x,$z);
 				$owner = AreaProtector::getNameFromOwnerNo($ownerNo);
 				$ar = [
 					["§7[[ 座標情報 ]]",false],
 					["§7§l座標§r §7x§f{$x} §7y§f{$y} §7z§f{$z}",false],
 					["§7§l住所§r §f{$address}",false],
-					["§7§l所有者§r §f{$owner}",false],	
+					["§7§l所有者§r §f{$owner}",false],
 				];
 				if(!$ownerNo){
+                    $price = AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+                    $ar[] = ["§7§l　価格§r §f{$price}",false];
 					$ar[] = ["この土地を買う",4];
 				}
 				$ar[] = ["§f■ 戻る",false];
@@ -210,8 +214,7 @@ class Menu implements ChatInput {
 				}else{
 					$ar = [
 						["§2[[ 失敗 ]]",false],
-						["§7サーバーに再ログインし",false],
-						["て購入してください。",false],
+						["§7購入できませんでした。",false],
 						["§f■ トップへ戻る",false],
 					];
 				}
