@@ -41,10 +41,3 @@ class License {
 	private $no, $delay;
 
 }
-
-
-class Builder extends License {
-
-
-
-}
