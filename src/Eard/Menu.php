@@ -83,7 +83,7 @@ class Menu implements ChatInput {
 		if($this->isActive()){
 			//「進む」動作に当たる。
 			$no = self::getNo($damageId); //0帰ってくる可能性もあるが、0でもぞっこう
-			var_dump($this->pageData);			
+			//var_dump($this->pageData);			
 			$pageNo = $this->pageData[$no];
 			if(0 <= $pageNo){
 				$this->sendMenu($pageNo);

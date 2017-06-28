@@ -43,7 +43,7 @@ trait BlockMenu {
 			//現在のカーソル
 			$cursor = $this->menu[$player->getName()][1];
 			//カーソルから次のページ番号を探す
-			$pageNo = $this->menu[$player->getName()][2][ $this->menu[$player->getName()][3][$cursor] ][1];
+			$pageNo = $this->menu[$player->getName()][2][ $this->menu[ $player->getName() ][3][$cursor] ][1];
 			//次のページを送信用にセット、向こうで頑張って
 			$this->sendPageData($pageNo, $player);
 		}

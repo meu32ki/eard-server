@@ -6,9 +6,6 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
-use Eard\Menu;
-use Eard\Chat;
-
 
 /***
 *
@@ -126,7 +123,7 @@ class Account{
 	private $chatmode = 1;
 
 
-	/**
+	/*
 	*	playerのチャットをそのオブジェクトに入力(とばしたい)させたい時は
 	*	setChatObjectをつかう。setChatModeではなく。
 	*	@param $obj | should use ChatInterface
