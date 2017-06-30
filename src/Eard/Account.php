@@ -277,7 +277,7 @@ class Account{
 					famima65535 => authority 2
 					の場合、32kiはどちらの土地でも設置破壊はできるが、famima65535は、[12,14]でのみ設置はかいができる。
 			*/
-			return $this->data[4][$sectionNoX][$sectionNoZ] <= $this->data[6][$uniqueNo];
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] <= $this->data[6][$uniqueNo];
 		}
 		return false; //破壊できない
 	}
