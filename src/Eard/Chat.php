@@ -12,7 +12,6 @@ class Chat {
 
 	/**
 	 * Playerから指定半径内にいるプレイヤーを探す
-	 *
 	 * @param Player $player
 	 * @return Array Player[]
 	 */
@@ -29,6 +28,11 @@ class Chat {
 		return $e;
 	}
 
+	/**
+	*	PlayerChatEventからの処理が直でやってくる。チャットの全処理をここで行う。
+	*	@param string | プレイヤー名
+	*	@return string | 最終的にできた参加時メッセージ 
+	*/
 	public static function chat($player, $e){
 		$playerData = Account::get($player);
 		$chatmode = $playerData->getChatMode();
@@ -83,6 +87,12 @@ class Chat {
 		if($consoleMsg) MainLogger::getLogger()->info($consoleMsg);
 	}
 
+	/**
+	*	@param string | 発信者の名前
+	*	@param string | 対象者 or message
+	*	@param string | message
+	*	@return string | 最終的に送るメッセージ 
+	*/
 	public static function Format($arg1, $arg2 = "", $arg3 = ""){
 		$out = "{$arg1} §7>";
 		if(!$arg3){
@@ -94,9 +104,18 @@ class Chat {
 	}
 
 	
+	/**
+	*	@param string | プレイヤー名
+	*	@return string | 最終的にできた参加時メッセージ
+	*/
 	public static function getJoinMessage($name){
 		return self::Format("§8システム", "{$name} がEardにやって来た");
 	}
+
+	/**
+	*	@param string | プレイヤー名
+	*	@return string | 最終的にできた退出時メッセージ
+	*/
 	public static function getQuitMessage($name){
 		return self::Format("§8システム", "{$name} が地球へ戻っていった");
 	}

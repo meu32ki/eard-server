@@ -42,6 +42,18 @@ class BlockObjectManager {
 				$obj->Place($player);
 				return false;
 			break;
+			case 247: //リアクターコア
+				//インデックス
+				$x = $block->x; $y = $block->y; $z = $block->z;
+				self::$index[$x][$y][$z] = self::$indexNo + 1;
+				self::$indexNo += 1;
+				//実際のオブジェクト
+				$obj = new Shop;
+				$obj->x = $x; $obj->y = $y; $obj->z = $z; $obj->objNo = self::$indexNo;
+				self::$objects[self::$indexNo] = $obj;
+				$obj->Place($player);
+				return false;
+			break;
 			default:
 				return false;
 			break;
@@ -63,6 +75,7 @@ class BlockObjectManager {
 			if($obj){
 				return $obj->Tap($player);
 			}else{
+				// self::$blocks上にうまくオブジェクトのデータの読み出しができない
 				MainLogger::getLogger()->notice("§cBlockObjectManager: index {$x},{$y},{$z} has been deleted due to save failure.");
 				unset(self::$index[$x][$y][$z]);
 			}
@@ -82,6 +95,7 @@ class BlockObjectManager {
 			if($obj){
 				return $obj->StartBreak($player);
 			}else{
+				// self::$blocks上にうまくオブジェクトのデータの読み出しができない
 				MainLogger::getLogger()->notice("§cBlockObjectManager: index {$x},{$y},{$z} has been deleted due to save failure.");
 				unset(self::$index[$x][$y][$z]);
 			}
@@ -92,8 +106,8 @@ class BlockObjectManager {
 	/**
 	*	ブロック長押しされ続け、壊された時
 	*	trueが帰ると、キャンセルされる
-	*	@param $x, $y, $z | 座標
-	*	@param Item そのブロックをタップしたアイテム
+	*	@param Block | $x, $y, $z がはいってる座標
+	*	@param Item | そのブロックをタップしたアイテム
 	*	@return bool
 	*/
 	public static function Break(Block $block, Player $player){
@@ -101,7 +115,7 @@ class BlockObjectManager {
 		if( isset(self::$index[$x][$y][$z]) ){
 			$result = self::getObject(self::$index[$x][$y][$z])->Break($player);
 
-			//重要、これがないと、処理が重かった場合に死ぬ
+			// 重要、これがないと、処理が重かった場合に死ぬ
 			$player->lastBreak = $player->lastBreak - 1.4;
 			
 			if(!$result){
@@ -123,12 +137,19 @@ class BlockObjectManager {
 		unset(self::$index[$x][$y][$z]);
 	}
 
+	/**
+	*	指定されたインデックスにm格納されている(べき)BlockObjectを返す
+	*	見つからない場合はHDDからデータを読み出し、格納したうえで返す
+	*	@param int | $indexNo
+	*	@return BlockObject | interface::BlockObjectを使っているクラス
+	*/
 	public static function getObject($indexNo){
 		if(!isset(self::$objects[$indexNo])){
 			if($objData = self::loadObjectData($indexNo) ){
 				echo $indexNo; print_r($objData);
 				switch($objData[0]){
 					case 1: $obj = new ItemExchanger(); break;
+					case 2: $obj = new Shop(); break;
 				}
 				$obj->setData($objData[1]);
 				self::$objects[$indexNo] = $obj;
@@ -148,13 +169,12 @@ class BlockObjectManager {
 
 
 
-/*
-	//この関数は作る必要がない
-	//いきなりすべての読み込みはしないから
-
-	public static function loadAllObjects(){
-	}
-*/
+	/*
+		public static function loadAllObjects(){
+			//この関数は作る必要がない
+			//いきなりすべての読み込みはしないから
+		}
+	*/
 	public static function saveAllObjects(){
 		foreach(self::$objects as $indexNo => $obj){
 			$data = $obj->getData();
@@ -202,7 +222,7 @@ class BlockObjectManager {
 
 
 	/*
-	*	このBlockObjectmanagerクラスで使っている変数を保存
+	*	このclass::BlockObjectmanagerで使っている変数を保存
 	*/
 	public static function load(){
 		$path = __DIR__."/../data/";

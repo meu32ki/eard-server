@@ -263,32 +263,59 @@ class AreaProtector{
 		}
 	}
 
-	//return bool
-	//買うときのすべての処理をここで行う
+	/**
+	*	土地を買う際の、決済処理を行う。決済が完了したらgiveSectionを実行する。
+	*	@param Player | Playerオブジェクト
+	*	@param int | AreaProtector::calculateSectionNo で得られるxの値
+	*	@param int | AreaProtector::calculateSectionNo で得られるzの値
+	*	@return bool
+	*/
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
 		//if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
 			//購入できるか確認
 
-				//かねがあるか
-				$price = self::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
-				if($price <= 0){
-					$player->sendMessage(Chat::Format("政府", "その土地は売買が許可されていないようです。"));
-					return false;
-				}
-				if(!$playerData->getMeu()->sufficient($price)){
-					$player->sendMessage(Chat::Format("政府", "お持ちのお金({$playerData->getMeu()->getName()})では購入はできないようですが…。"));
-					return false;
-				}
+			//かねがあるか
+			$price = self::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+			if($price <= 0){
+				$player->sendMessage(Chat::Format("政府", "その土地は売買が許可されていないようです。"));
+				return false;
+			}
+			if(!$playerData->getMeu()->sufficient($price)){
+				$player->sendMessage(Chat::Format("政府", "お持ちのお金({$playerData->getMeu()->getName()})では購入はできないようですが…。"));
+				return false;
+			}
 
-				//土地が余っているか
-				if(self::$leftSection <= 0){
-					$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
-					return false;
-				}
+			if(!self::giveSection($player, $sectionNoX, $sectionNoZ) ){
+				$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
+				return false;
+			}
 
-            //新規セクションデーター
+			return true;
+		}else{
+			//ログイン
+			$player->sendMessage(Chat::Format("政府", "ログインしなおしてから購入してください。"));
+		}
+		return false;		
+	}
+
+	/**
+	*	土地を買う際の、登録の処理を行う。データに保存する。
+	*	registerと分けたのは、土地をもらうコマンドを作るため。
+	*	@param Account | PlayerData
+	*	@param int | calculateSectionNo でえられるxの値
+	*	@param int | calculateSectionNo でえられるzの値
+	*	@return bool | 成功していたらtrueを返す
+	*/
+	public static function giveSection(Account $playerData, $sectionNoX, $sectionNoZ){
+		$uniqueNo = $playerData->getUniqueNo();
+
+		//売れる土地が余っているか
+		if(self::$leftSection <= 0){
+			return false;
+		}else{
+	        //新規セクションデーター
 			$sectionData = [
 				$uniqueNo,
 				0,//時間に置きかわる
@@ -298,7 +325,7 @@ class AreaProtector{
 			self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 			//残りの数を減らす 販売数
-            --self::$leftSection;
+	        --self::$leftSection;
 
 			//オフラインリストに名前を保存
 			Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
@@ -309,42 +336,15 @@ class AreaProtector{
 			$playerData->updateData();
 			self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
 			return true;
-		}else{
-			//ログイン
-			$player->sendMessage(Chat::Format("政府", "ログインしなおしてから購入してください。"));
-		}
-		return false;		
-	}
-
-	//return array or false
-	private static function readSectionFile($sectionNoX, $sectionNoZ){
-		$path = __DIR__."/sections/";
-		$filepath = "{$path}{$sectionNoX}_{$sectionNoZ}.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				return $data;
-			}
-		}else{
-			//ふぁいるなんてなかった
-			return false;//section no
 		}
 	}
-	//return bool
-	private static function saveSectionFile($sectionNoX, $sectionNoZ, $data){
-		$path = __DIR__."/sections/";
-		if(!file_exists($path)){
-			@mkdir($path);
-		}
-		$filepath = "{$path}{$sectionNoX}_{$sectionNoZ}.sra";
-		$json = serialize($data);
-		return file_put_contents($filepath, $json);
-	}
 
-
-
-	// params int | ownerNo
-	// return string | name
+	/**
+	*	いちいちDBのデータを読み込むまでもないとき、owneerNoから、持ち主の名前をだす。
+	*	DBのいんでっくすみたいなもん？
+	*	@param int | ownerNo
+	*	@return string | プレイヤーのname
+	*/
 	public static function getNameFromOwnerNo($no){
 		if($no === -1){
 			return "グリッド上";
@@ -363,9 +363,12 @@ class AreaProtector{
 	購入するときの価格について
 */
 
-
-	/*
-		0が帰る場合は、販売できないということに。
+	/**
+	*	土地が販売可能な状態か調べる。販売可能な場合は1以上の整数を返す。
+	*	@param Account | PlayerData
+	*	@param int | calculateSectionNo でえられるxの値
+	*	@param int | calculateSectionNo でえられるzの値
+	*	@return int | その土地の価格 0が帰る場合は、販売できないということに。
 	*/
 	public static function getTotalPrice(Account $playerData, $sectionNoX, $sectionNoZ){
 		$pofs = self::getPriceOf($sectionNoX, $sectionNoZ);
@@ -388,7 +391,11 @@ class AreaProtector{
         }
 	}
 
-	//　設定：購入可能なセクションの数を$amount個に変更する
+	/**
+	*	設定：購入可能なセクションの数を$amount個に変更する
+	*	@param int | 個数 (default:1000)
+	*	@return bool | 設定できればtrue
+	*/
 	public static function setAffordableSection($amount){
 		$increase = $amount - self::$affordableSection;//マイナスかもしれない
 		$newLeft = self::$leftSection + $increase;
@@ -425,6 +432,38 @@ class AreaProtector{
 				[self::$affordableSection, self::$leftSection]
 			);
 		MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
+		return file_put_contents($filepath, $json);
+	}
+
+	/**
+	*	セクションごとにそんざいするでーた。読み込む。
+	*	@return array or false
+	*/
+	private static function readSectionFile($sectionNoX, $sectionNoZ){
+		$path = __DIR__."/sections/";
+		$filepath = "{$path}{$sectionNoX}_{$sectionNoZ}.sra";
+		$json = @file_get_contents($filepath);
+		if($json){
+			if($data = unserialize($json)){
+				return $data;
+			}
+		}else{
+			//ふぁいるなんてなかった
+			return false;//section no
+		}
+	}
+
+	/**
+	*	セクションごとにそんざいするでーた。書き込む。
+	*	@return bool | 保存ができればtrue
+	*/
+	private static function saveSectionFile($sectionNoX, $sectionNoZ, $data){
+		$path = __DIR__."/sections/";
+		if(!file_exists($path)){
+			@mkdir($path);
+		}
+		$filepath = "{$path}{$sectionNoX}_{$sectionNoZ}.sra";
+		$json = serialize($data);
 		return file_put_contents($filepath, $json);
 	}
 
