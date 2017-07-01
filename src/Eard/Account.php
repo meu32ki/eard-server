@@ -66,11 +66,13 @@ class Account{
     }
 
 
-    /*
-    	メールでの処理かもしれないが用途が不明 動作確認してるのかわからない
-    	発見 2017/6/30
+    /**
+    *	メールでの処理かもしれないが用途が不明 動作確認してるのかわからない
+    *	発見 2017/6/30
+	*	@param None
+    *	@return Account[]
     */
-	public static function getOnlineUsers() : array {
+	public static function getOnlineUsers(){
 		$players = Server::getInstance()->getOnlinePlayers();
 
 		$accounts = [];
