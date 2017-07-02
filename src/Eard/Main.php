@@ -91,10 +91,62 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                     $s->sendMessage($out);
 					return false;
 				}
+			break;
+			case 'enemy':
+				if($s instanceof Player && count($a) >= 1){
+					EnemyRegister::summon($s->getLevel(), $a[0], $s->x, $s->y, $s->z);
+					return true;
+				}else{
+					return false;
+				}
+			break;
+			case "saveskin":
+				if(count($a) == 1){
+					$skinName = $a[0];
+					$savePlayer = Server::getInstance()->getPlayer($skinName);
+					$result = self::saveSkinData($savePlayer);
+					if($result === false){
+						Command::broadcastCommandMessage($s, "そのプレイヤーは存在しません");
+					}else{
+						Command::broadcastCommandMessage($s, "スキンをセーブしました");
+						return true;
+					}
+				}
+			break;
 			default:
 				return true;
 			break;
 		}
+	}
+
+	/*
+	 * スキンデータをロードして返す
+	 */
+	public static function loadSkinData($skinName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/skins/'.$skinName.'.txt';
+		$skinData = file_get_contents($fullPath);
+		$decode_skin = urldecode($skinData);
+		return $decode_skin;
+	}
+
+	/*
+	 * スキンデータをセーブ
+	 */
+	public static function saveSkinData(Player $player){
+		if($player instanceof Player){
+			$path = __FILE__ ;
+			$dir = dirname($path);
+			$name = $player->getName();
+			$fullPath = $dir.'/skins/'.$name.'.txt';
+			$skinData = $player->getSkinData();
+			$encode_skin = urlencode($skinData);
+			file_put_contents($fullPath, $encode_skin);
+			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkinId());
+			return true;
+		}
+		return false;
 	}
 
 	public static function getInstance(){
