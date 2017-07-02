@@ -2,8 +2,8 @@
 
 namespace Eard\Enemys;
 
-use test\Enemy;
-use test\Main;
+use Eard\Enemy;
+use Eard\Main;
 
 use pocketmine\Player;
 use pocketmine\Server;
