@@ -22,6 +22,9 @@ commands:
  ap:
   description: "AreaProtector"
   usage: "/ap [afs| ]"
+ gv:
+  description: "Muni: Government"
+  usage: "/gv [give]"
   permission: muni
 permissions:
  muni:

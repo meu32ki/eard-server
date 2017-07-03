@@ -91,6 +91,29 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                     $s->sendMessage($out);
 					return false;
 				}
+			case "gv":
+				if(isset($a[0])){
+					switch($a[0]){
+						case "give":
+							if(isset($a[1]) && isset($a[2])){
+								$name = $a[1];
+								$amount = $a[2];
+								$player = Server::getInstance()->getPlayer($name);
+								if($player instanceof Player){
+									$playerData = Account::get($player);
+									$result = Government::giveMeu($playerData, $amount);
+									$out = $result ? "あげた" : "あげてない";
+									$s->sendMessage($out);
+								}
+							}else{
+
+							}
+						break;
+					}
+				}else{
+
+				}				
+			break;
 			default:
 				return true;
 			break;
