@@ -2,7 +2,6 @@
 
 namespace Eard\Enemys;
 
-use Eard\Enemy;
 use Eard\Main;
 
 use pocketmine\Player;
@@ -82,7 +81,7 @@ class Dummy extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", Main::loadSkinData('moyasan083')),
+				new StringTag("Data", EnemyRegister::loadSkinData('moyasan083')),
 				new StringTag("Name", 'GreekMythology_GreekMythologySiren')
 			]),
 		]);
