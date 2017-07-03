@@ -573,18 +573,25 @@ class Account{
 		if($json){
 			if($data = unserialize($json)){
 				self::$namelist = $data;
-				MainLogger::getLogger()->notice("§aAccount: offline list has loaded (Listfile)");
+				MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
 			}
 		}
 	}
 	//return bool
 	public static function save(){
+		//全員分のデータセーブ
+		foreach(self::$accounts as $playerData){
+			$playerData->updateData();
+		}
+
+		//記録データセーブ
 		$path = __DIR__."/data/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
 		$filepath = "{$path}Account.sra";
 		$json = serialize(self::$namelist);
+		MainLogger::getLogger()->notice("§aAccount: offline list has saved");
 		return file_put_contents($filepath, $json);
 	}
 	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
