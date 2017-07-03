@@ -41,15 +41,17 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		AreaProtector::load();
 		Account::load();
 		BlockObjectManager::load();
+		Government::load();
 		self::$instance = $this;
 	}
 
 	public function onDisable(){
 
 		#Muni関連
+		Government::save();
+		BlockObjectManager::saveAllObjects();
 		BlockObjectManager::save();	
 		Account::save();
-		AreaProtector::saveAllObjects();
 		AreaProtector::save();
 	}
 

@@ -2,6 +2,8 @@
 namespace Eard;
 
 
+use pocketmine\utils\MainLogger;
+
 /****
 *
 *	通貨管理する政府
@@ -36,6 +38,7 @@ class Government{
 	*	@return bool
 	*/
 	public static function giveMeu(Account $playerData, $amount){
+		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
 			$bankMeu = self::$CentralBankMeu;
 			if($bankMeu->sufficient($amount)){
@@ -51,29 +54,44 @@ class Government{
 	}
 
 
+	public static function confirmBalance(){
+		$firstBank = self::$CentralBankFirst;
+		$left = self::$CentralBankMeu->getAmount();
+		$inPublic = $firstBank - $left;
+		$out = "総発行μ: {$firstBank}μ\n出回っているμ: {$inPublic}μ\n政府保有μ: {$left}μ";
+		return $out;
+	}
 
-	private static function load(){
+
+	public static function load(){
 		$path = __DIR__."/data/";
-		$filepath = "{$path}government.sra";
+		$filepath = "{$path}Government.sra";
+
+		//初回用
+		self::$CentralBankFirst = 1000 * 10000;
+		self::$CentralBankMeu = Meu::get(1000 * 10000, 100000); //100000は政府のUniqueNo
+
 		$json = @file_get_contents($filepath);
 		if($json){
 			if($data = unserialize($json)){
 				self::$CentralBankFirst = $data[0];
 				self::$CentralBankMeu = Meu::get($data[1], 100000); //100000は政府のUniqueNo
+				MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
 			}
 		}
 	}
 	//return bool
-	private static function save(){
+	public static function save(){
 		$path = __DIR__."/data/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
-		$filepath = "{$path}government.sra";
+		$filepath = "{$path}Government.sra";
 		$json = serialize([
 				self::$CentralBankFirst,
 				self::$CentralBankMeu->getAmount()
 			]);
+		MainLogger::getLogger()->notice("§aGovernment: data has been saved");
 		return file_put_contents($filepath, $json);
 	}
 
