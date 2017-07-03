@@ -66,17 +66,17 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "ap": // Area Protector 土地関連
 				if(isset($a[0])){
 					switch($a[0]){
-						case "afs": // 販売セクションの設定
-							if(0 < (int) $a[1]){
-								AreaProtector::setAffordableSection($a[1]);
-								$out = Chat::System("販売セクション数を{$a[1]}に設定しました。");
+						case "asec": // 販売セクションの発行数設定
+							if(isset($a[1]) && 0 < (int) $a[1]){
+								$result　= AreaProtector::setAffordableSection($a[1]);
+								$out = $result ? Chat::System("販売セクション数を{$a[1]}に設定しました。") : Chat::System("設定できませんでした");
 								$s->sendMessage($out);
 								return true;
 							}else{
 								return false;
 							}
 						    break;
-                        case "lfs": // 販売されてるセクションの確認
+                        case "vsec": // 販売されてるセクションの発行数確認
                             $leftSection = AreaProtector::$leftSection;
                             $affordableSection = AreaProtector::$affordableSection;
                             $out = Chat::System("販売可能土地数: {$leftSection} / {$affordableSection}");
@@ -86,7 +86,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                         case "give": // セクションをタダで渡す
                         	if(isset($a[1])){
                         		$name = (string) $a[1];
-                        		if( ($player = Server::getInstance()->getPlayer($name) ) instanceof Player){
+                        		if( ( $player = Server::getInstance()->getPlayer($name) ) instanceof Player){
                         			$playerData = Account::get($player);
                         			$sectionNoX = AreaProtector::calculateSectionNo($player->getX());
                         			$sectionNoZ = AreaProtector::calculateSectionNo($player->getZ());
@@ -115,7 +115,22 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "gv": // Government 政府のお金関連
 				if(isset($a[0])){
 					switch($a[0]){
-						case "give":
+						case "ameu": // 発行量設定
+							if(isset($a[1]) && 0 < (int) $a[1]){
+								$result = Government::setCentralBankFirst($a[1]);
+								$out = $result ? Chat::System("政府の通貨発行量を{$a[1]}に設定しました。") : Chat::System("設定できませんでした");
+								$s->sendMessage($out);
+								return true;
+							}else{
+								return false;
+							}
+						break;
+						case "vmeu": // 発行数の確認
+							$out = Government::confirmBalance();
+							$s->sendMessage($out);
+							return true;
+						break;
+						case "give": // ただでお金が欲しい！
 							if(isset($a[1]) && isset($a[2])){
 								$name = $a[1];
 								$amount = $a[2];
@@ -125,6 +140,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 									$result = Government::giveMeu($playerData, $amount);
 									$out = $result ? "あげた" : "あげてない";
 									$s->sendMessage($out);
+								}else{
+									$s->sendMessage("プレイヤーおらへんで");									
 								}
 							}else{
 

@@ -21,11 +21,11 @@ commands:
   aliases: [test2, test3, test4, t]
  ap:
   description: "Muni: AreaProtector"
-  usage: "/ap [afs|lfs|give]"
+  usage: "/ap [asec|vsec|give]"
   permission: muni
  gv:
   description: "Muni: Government"
-  usage: "/gv [give]"
+  usage: "/gv [ameu|vmeu|give]"
   permission: muni
  enemy:
   description: "エネミーを呼び出します"
