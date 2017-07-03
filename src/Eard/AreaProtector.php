@@ -315,27 +315,31 @@ class AreaProtector{
 		if(self::$leftSection <= 0){
 			return false;
 		}else{
-	        //新規セクションデーター
-			$sectionData = [
-				$uniqueNo,
-				0,//時間に置きかわる
-				( $player->getY() - 1 ),//べーすとなる座標
-				0 //プレイヤーの売却価格に置き換わる
-			];
-			self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
+			if( ($player = $playerData->getPlayer()) instanceof Player){
+		        //新規セクションデーター
+				$sectionData = [
+					$uniqueNo,
+					0,//時間に置きかわる
+					( $player->getY() - 1 ),//べーすとなる座標
+					0 //プレイヤーの売却価格に置き換わる
+				];
+				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
-			//残りの数を減らす 販売数
-	        --self::$leftSection;
+				//残りの数を減らす 販売数
+		        --self::$leftSection;
 
-			//オフラインリストに名前を保存
-			Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
-			Account::save();
+				//オフラインリストに名前を保存
+				Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
+				Account::save();
 
-			//購入時にセーブ
-			$playerData->addSection($sectionNoX, $sectionNoZ);
-			$playerData->updateData();
-			self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
-			return true;
+				//購入時にセーブ
+				$playerData->addSection($sectionNoX, $sectionNoZ);
+				$playerData->updateData();
+				self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
+				return true;
+			}else{
+				return false;
+			}
 		}
 	}
 
