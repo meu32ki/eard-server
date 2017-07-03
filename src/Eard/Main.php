@@ -168,7 +168,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	public static function loadSkinData($skinName){
 		$path = __FILE__ ;
 		$dir = dirname($path);
-		$fullPath = $dir.'/skins/'.$skinName.'.txt';
+		$fullPath = $dir.'/data/skins/'.$skinName.'.txt';
 		$skinData = file_get_contents($fullPath);
 		$decode_skin = urldecode($skinData);
 		return $decode_skin;
@@ -182,7 +182,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			$path = __FILE__ ;
 			$dir = dirname($path);
 			$name = $player->getName();
-			$fullPath = $dir.'/skins/'.$name.'.txt';
+			$fullPath = $dir.'/data/skins/'.$name.'.txt';
 			$skinData = $player->getSkinData();
 			$encode_skin = urlencode($skinData);
 			file_put_contents($fullPath, $encode_skin);
