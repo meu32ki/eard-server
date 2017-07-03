@@ -182,18 +182,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	}
 
 	/*
-	 * スキンデータをロードして返す
-	 */
-	public static function loadSkinData($skinName){
-		$path = __FILE__ ;
-		$dir = dirname($path);
-		$fullPath = $dir.'/data/skins/'.$skinName.'.txt';
-		$skinData = file_get_contents($fullPath);
-		$decode_skin = urldecode($skinData);
-		return $decode_skin;
-	}
-
-	/*
 	 * スキンデータをセーブ
 	 */
 	public static function saveSkinData(Player $player){
