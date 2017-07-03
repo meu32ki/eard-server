@@ -503,7 +503,11 @@ class Account{
     	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
     	DB::get()->query($sql);
 		MainLogger::getLogger()->notice("§aAccount: {$name} data saved　- first time");
+
 		$this->data = self::$newdata;//初回データを読み込む
+
+		//meuは展開する
+		$this->meu = Meu::get($this->data[1], 0);
     }
 
     /**
