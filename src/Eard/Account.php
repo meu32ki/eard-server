@@ -49,6 +49,7 @@ class Account{
     *	名前から、上記のオブジェクトを取得する。
     *	@param String | name
     *	@param bool | オフライン時でも、読ませる必要があるか。
+    *	@return Account or null
     */
 	public static function getByName($name, $forceLoad = false){
 		$name = strtolower($name);
@@ -228,7 +229,7 @@ class Account{
 	*	@return bool
 	*/
 	public function setMeu(Meu $meu){
-		$this->data[1] = $meu->getAmount();
+		$this->meu = $meu;
 		return true;
 	}
 
@@ -237,7 +238,7 @@ class Account{
 	*	@return Meu | 所持金料などのデータ
 	*/
 	public function getMeu(){
-		return Meu::get($this->data[1], $this);
+		return $this->meu;
 	}
 
 
@@ -469,8 +470,13 @@ class Account{
 						MainLogger::getLogger()->notice($msg);
 					}
 
-					//読み込み格納
+					// めもりにてんかい
 					$this->data = $data; //メモリにコンニチハ
+
+					// Meuは展開する
+					$this->meu = Meu::get($this->data[1], $this->getUniqueNo());
+
+
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 				}else{
 					//れつがみつからなかった ＝　データがなかった初回
@@ -508,6 +514,10 @@ class Account{
     *	@return void
     */
 	public function updateData($quit = false){
+		//Meuの量を
+		$this->data[1] = $this->meu->getAmount();
+
+		// セーブ
 		$name = $this->getPlayer()->getName();
 		$data = serialize($this->data);
 		$txtdata = base64_encode($data);
@@ -517,6 +527,7 @@ class Account{
     	if($quit){
     		unset(self::$accounts[$name]);//メモリからバイバイ
     	}
+    
     }
 	public function dumpData(){
 		print_r($this->data);
