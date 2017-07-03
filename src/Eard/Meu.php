@@ -68,10 +68,12 @@ class Meu {
 	*	@return Meu　or false
 	*/
 	public function spilit($spilitAmount){
-		if($this->amount < $spilitAmount){//残りが0以下にならないように
+		if($spilitAmount <= $this->amount){
+			//残りが0以下にならないように
 			$this->amount = $this->amount - $spilitAmount;
 			return self::get($spilitAmount, $this->uniqueNo);
 		}else{
+			//残りが0以下になっちゃう
 			return false;
 		}
 	}
