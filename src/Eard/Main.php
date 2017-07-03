@@ -56,14 +56,14 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){
 		$user = $s->getName();
 		switch($cmd->getName()){
-			case "test": // テスト用に変更と化して使う
+			case "test": // テスト用に変更とかして使う
 				//$no = isset($a[0]) ? $a[0] : 0;
 				$playerData = Account::getByName('meu32ki');
 				$player = $playerData->getPlayer();
 				AreaProtector::cal($player);
 				return true;
 			break;
-			case "ap":
+			case "ap": // Area Protector 土地関連
 				if(isset($a[0])){
 					switch($a[0]){
 						case "afs": // 販売セクションの設定
@@ -112,7 +112,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                     $s->sendMessage($out);
 					return false;
 				}
-			case "gv":
+			case "gv": // Government 政府のお金関連
 				if(isset($a[0])){
 					switch($a[0]){
 						case "give":
@@ -135,10 +135,61 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 				}				
 			break;
+			case "enemy":
+				if($s instanceof Player && count($a) >= 1){
+					EnemyRegister::summon($s->getLevel(), $a[0], $s->x, $s->y, $s->z);
+					return true;
+				}else{
+					return false;
+				}
+			break;
+			case "saveskin":
+				if(count($a) == 1){
+					$skinName = $a[0];
+					$savePlayer = Server::getInstance()->getPlayer($skinName);
+					$result = self::saveSkinData($savePlayer);
+					if($result === false){
+						Command::broadcastCommandMessage($s, "そのプレイヤーは存在しません");
+					}else{
+						Command::broadcastCommandMessage($s, "スキンをセーブしました");
+						return true;
+					}
+				}
+			break;
 			default:
 				return true;
 			break;
 		}
+	}
+
+	/*
+	 * スキンデータをロードして返す
+	 */
+	public static function loadSkinData($skinName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/skins/'.$skinName.'.txt';
+		$skinData = file_get_contents($fullPath);
+		$decode_skin = urldecode($skinData);
+		return $decode_skin;
+	}
+
+	/*
+	 * スキンデータをセーブ
+	 */
+	public static function saveSkinData(Player $player){
+		if($player instanceof Player){
+			$path = __FILE__ ;
+			$dir = dirname($path);
+			$name = $player->getName();
+			$fullPath = $dir.'/skins/'.$name.'.txt';
+			$skinData = $player->getSkinData();
+			$encode_skin = urlencode($skinData);
+			file_put_contents($fullPath, $encode_skin);
+			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkinId());
+			return true;
+		}
+		return false;
 	}
 
 	public static function getInstance(){
