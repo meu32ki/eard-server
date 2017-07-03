@@ -56,7 +56,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){
 		$user = $s->getName();
 		switch($cmd->getName()){
-			case "test":
+			case "test": // テスト用に変更と化して使う
 				//$no = isset($a[0]) ? $a[0] : 0;
 				$playerData = Account::getByName('meu32ki');
 				$player = $playerData->getPlayer();
@@ -66,28 +66,49 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "ap":
 				if(isset($a[0])){
 					switch($a[0]){
-						case "afs":
+						case "afs": // 販売セクションの設定
 							if(0 < (int) $a[1]){
 								AreaProtector::setAffordableSection($a[1]);
-								$out = Chat::Format("システム", "販売セクション数を{$a[1]}に設定しました。");
+								$out = Chat::System("販売セクション数を{$a[1]}に設定しました。");
 								$s->sendMessage($out);
 								return true;
 							}else{
 								return false;
 							}
 						    break;
-                        case "lfs":
+                        case "lfs": // 販売されてるセクションの確認
                             $leftSection = AreaProtector::$leftSection;
                             $affordableSection = AreaProtector::$affordableSection;
-                            $out = Chat::Format("システム", "販売可能土地数: {$leftSection} / {$affordableSection}");
+                            $out = Chat::System("販売可能土地数: {$leftSection} / {$affordableSection}");
                             $s->sendMessage($out);
+                            return true;
                             break;
-						default:
-							return false;
-						    break;
+                        case "give": // セクションをタダで渡す
+                        	if(isset($a[1])){
+                        		$name = (string) $a[1];
+                        		if( ($player = Server::getInstance()->getPlayer($name) ) instanceof Player){
+                        			$playerData = Account::get($player);
+                        			$sectionNoX = AreaProtector::calculateSectionNo($player->getX());
+                        			$sectionNoZ = AreaProtector::calculateSectionNo($player->getZ());
+                        			$result = AreaProtector::giveSection($playerData, $sectionNoX, $sectionNoZ);
+                        			if($result){
+										$sectionCode = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
+										$s->sendMessage(Chat::System("{$sectionCode}を{$player->getName()}さんにあげました。"));
+										$player->sendMessage(Chat::System("政府から{$sectionCode}をもらいました。"));
+                        			}else{
+										$s->sendMessage(Chat::System("あげれへんかったで。"));
+                        			}
+                        		}else{
+                        			$s->sendMessage(Chat::System("その名前のプレイヤーおんらいんちゃうで。"));
+                        		}
+                        	}else{
+                        		$s->sendMessage(Chat::System("パラメータ不足"));
+                        	}
+                        break;
+						default: break;
 					}
 				}else{
-					$out = "/ap afs <int> : 販売するセクションをせってい";
+					$out = "/ap afs <int> : 販売するセクションをせってい\n/ap lfs : 売られているセクションの個数";
                     $s->sendMessage($out);
 					return false;
 				}

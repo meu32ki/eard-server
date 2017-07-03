@@ -20,8 +20,9 @@ commands:
   permission: muni
   aliases: [test2, test3, test4, t]
  ap:
-  description: "AreaProtector"
-  usage: "/ap [afs| ]"
+  description: "Muni: AreaProtector"
+  usage: "/ap [afs|lfs|give]"
+  permission: muni
  gv:
   description: "Muni: Government"
   usage: "/gv [give]"
