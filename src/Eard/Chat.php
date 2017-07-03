@@ -103,7 +103,15 @@ class Chat {
 		return $out;
 	}
 
-	
+	/**
+	*	@param string | message
+	*	@return string | 最終的に送るメッセージ 
+	*/
+	public static function System($arg1){
+		$out = "システム §7>　{$arg1}";
+		return $out;
+	}
+
 	/**
 	*	@param string | プレイヤー名
 	*	@return string | 最終的にできた参加時メッセージ
