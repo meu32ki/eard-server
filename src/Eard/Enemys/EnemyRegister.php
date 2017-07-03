@@ -13,12 +13,14 @@ class EnemyRegister{
 	 */
 
 	const TYPE_DUMMY = 0;//ここで識別番号を定義
+	const TYPE_HOPPER = 1;
 
 	private static $instance = null;
 	public static $register = [];
 
 	public function __construct(){
 		self::register(Dummy::class, Dummy::getEnemyType());
+		self::register(Hopper::class, Hopper::getEnemyType());
 
 		self::$instance = $this;
 	}
@@ -37,9 +39,6 @@ class EnemyRegister{
 		Entity::registerEntity($className, true);
 	}
 
-	/*
-	 * スキンデータをロードして返す
-	 */
 	public static function loadSkinData($skinName){
 		$path = __FILE__ ;
 		$dir = dirname($path);

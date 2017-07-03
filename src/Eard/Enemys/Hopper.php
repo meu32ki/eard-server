@@ -34,16 +34,16 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Dummy extends Humanoid implements Enemy{
+class Hopper extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ダミーエネミー";
+		return "ホッパー";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_DUMMY;
+		return EnemyRegister::TYPE_HOPPER;
 	}
 
 	//最大HPを取得
@@ -82,18 +82,19 @@ class Dummy extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Dummy')),
-				new StringTag("Name", 'GreekMythology_GreekMythologySiren')
+				new StringTag("Data", EnemyRegister::loadSkinData('Hopper')),
+				new StringTag("Name", 'JTTW_JTTWShaWujing')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Dummy($level, $nbt);
-		$entity->setMaxHealth(self::getHP());
-		$entity->setHealth(self::getHP());
-		AI::setSize($entity, 2);
+		$entity = new Hopper($level, $nbt);
+		$random_hp = 1+(mt_rand(-10, 10)/100);
+		$entity->setMaxHealth(round(self::getHP()+$random_hp));
+		$entity->setHealth(round(self::getHP()+$random_hp));
+		AI::setSize($entity, 1);
 		if($entity instanceof Entity){
 			$entity->spawnToAll();
 			return $entity;
@@ -108,23 +109,33 @@ class Dummy extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
+		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if(AI::getRate($this)){
-			$this->yaw += mt_rand(-60, 60);
-			AI::setRate($this, 40);
+			if($this->charge){
+				$this->yaw += mt_rand(-60, 60);
+				AI::setRate($this, 20);
+				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.2);
+				$this->charge = false;
+			}else{
+				$this->motionX = 0;
+				$this->motionZ = 0;
+				AI::setRate($this, 20);
+				$this->charge = true;
+			}
 		}
-		AI::walkFront($this);
+		//AI::walkFront($this, 0.08);
 		parent::onUpdate($tick);
 	}
 
 	public function attack($damage, EntityDamageEvent $source){
 		parent::attack($damage, $source);
 	}
-	
+
 	public function getName(){
 		return self::getEnemyName();
 	}

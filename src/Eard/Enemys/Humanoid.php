@@ -12,6 +12,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\enchantment\Enchantment;
 
@@ -119,5 +120,12 @@ class Humanoid extends Human{
 		parent::entityBaseTick();
 		$grandParent = get_parent_class(get_parent_class($this));
 		return $grandParent::onUpdate($tick);
+	}
+
+	public function attack($damage, EntityDamageEvent $source){
+		if($source->getCause() === EntityDamageEvent::CAUSE_FALL){
+			$source->setCancelled(true);
+		}
+		parent::attack($damage, $source);
 	}
 }
