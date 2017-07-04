@@ -58,7 +58,7 @@ class Government{
 		$firstBank = self::$CentralBankFirst;
 		$left = self::$CentralBankMeu->getAmount();
 		$inPublic = $firstBank - $left;
-		$out = "総発行μ: {$firstBank}μ\n出回っているμ: {$inPublic}μ\n政府保有μ: {$left}μ";
+		$out = "マネタリーベースμ: {$firstBank}μ\nマネーストックμ: {$inPublic}μ\n政府保有μ: {$left}μ";
 		return $out;
 	}
 
