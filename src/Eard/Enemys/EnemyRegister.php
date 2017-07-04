@@ -3,6 +3,7 @@
 namespace Eard\Enemys;
 
 use pocketmine\entity\Entity;
+use pocketmine\level\Position;
 
 class EnemyRegister{
 
@@ -29,7 +30,8 @@ class EnemyRegister{
 	 */
 	public static function summon($level, $type, $x, $y, $z){
 		$className = self::$register[$type];
-		$className::summon($level, $x, $y, $z);
+		//$className::summon($level, $x, $y, $z);
+		EnemySpawn::call($className, new Position($x, $y, $z, $level), $className::getAnimationType());
 	}
 
 	/**summonで呼び出せるように登録

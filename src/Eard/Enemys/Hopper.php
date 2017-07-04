@@ -51,6 +51,21 @@ class Hopper extends Humanoid implements Enemy{
 		return 40;
 	}
 
+	//召喚時のポータルのサイズを取得
+	public static function getSize(){
+		return 1;
+	}
+
+	//召喚時ポータルアニメーションタイプを取得
+	public static function getAnimationType(){
+		return EnemySpawn::TYPE_COMMON;
+	}
+
+	//召喚時のポータルアニメーションの中心座標を取得
+	public static function getCentralPosition(){
+		return new Vector3(0, 0, 0);
+	}
+
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
 	public static function getAllDrops(){
 		//火薬 骨粉 種(スイカ/かぼちゃ/麦になるやつ)
@@ -68,9 +83,9 @@ class Hopper extends Humanoid implements Enemy{
 	public static function summon($level, $x, $y, $z){
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
-				new DoubleTag("", $x + 0.5),
-				new DoubleTag("", $y),
-				new DoubleTag("", $z + 0.5)
+				new DoubleTag("", $x),
+				new DoubleTag("", $y-1),
+				new DoubleTag("", $z)
 			]),
 			"Motion" => new ListTag("Motion", [
 				new DoubleTag("", 0),
@@ -94,7 +109,7 @@ class Hopper extends Humanoid implements Enemy{
 		$random_hp = 1+(mt_rand(-10, 10)/100);
 		$entity->setMaxHealth(round(self::getHP()+$random_hp));
 		$entity->setHealth(round(self::getHP()+$random_hp));
-		AI::setSize($entity, 1);
+		AI::setSize($entity, self::getSize());
 		if($entity instanceof Entity){
 			$entity->spawnToAll();
 			return $entity;
