@@ -2,6 +2,8 @@
 
 namespace Eard\Enemys;
 
+use pocketmine\math\Vector3;
+
 /**Webでも使う用にエネミーｸﾗｽに定義を強制している関数
  * インスタンス生成にPMMPが必要なため必ず静的メソッドで定義
  * getNumber()で取得した識別番号からエネミークラスを呼び出したい
@@ -23,4 +25,13 @@ interface Enemy{
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
 	public static function getAllDrops();
+
+	//召喚時のポータルのサイズを取得
+	public static function getSize();
+
+	//召喚時ポータルアニメーションタイプを取得
+	public static function getAnimationType();
+
+	//召喚時のポータルアニメーションの中心座標を取得
+	public static function getCentralPosition();
 }

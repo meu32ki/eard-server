@@ -65,12 +65,27 @@ class Dummy extends Humanoid implements Enemy{
 		];
 	}
 
+	//召喚時のポータルのサイズを取得
+	public static function getSize(){
+		return 2;
+	}
+
+	//召喚時ポータルアニメーションタイプを取得
+	public static function getAnimationType(){
+		return EnemySpawn::TYPE_COMMON;
+	}
+
+	//召喚時のポータルアニメーションの中心座標を取得
+	public static function getCentralPosition(){
+		return new Vector3(0, 0.7, 0);
+	}
+
 	public static function summon($level, $x, $y, $z){
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
-				new DoubleTag("", $x + 0.5),
+				new DoubleTag("", $x),
 				new DoubleTag("", $y),
-				new DoubleTag("", $z + 0.5)
+				new DoubleTag("", $z)
 			]),
 			"Motion" => new ListTag("Motion", [
 				new DoubleTag("", 0),
@@ -93,7 +108,7 @@ class Dummy extends Humanoid implements Enemy{
 		$entity = new Dummy($level, $nbt);
 		$entity->setMaxHealth(self::getHP());
 		$entity->setHealth(self::getHP());
-		AI::setSize($entity, 2);
+		AI::setSize($entity, self::getSize());
 		if($entity instanceof Entity){
 			$entity->spawnToAll();
 			return $entity;
