@@ -73,7 +73,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						case "asec": // 販売セクションの発行数設定
 							if(isset($a[1]) && 0 < (int) $a[1]){
 								$result　= AreaProtector::setAffordableSection($a[1]);
-								$out = $result ? Chat::System("販売セクション数を{$a[1]}に設定しました。") : Chat::System("設定できませんでした");
+								$out = $result ? Chat::System("販売セクション数を{$a[1]}に設定しました") : Chat::System("設定できませんでした");
 								$s->sendMessage($out);
 								return true;
 							}else{
@@ -97,17 +97,18 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                         			$result = AreaProtector::giveSection($playerData, $sectionNoX, $sectionNoZ);
                         			if($result){
 										$sectionCode = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
-										$s->sendMessage(Chat::System("{$sectionCode}を{$player->getName()}さんにあげました。"));
-										$player->sendMessage(Chat::System("政府から{$sectionCode}をもらいました。"));
+										$s->sendMessage(Chat::System("{$sectionCode}を{$player->getName()}さんにあげました"));
+										$player->sendMessage(Chat::System("政府から{$sectionCode}をもらいました"));
                         			}else{
-										$s->sendMessage(Chat::System("あげれへんかったで。"));
+										$s->sendMessage(Chat::System("あげれへんかったで"));
                         			}
                         		}else{
-                        			$s->sendMessage(Chat::System("その名前のプレイヤーおんらいんちゃうで。"));
+									$s->sendMessage(Chat::System("プレイヤーおらへんで"));
                         		}
                         	}else{
                         		$s->sendMessage(Chat::System("パラメータ不足"));
                         	}
+                        	return true;
                         break;
 						default: break;
 					}
@@ -142,14 +143,15 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								if($player instanceof Player){
 									$playerData = Account::get($player);
 									$result = Government::giveMeu($playerData, $amount);
-									$out = $result ? "あげた" : "あげてない";
-									$s->sendMessage($out);
+									$out = $result ? "{$amount}μあげた" : "あげられなかった 政府の予算が足りない";
+									$s->sendMessage(Chat::System($out));
 								}else{
-									$s->sendMessage("プレイヤーおらへんで");									
+									$s->sendMessage(Chat::System("プレイヤーおらへんで"));
 								}
 							}else{
-
+								$s->sendMessage(Chat::System("パラメータ不足"));
 							}
+							return true;
 						break;
 					}
 				}else{
