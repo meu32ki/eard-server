@@ -20,6 +20,7 @@ use Eard\DB;
 use Eard\Event;
 use Eard\AreaProtector;
 use Eard\BlockObject\BlockObjectManager;
+use Eard\Enemys\EnemyRegister;
 
 
 /***
@@ -42,6 +43,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Account::load();
 		BlockObjectManager::load();
 		Government::load();
+		new EnemyRegister();
 		self::$instance = $this;
 	}
 
@@ -159,6 +161,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 					EnemyRegister::summon($s->getLevel(), $a[0], $s->x, $s->y, $s->z);
 					return true;
 				}else{
+					$s->sendMessage(Chat::System("コンソールじゃ無理"));
 					return false;
 				}
 			break;

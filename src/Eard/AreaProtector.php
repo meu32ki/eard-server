@@ -380,9 +380,9 @@ class AreaProtector{
 		//priceが0の場合は、うらない。
 		//いまんとこ、pofsはつかわないので、この変数はどこでもつあっていない。将来的には、土地を譲ることができるようになった場合、使うかもしれない。
 
-		$taxBase = 20000; //さいていでもこのきんがくかかるよ
+		$taxBase = 1000; //さいていでもこのきんがくかかるよ
 		$percentage = (self::$affordableSection - self::$leftSection) / self::$affordableSection; // 残っている土地の数によって価格が変わるよ
-		$taxChangeable = $taxBase * $percentage * 4; // かかくは、初期 = $taxbase, 最後 = $taxbase * 4;
+		$taxChangeable = $taxBase * $percentage * 40; // かかくは、初期 = $taxbase, 最後 = $taxbase * 40;
 
 		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getSectionArray()); //すでに購入してる人は高くなるよ
 
