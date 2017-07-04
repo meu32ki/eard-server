@@ -49,6 +49,7 @@ class Chat {
 					foreach($targets as $e){
 						$e->sendMessage($msg);
 					}
+					$player->sendMessage($msg);
 				}else{
 					$msg = self::Format("§8システム", "周囲に誰もいません: ".$e->getMessage());
 					$consoleMsg = self::Format($player->getDisplayName(), "§8システム", "周囲に誰もいません: ".$e->getMessage());
