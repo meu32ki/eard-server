@@ -101,6 +101,14 @@ abstract class AI{
 		return true;
 	}
 
+	public static function canLook($enemy, $player){
+		if(!$player->hasEffect(Effect::INVISIBILITY)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	//$entityにエイムを合わせる関数
 	public static function lookAt($enemy, $target, $oversee = false){
 		$x1 = $enemy->x;
@@ -129,7 +137,7 @@ abstract class AI{
 
 		}
 
-		if(!$oversee && !Enemy::canLook($enemy, $target)){
+		if(!$oversee && !self::canLook($enemy, $target)){
 			$yaw += mt_rand(-30, 30);
 		}
 
@@ -221,5 +229,54 @@ abstract class AI{
 			return 0;
 		}
 		return 1;
+	}
+
+	/**
+	 * ロックオンする対象を探す
+	 * 返り値 Player or bool
+	 */
+	public static function searchTarget($enemy, $disq = 800, $oversee = false, $enemys = null){
+		$x = $enemy->x;
+		$y = $enemy->y;
+		$z = $enemy->z;
+		$target = false;
+		if($enemys === null){
+			$enemys = Server::getInstance()->getOnlinePlayers();
+			$enemys = array_filter($enemys , function ($e) use ($oversee){
+				return ($e instanceof Player &&
+				!$e->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_IMMOBILE) &&
+				!($e->hasEffect(Effect::INVISIBILITY) && !$oversee)
+				);
+			});
+		}
+		foreach($enemys as $e){
+			if($e->getHealth() <= 0){
+				continue;
+			}
+			$distance_sq = pow($x - $e->x, 2) +  pow($y - $e->y, 2) + pow($z - $e->z, 2);
+
+			if($distance_sq <= $disq){
+				$target = $e;
+				$disq = $distance_sq;
+			}
+		}
+		return $target;
+	}
+
+	//範囲攻撃
+	public static function rangeAttack($enemy, $range, $power, $target = null){
+		if($target === null){
+			$target = Server::getInstance()->getOnlinePlayers();
+		}
+		foreach($target as $name => $player){
+			if(!$player instanceof Entity){
+				continue;
+			}
+			$disq = $enemy->distanceSquared($player);
+			if($disq <= pow($range, 2)){
+				$ev = new EntityDamageByEntityEvent($enemy, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($power), 0);
+				$player->attack(round($power), $ev);
+			}
+		}
 	}
 }

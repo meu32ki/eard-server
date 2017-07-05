@@ -133,12 +133,17 @@ class Hopper extends Humanoid implements Enemy{
 		if(AI::getRate($this)){
 			if($this->charge){
 				$this->yaw += mt_rand(-60, 60);
+				if($this->target){
+					AI::lookAt($this, $this->target);
+				}
 				AI::setRate($this, 20);
 				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.2);
+				AI::rangeAttack($this, 2.5, 3);
 				$this->charge = false;
 			}else{
 				$this->motionX = 0;
 				$this->motionZ = 0;
+				AI::rangeAttack($this, 2.5, 3);
 				AI::setRate($this, 20);
 				$this->charge = true;
 			}
@@ -149,6 +154,10 @@ class Hopper extends Humanoid implements Enemy{
 
 	public function attack($damage, EntityDamageEvent $source){
 		parent::attack($damage, $source);
+		if($source instanceof EntityDamageByEntityEvent){
+			$damager = $source->getDamager();
+			$this->target = $damager;
+		}
 	}
 
 	public function getName(){
