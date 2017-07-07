@@ -21,34 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\normal\biome;
+namespace pocketmine\level\generator\object;
 
-use pocketmine\block\Sapling;
-use pocketmine\level\generator\populator\TallGrass;
-use pocketmine\level\generator\populator\Tree;
+use pocketmine\block\Block;
+use pocketmine\block\Wood;
+use pocketmine\level\ChunkManager;
+use pocketmine\utils\Random;
 
-class PlainBiome extends GrassyBiome{
+class DarkOakTree extends Tree{
 
 	public function __construct(){
-		parent::__construct();
-
-		$trees = new Tree(mt_rand(0, 3));
-		$trees->setBaseAmount(2);
-		$this->addPopulator($trees);
-
-		$tallGrass = new TallGrass();
-		$tallGrass->setBaseAmount(12);
-
-		$this->addPopulator($tallGrass);
-
-		//$this->setElevation(63, 74);
-		$this->setElevation(35, 90);
-
-		$this->temperature = 0.8;
-		$this->rainfall = 0.4;
+		$this->trunkBlock = Block::WOOD2;
+		$this->leafBlock = Block::LEAVES2;
+		$this->type = Wood::SPRUCE;
 	}
 
-	public function getName(){
-		return "Plains";
+	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
+		$this->treeHeight = $random->nextBoundedInt(3) + 6;
+		parent::placeObject($level, $x, $y, $z, $random);
 	}
 }

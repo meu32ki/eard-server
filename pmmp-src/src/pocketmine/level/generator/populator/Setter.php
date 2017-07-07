@@ -67,7 +67,7 @@ class Setter extends Populator{
 
 	private function canStay($x, $y, $z){
 		$b = $this->level->getBlockIdAt($x, $y, $z);
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and Block::get($this->level->getBlockIdAt($x, $y - 1, $z))->isSolid();
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and (Block::get($this->level->getBlockIdAt($x, $y - 1, $z))->isSolid() || $this->level->getBlockIdAt($x, $y - 1, $z) === 237);
 	}
 
 	private function getHighestWorkableBlock($x, $z){

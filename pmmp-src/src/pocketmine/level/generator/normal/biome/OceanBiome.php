@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\normal\biome;
 
+use pocketmine\block\Sapling;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Setter;
+use pocketmine\level\generator\populator\Tree;
 use pocketmine\block\Block;
 
 class OceanBiome extends GrassyBiome{
@@ -68,8 +70,8 @@ class OceanBiome extends GrassyBiome{
 
 		$this->addPopulator($setter);
 
-		$trees = new Tree([Block::Wood2, Block::ICE, Sapling::SPRUCE]);
-		$trees->setBaseAmount(3);
+		$trees = new Tree([Block::WOOD2, Block::ICE, Sapling::SPRUCE]);
+		$trees->setBaseAmount(1);
 		$this->addPopulator($trees);
 
 		$this->setElevation(15, 95);

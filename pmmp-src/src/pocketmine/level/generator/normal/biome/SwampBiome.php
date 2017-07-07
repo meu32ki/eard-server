@@ -23,12 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\normal\biome;
 
+use pocketmine\block\Sapling;
+use pocketmine\level\generator\populator\TallGrass;
+use pocketmine\level\generator\populator\Tree;
+
 class SwampBiome extends GrassyBiome{
 
 	public function __construct(){
 		parent::__construct();
 
 		$this->setElevation(50, 63);
+
+		$trees = new Tree(Sapling::DARK_OAK);
+		$trees->setBaseAmount(2);
+		$this->addPopulator($trees);
 
 		$this->temperature = 0.8;
 		$this->rainfall = 0.9;

@@ -62,6 +62,9 @@ abstract class Tree{
 				case Sapling::JUNGLE:
 					$tree = new JungleTree();
 					break;
+				case Sapling::DARK_OAK:
+					$tree = new DarkOakTree();
+					break;
 				case Sapling::OAK:
 				default:
 					$tree = new OakTree();
@@ -122,7 +125,9 @@ abstract class Tree{
 
 	protected function placeTrunk(ChunkManager $level, $x, $y, $z, Random $random, $trunkHeight){
 		// The base dirt block
-		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
+		if(!$this instanceof DummyTree){
+			$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);	
+		}
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
 			$blockId = $level->getBlockIdAt($x, $y + $yy, $z);
