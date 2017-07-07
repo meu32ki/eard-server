@@ -33,20 +33,44 @@ class OceanBiome extends GrassyBiome{
 		parent::__construct();
 
 		$this->setGroundCover([
-			Block::get(Block::SAND, 1),
-			Block::get(Block::SAND, 1),
-			Block::get(179, 0),
-			Block::get(179, 0),
-			Block::get(179, 0),
+			Block::get(237, 9),
+			Block::get(237, 9),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
+			Block::get(168, 0),
 		]);
 		
 		//$tallGrass = new TallGrass();
 		//$tallGrass->setBaseAmount(5);
 
-		$setter = new Setter(32, 0);
-		$setter->setBaseAmount(2);
+		$setter = new Setter(38, 1);
+		$setter->setBaseAmount(5);
 
 		$this->addPopulator($setter);
+
+		$trees = new Tree([Block::Wood2, Block::ICE, Sapling::SPRUCE]);
+		$trees->setBaseAmount(3);
+		$this->addPopulator($trees);
 
 		$this->setElevation(15, 95);
 
