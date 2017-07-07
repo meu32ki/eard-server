@@ -17,8 +17,8 @@ class DB{
 
 	public static function mysqlConnect($isFromServer = false){
 		MainLogger::getLogger()->notice("§aDB: Connecting to the database...");
-		$address = $isFromServer ? 'mcpe.jp' : '127.0.0.1';
-		$mysqli = new \mysqli($address, 'muni', '83yvbqov01-92v8@mn', 'muni');
+		$address = $isFromServer ? 'eardvps.32ki.net' : '127.0.0.1';
+		$mysqli = new \mysqli($address, 'eard', '83yvbqov01-92v8@mn', '32kinet_eard');
 		if($mysqli->connect_errno){
 			MainLogger::getLogger()->error($mysqli->connect_error."(".$mysqli->connect_errno.")");
 			self::$mysqli = null;
