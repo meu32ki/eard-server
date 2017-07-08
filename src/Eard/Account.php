@@ -58,8 +58,9 @@ class Account{
     			//オフライン用のデータようにしか使っていない。
     			// todo 20170523 このままでは、サバ内にいないプレイヤーが所有する土地で設置破壊するたびにでーたをnewしてしまうので、なんとかしなくては。
 	    		$account = new Account();
+	    		$account->initMenu();
 	    		self::$accounts[$name] = $account;
-				$account->loadData($name);
+				return $account;
     		}
     		return null;
     	}
@@ -524,6 +525,7 @@ class Account{
 		// セーブ
 		$name = $this->getPlayer()->getName();
 		$data = serialize($this->data);
+		
 		$txtdata = base64_encode($data);
     	$sql = "UPDATE data SET base64 = '{$txtdata}', date = now() WHERE name = '{$name}';";
     	DB::get()->query($sql);
@@ -531,7 +533,6 @@ class Account{
     	if($quit){
     		unset(self::$accounts[$name]);//メモリからバイバイ
     	}
-    
     }
 	public function dumpData(){
 		print_r($this->data);
