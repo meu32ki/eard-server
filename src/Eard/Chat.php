@@ -187,5 +187,6 @@ class Chat {
 	const CHATMODE_VOICE = 1;//30マスいない
 	const CHATMODE_ALL = 2;//全体
 	const CHATMODE_PLAYER = 3; //tell
-	const CHATMODE_ENTER = 4;//設備などに文字打ち込み中
+	const CHATMODE_PLAYERS = 4; //プレイヤー複数
+	const CHATMODE_ENTER = 5;//設備などに文字打ち込み中
 }
