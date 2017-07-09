@@ -9,6 +9,7 @@ use pocketmine\item\Item;
 # Eard
 use Eard\Account;
 use Eard\Chat;
+use Eard\Utils\ItemName;
 
 
 class ItemExchanger implements BlockObject, ChatInput {
@@ -305,7 +306,8 @@ class ItemExchanger implements BlockObject, ChatInput {
 		$out = "";
 		if(isset($this->transaction[$name][1])){
 			foreach($this->transaction[$name][1] as $i){
-				$out .= " {$i->getName()} x {$i->getCount()}{$separator}";
+				$itemName = ItemName::getNameOf($i);
+				$out .= " {$itemName} x {$i->getCount()}{$separator}";
 			}
 			$out = substr($out, 0, -1);
 			return $out;
