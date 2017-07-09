@@ -7,9 +7,9 @@ use Eard\Main;
 use pocketmine\Player;
 use pocketmine\Server;
 
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\networks\protocol\AddEntityPacket;
+use pocketmine\networks\protocol\MobArmorEquipmentPacket;
+use pocketmine\networks\protocol\AnimatePacket;
 
 use pocketmine\level\Level;
 use pocketmine\level\Position;

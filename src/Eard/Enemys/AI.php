@@ -6,8 +6,8 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 use pocketmine\block\Liquid;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
+use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\protocol\ExplodePacket;
 use pocketmine\item\Item as ItemItem;
 
 use pocketmine\command\Command;
@@ -63,7 +63,7 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
-use pocketmine\network\mcpeprotocol\AnimatePacket;
+use pocketmine\networkprotocol\AnimatePacket;
 
 /**AIとして使う関数を簡単に呼び出せるように置いておく場所
 　* abstractだけど継承して使うものではない
