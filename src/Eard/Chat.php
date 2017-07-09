@@ -11,9 +11,9 @@ use pocketmine\utils\MainLogger;
 class Chat {
 
 	/**
-	 * Playerから指定半径内にいるプレイヤーを探す
+	 * Playerから指定半径内にいるプレイヤーを探す。複数いる場合は複数返す。
 	 * @param Player $player
-	 * @return Array Player[]
+	 * @return Player[]
 	 */
 	public static function searchTarget($player){
 		// From PileUp
@@ -31,7 +31,8 @@ class Chat {
 	/**
 	*	PlayerChatEventからの処理が直でやってくる。チャットの全処理をここで行う。
 	*	@param string | プレイヤー名
-	*	@return string | 最終的にできた参加時メッセージ 
+	*	@param PlayerChatEvent 
+	*	@return bool | チャットを表示できるかできないか…boolを返す意味がいまいち 20170709
 	*/
 	public static function chat($player, $e){
 		$playerData = Account::get($player);
@@ -39,53 +40,107 @@ class Chat {
 		$msg = "";
 		$consoleMsg = "";
 		
+
+		$message = $e->getMessage();
+		$start = substr($message, 0, 1);
+		if( $start === "@" ){
+			$posblank = strpos($message," ");
+			$targetName = substr($message, 1, $posblank - 1);
+			$message = substr($message, $posblank + 1, 100);
+			//echo "posblank: {$posblank}, targetname: {$targetName}, message: {$message}\n";
+			if($targetName === "a"){
+				// @a
+				$chatmode = self::CHATMODE_ALL;
+			}else{
+				// @32ki とか @32ki,wakame,m0
+				$targetNames = explode(",", $targetName);
+				//$targetNamesの中身は array かもしれないし string かもしれない
+				if(1 < count($targetNames)){
+					$chatmode = self::CHATMODE_PLAYERS;
+				}else{
+					$chatmode = self::CHATMODE_PLAYER;
+					$target = Server::getInstance()->getPlayer($targetName);//後の処理用
+				}
+			}
+		}elseif( $start === "/" ){
+			//コマンドなので、表示しない
+			return false;
+		}
+
 		$e->setCancelled(true);
 		switch($chatmode){
 			case self::CHATMODE_VOICE:
-				if($targets = self::searchTarget($player)){
-					//じぶんもふくめてsearchTargetしている
-					$msg = self::Format($player->getDisplayName(), "§a周囲", $e->getMessage());
+				if($targets = self::searchTarget($player)){ // $targets = Player[]
+					// 周囲に誰かいる
+					$msg = self::Format($player->getDisplayName(), "§a周囲", $message);
 					$consoleMsg = $msg;
 					foreach($targets as $e){
 						$e->sendMessage($msg);
 					}
-					$player->sendMessage($msg);
+					$player->sendMessage($msg);	//じぶんもふくめてsearchTargetしていないため
 				}else{
-					$msg = self::Format("§8システム", "周囲に誰もいません: ".$e->getMessage());
-					$consoleMsg = self::Format($player->getDisplayName(), "§8システム", "周囲に誰もいません: ".$e->getMessage());
+					// 周囲に誰一人いない
+					$msg = self::Format($player->getDisplayName(), "§a周囲", "§8周囲に誰もいません: ".$message);
+					$consoleMsg = $msg;
 					$player->sendMessage($msg);
 				}
 				break;
 			case self::CHATMODE_ALL:
-				$msg = self::Format($player->getDisplayName(), "§b全体", $e->getMessage());
+				$msg = self::Format($player->getDisplayName(), "§b全体", $message);
 				Server::getInstance()->broadcastMessage($msg);
 				break;
 			case self::CHATMODE_PLAYER:
-				$target = $playerData->getChatTarget();
+				if(!isset($target)) $target = $playerData->getChatTarget();
 				if($target && $target->isOnline()){
-					//指定したターゲットがいまだイオンラインであったら
-					$sendermsg = self::Format($player->getDisplayName(), "§6".$target->getDisplayName(), $e->getMessage());
-					$consoleMsg = $sendermsg;
-					$targetmsg = self::Format($player->getDisplayName(), "§6個人", $e->getMessage());
-					$target->sendMessage($targetmsg);
-					$player->sendMessage($sendermsg);
-				}else{
-					// すでにログアウトしていたら
-					$msg = self::Format("§8システム", "§c指定の相手はいないようです。");
-					$consoleMsg = self::Format($player->getDisplayName(), "§8システム", "§c指定の相手はいないようです。");
+					//　指定したターゲットがいまだイオンラインであったら
+					$msg = self::Format($player->getDisplayName(), "§6個人(".$target->getDisplayName().")", $message);
+					$consoleMsg = $msg;
+					$target->sendMessage($msg);
 					$player->sendMessage($msg);
-					$playerData->setChatMode(self::CHATMODE_VOICE); //きりかえ
+				}else{
+					// 指定playerがすでにログアウトしていたら
+					$name = $target ? $target->getDisplayName() : $targetName;
+					$msg = self::Format($player->getDisplayName(), "§6個人({$name})", "§8相手はEardにいません: ".$message);
+					$consoleMsg = $msg;
+					$player->sendMessage($msg);
+					/*
+						このいっかいだけchatmodeが変わっている可能性があるので、切りかえる際には、
+						今のチャットモードとの比較をする
+					*/
+					if($playerData->getChatMode() == $chatmode){
+						$playerData->setChatMode(self::CHATMODE_VOICE); //きりかえ
+					}
 				}
 				break;
-			case self::CHATMODE_ENTER:
-				$msg = self::Format($player->getDisplayName(), "§eシステム", $e->getMessage());
+			case self::CHATMODE_PLAYERS:
+				$senderName = $player->getDisplayName();
+				$displayTargetNames = "";
+				foreach($targetNames as $name){
+					$target = Server::getInstance()->getPlayer($name);
+					if($target && $target->isOnline()){
+						$msg = self::Format($senderName, "§6複数", $message);
+						$target->sendMessage($msg);
+						$displayTargetNames .= $target->getDisplayName;
+					}
+				}
+				if(!$displayTargetNames){
+					//誰にも送信していなければ
+					$message = "§8相手はEardにいません: {$message}";
+					$displayTargetNames = $targetName;
+				}
+				$msg = self::Format($senderName, "§6複数({$displayTargetNames})", $message);
 				$consoleMsg = $msg;
 				$player->sendMessage($msg);
-				$obj = $playerData->getChatObject()->Chat($player, $e->getMessage());
-
+				break;
+			case self::CHATMODE_ENTER:
+				$msg = self::Format($player->getDisplayName(), "§dシステム", $message);
+				$consoleMsg = $msg;
+				$player->sendMessage($msg);
+				$obj = $playerData->getChatObject()->Chat($player, $message);
 				break;
 		}
 		if($consoleMsg) MainLogger::getLogger()->info($consoleMsg);
+		return true;
 	}
 
 	/**
