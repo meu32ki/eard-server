@@ -311,6 +311,9 @@ class AreaProtector{
 	public static function giveSection(Account $playerData, $sectionNoX, $sectionNoZ){
 		$uniqueNo = $playerData->getUniqueNo();
 
+		//コマンドの時対策
+		if(!$uniqueNo) return false;
+
 		//売れる土地が余っているか
 		if(self::$leftSection <= 0){
 			return false;
