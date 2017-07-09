@@ -14,6 +14,10 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerDeathEvent;
+
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -66,9 +70,13 @@ class Event implements Listener{
 */
 	}
 
+
+
 	public function J(PlayerJoinEvent $e){
 		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
 	}
+
+
 
 	public function Q(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
@@ -84,6 +92,8 @@ class Event implements Listener{
 			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。
 		}
 	}
+
+
 
 	public function I(PlayerInteractEvent $e){
 		$item = $e->getItem();
@@ -123,6 +133,8 @@ class Event implements Listener{
 		}
 	}
 
+
+
 	public function IE(PlayerItemHeldEvent $e){
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
@@ -136,6 +148,8 @@ class Event implements Listener{
 				break;
 		}
 	}
+
+
 
 	public function D(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();
@@ -163,7 +177,9 @@ class Event implements Listener{
 		}
 	}
 
-	public function BP(BlockPlaceEvent $e){
+
+
+	public function Place(BlockPlaceEvent $e){
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
@@ -174,7 +190,9 @@ class Event implements Listener{
 		}
 	}
 
-	public function BB(BlockBreakEvent $e){
+
+
+	public function Break(BlockBreakEvent $e){
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
@@ -188,8 +206,47 @@ class Event implements Listener{
 		}
 	}
 
-	public function C(PlayerChatEvent $e){
+
+
+	public function Chat(PlayerChatEvent $e){
 		Chat::chat($e->getPlayer(), $e);
+	}
+
+
+
+	public function Death(PlayerDeathEvent $e){
+		$player = $e->getEntity();
+		$playerData = Account::get($player);
+		
+		// メニューを見ていたら、消す
+		if($playerData->getMenu()->isActive()){
+			$playerData->getMenu()->close();
+		}
+	}
+
+
+
+	public function Damaged(EntityDamageEvent $e){
+		if($e instanceof EntityDamageByEntityEvent){
+			$e->setCancelled(true);
+
+			$damager = $e->getDamager();//ダメージを与えた人
+			$victim = $e->getEntity();//喰らった人
+
+			$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+		}
+/*		echo $e->getCause();
+		switch($e->getCause()){
+			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
+				$damager = $e->getDamager();//ダメージを与えた人
+				$victim = $e->getEntity();//喰らった人
+				if($damager instanceof Player){
+					$e->setCancelled(true);
+				}
+				break;
+		}
+*/
+		return true;
 	}
 
 /*
