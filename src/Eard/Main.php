@@ -21,7 +21,7 @@ use Eard\Event;
 use Eard\AreaProtector;
 use Eard\BlockObject\BlockObjectManager;
 use Eard\Enemys\EnemyRegister;
-
+use Eard\Utils\ItemName;
 
 /***
 *
@@ -44,6 +44,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		BlockObjectManager::load();
 		Government::load();
 		new EnemyRegister();
+		ItemName::init();
 		self::$instance = $this;
 	}
 
