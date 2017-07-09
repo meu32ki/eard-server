@@ -73,7 +73,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						case "asec": // 販売セクションの発行数設定
 							if(isset($a[1]) && 0 < (int) $a[1]){
 								$result　= AreaProtector::setAffordableSection($a[1]);
-								$out = $result ? Chat::System("販売セクション数を{$a[1]}に設定しました") : Chat::System("設定できませんでした");
+								$out = $result ? Chat::SystemToPlayer("販売セクション数を{$a[1]}に設定しました") : Chat::SystemToPlayer("設定できませんでした");
 								$s->sendMessage($out);
 								return true;
 							}else{
@@ -83,7 +83,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                         case "vsec": // 販売されてるセクションの発行数確認
                             $leftSection = AreaProtector::$leftSection;
                             $affordableSection = AreaProtector::$affordableSection;
-                            $out = Chat::System("販売可能土地数: {$leftSection} / {$affordableSection}");
+                            $out = Chat::SystemToPlayer("販売可能土地数: {$leftSection} / {$affordableSection}");
                             $s->sendMessage($out);
                             return true;
                             break;
@@ -97,16 +97,16 @@ class Main extends PluginBase implements Listener, CommandExecutor{
                         			$result = AreaProtector::giveSection($playerData, $sectionNoX, $sectionNoZ);
                         			if($result){
 										$sectionCode = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
-										$s->sendMessage(Chat::System("{$sectionCode}を{$player->getName()}さんにあげました"));
-										$player->sendMessage(Chat::System("政府から{$sectionCode}をもらいました"));
+										$s->sendMessage(Chat::SystemToPlayer("{$sectionCode}を{$player->getName()}さんにあげました"));
+										$player->sendMessage(Chat::SystemToPlayer("政府から{$sectionCode}をもらいました"));
                         			}else{
-										$s->sendMessage(Chat::System("あげれへんかったで"));
+										$s->sendMessage(Chat::SystemToPlayer("あげれへんかったで"));
                         			}
                         		}else{
-									$s->sendMessage(Chat::System("プレイヤーおらへんで"));
+									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
                         		}
                         	}else{
-                        		$s->sendMessage(Chat::System("パラメータ不足"));
+                        		$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
                         	}
                         	return true;
                         break;
@@ -123,7 +123,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						case "ameu": // 発行量設定
 							if(isset($a[1]) && 0 < (int) $a[1]){
 								$result = Government::setCentralBankFirst($a[1]);
-								$out = $result ? Chat::System("政府の通貨発行量を{$a[1]}に設定しました。") : Chat::System("設定できませんでした");
+								$out = $result ? Chat::SystemToPlayer("政府の通貨発行量を{$a[1]}に設定しました。") : Chat::SystemToPlayer("設定できませんでした");
 								$s->sendMessage($out);
 								return true;
 							}else{
@@ -144,12 +144,12 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 									$playerData = Account::get($player);
 									$result = Government::giveMeu($playerData, $amount);
 									$out = $result ? "{$amount}μあげた" : "あげられなかった 政府の予算が足りない";
-									$s->sendMessage(Chat::System($out));
+									$s->sendMessage(Chat::SystemToPlayer($out));
 								}else{
-									$s->sendMessage(Chat::System("プレイヤーおらへんで"));
+									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
 								}
 							}else{
-								$s->sendMessage(Chat::System("パラメータ不足"));
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
 							}
 							return true;
 						break;
@@ -160,11 +160,11 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			break;
 			case "enemy":
 				if($s instanceof Player && count($a) >= 1){
-					$s->sendMessage(Chat::System("召喚したで"));
+					$s->sendMessage(Chat::SystemToPlayer("召喚したで"));
 					EnemyRegister::summon($s->getLevel(), $a[0], mt_rand(-10, 10) + $s->x, $s->y, mt_rand(-10, 10) + $s->z);
 					return true;
 				}else{
-					$s->sendMessage(Chat::System("コンソールじゃ無理"));
+					$s->sendMessage(Chat::SystemToPlayer("コンソールじゃ無理"));
 					return false;
 				}
 			break;
@@ -174,9 +174,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 					$savePlayer = Server::getInstance()->getPlayer($skinName);
 					$result = self::saveSkinData($savePlayer);
 					if($result === false){
-						Command::broadcastCommandMessage($s, "そのプレイヤーは存在しません");
+						Command::broadcastCommandMessage($s, Chat::SystemToPlayer("そのプレイヤーは存在しません"));
 					}else{
-						Command::broadcastCommandMessage($s, "スキンをセーブしました");
+						Command::broadcastCommandMessage($s, Chat::SystemToPlayer("スキンをセーブしました"));
 						return true;
 					}
 				}
