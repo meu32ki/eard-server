@@ -4,6 +4,7 @@ namespace Eard;
 
 # Basic
 //use pocketmine\Player;
+use pocketmine\utils\MainLogger;
 
 # Event
 use pocketmine\event\Listener;
@@ -234,6 +235,7 @@ class Event implements Listener{
 			$victim = $e->getEntity();//喰らった人
 
 			$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+			MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
 		}
 /*		echo $e->getCause();
 		switch($e->getCause()){

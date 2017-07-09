@@ -168,7 +168,7 @@ class Chat {
 		return $out;
 	}
 
-	public static function SystemToAll($arg1, $arg2){
+	public static function System($arg1, $arg2){
 		$out = "§8システム §7> {$arg1} §7> {$arg2}";
 		return $out;
 	}
@@ -178,7 +178,7 @@ class Chat {
 	*	@return string | 最終的にできた参加時メッセージ
 	*/
 	public static function getJoinMessage($name){
-		return self::SystemToAll("§bお知らせ", "{$name} がEardにやって来た");
+		return self::System("§bお知らせ", "{$name} がEardにやって来た");
 	}
 
 	/**
@@ -186,7 +186,7 @@ class Chat {
 	*	@return string | 最終的にできた退出時メッセージ
 	*/
 	public static function getQuitMessage($name){
-		return self::SystemToAll("§bお知らせ", "{$name} が地球へ戻っていった");
+		return self::System("§bお知らせ", "{$name} が地球へ戻っていった");
 	}
 
 	const CHATMODE_VOICE = 1;//30マスいない
