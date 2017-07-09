@@ -20,8 +20,8 @@ use pocketmine\event\block\BlockPlaceEvent;
 
 # NetWork
 use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\protocol\Info as ProtocolInfo;
+use pocketmine\network\protocol\PlayerActionPacket;
 
 # Item
 use pocketmine\item\Item;
