@@ -18,7 +18,7 @@ class BlockObjectManager {
 	オブジェクトにたどりつくためのキーを入れておくのが $index
 
 	セーブ時 $index 書く $blocks をセーブしファイルに書き込む。
-	ロード時 $index読む $blocks読まない 
+	ロード時 $index読む $blocks　読まない 
 	blocks タップ時に、indexをissetして、あればblocksに展開してから open する
 */
 
@@ -177,8 +177,7 @@ class BlockObjectManager {
 	*/
 	public static function saveAllObjects(){
 		foreach(self::$objects as $indexNo => $obj){
-			$data = $obj->getData();
-			self::saveObjectData($indexNo, $data);
+			self::saveObjectData($indexNo, $obj);
 		}
 	}
 
@@ -193,8 +192,9 @@ class BlockObjectManager {
 		if($json){
 			if($objData = unserialize($json)){
 				/*
+					// objectDataの構造
 					array => [
-						0 => int,
+						0 => int,　(kind)
 						1 => array => [
 							ばばばばば
 						]
@@ -207,15 +207,17 @@ class BlockObjectManager {
 
 	/**
 	*	@param int | $indexNo = self::index[$x][$y][$z]の中身
-	*	@param array | $objData BlockObjectのgetDataしたもの
+	*	@param obj | blockObjectをextendsしているやつ
 	*	@return bool
 	*/
-	public static function saveObjectData($indexNo, $data){
+	public static function saveObjectData($indexNo, $obj){
 		$path = __DIR__."/../data/obj/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
 		$filepath = "{$path}{$indexNo}.sra";
+		$kind = $obj::$kind;
+		$data = $obj->getData();
 		$json = serialize([$kind, $data]);
 		return file_put_contents($filepath, $json);
 	}
