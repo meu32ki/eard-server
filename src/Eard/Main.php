@@ -160,7 +160,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			break;
 			case "enemy":
 				if($s instanceof Player && count($a) >= 1){
-					EnemyRegister::summon($s->getLevel(), $a[0], $s->x, $s->y, $s->z);
+					$s->sendMessage(Chat::System("召喚したで"));
+					EnemyRegister::summon($s->getLevel(), $a[0], mt_rand(-10, 10) + $s->x, $s->y, mt_rand(-10, 10) + $s->z);
 					return true;
 				}else{
 					$s->sendMessage(Chat::System("コンソールじゃ無理"));
