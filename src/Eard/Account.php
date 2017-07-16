@@ -568,17 +568,13 @@ class Account{
 	*	このclass::Accountで使っている変数を保存
 	*/
 	public static function load(){
-		$path = __DIR__."/data/";
-		$filepath = "{$path}Account.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$namelist = $data;
-				MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
-			}
+		$data = Settings::load('Account');
+		if($data){
+			self::$namelist = $data;
+			MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
 		}
 	}
-	//return bool
+
 	public static function save(){
 		//全員分のデータセーブ
 		foreach(self::$accounts as $playerData){
@@ -586,15 +582,12 @@ class Account{
 		}
 
 		//記録データセーブ
-		$path = __DIR__."/data/";
-		if(!file_exists($path)){
-			@mkdir($path);
+		$data = Settings::save('Account', self::$namelist);
+		if($data){
+			MainLogger::getLogger()->notice("§aAccount: offline list has saved");
 		}
-		$filepath = "{$path}Account.sra";
-		$json = serialize(self::$namelist);
-		MainLogger::getLogger()->notice("§aAccount: offline list has saved");
-		return file_put_contents($filepath, $json);
 	}
+
 	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
 
 }
