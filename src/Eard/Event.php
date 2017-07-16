@@ -234,20 +234,11 @@ class Event implements Listener{
 			$damager = $e->getDamager();//ダメージを与えた人
 			$victim = $e->getEntity();//喰らった人
 
-			$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
-			MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
+			if($victim instanceof Player){
+				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+				MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
+			}
 		}
-/*		echo $e->getCause();
-		switch($e->getCause()){
-			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
-				$damager = $e->getDamager();//ダメージを与えた人
-				$victim = $e->getEntity();//喰らった人
-				if($damager instanceof Player){
-					$e->setCancelled(true);
-				}
-				break;
-		}
-*/
 		return true;
 	}
 
