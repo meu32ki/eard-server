@@ -187,10 +187,12 @@ class Event implements Listener{
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
-		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
-			$e->setCancelled(true);
-		}else{
-			$e->setCancelled( blockObjectManager::place($block, $player) );
+		if(Connection::isLivingArea()){
+			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+				$e->setCancelled(true);
+			}else{
+				$e->setCancelled( blockObjectManager::place($block, $player) );
+			}
 		}
 	}
 
@@ -200,13 +202,15 @@ class Event implements Listener{
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
-		if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
-			$e->setCancelled(true);
-		}else{
-			//echo "BB: ";
-			$r = blockObjectManager::break($block, $player);
-			//echo $r ? "true\n" : "false\n";
-			$e->setCancelled( $r );
+		if(Connection::isLivingArea()){
+			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+				$e->setCancelled(true);
+			}else{
+				//echo "BB: ";
+				$r = blockObjectManager::break($block, $player);
+				//echo $r ? "true\n" : "false\n";
+				$e->setCancelled( $r );
+			}
 		}
 	}
 

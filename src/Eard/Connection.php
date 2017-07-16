@@ -137,7 +137,6 @@ class Connection {
 		}
 	}
 
-
 /*
 	プレイヤーのステータス
 */
@@ -234,5 +233,23 @@ class Connection {
 		if($result){
 			MainLogger::getLogger()->notice("§aConnection: data has been saved");
 		}
+	}
+
+
+	/**
+	*	webからの場合にのみ使って
+	*/
+	public static function handleWeb(){
+		self::$place = 100;
+	}
+
+	/**
+	*	ここが、生活区域なのか資源区域なのか
+	*/
+	public static function isLivingArea(){
+		return self::$place === 1;
+	}
+	public static function isResourceArea(){
+		return self::$place === 2;
 	}
 }
