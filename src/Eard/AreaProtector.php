@@ -415,31 +415,23 @@ class AreaProtector{
 		return true;
 	}
 
+
 	public static function load(){
-		$path = __DIR__."/data/";
-		$filepath = "{$path}Section.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$affordableSection = $data[0];
-				self::$leftSection = $data[1];
-				MainLogger::getLogger()->notice("§aAreaProtector: data has been loaded");
-			}
+		$data = Settings::load('AreaProtector');
+		if($data){
+			self::$affordableSection = $data[0];
+			self::$leftSection = $data[1];
+			MainLogger::getLogger()->notice("§aAreaProtector: data has been loaded");
 		}
 	}
-	//return bool
+
+
 	public static function save(){
-		// ぶち切りした場合 土地と そうでないところの差が出るから saveはいれるな
-		$path = __DIR__."/data/";
-		if(!file_exists($path)){
-			@mkdir($path);
+		$data = [self::$affordableSection, self::$leftSection];
+		$result = Settings::save('AreaProtector', $data);
+		if($result){
+			MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
 		}
-		$filepath = "{$path}Section.sra";
-		$json = serialize(
-				[self::$affordableSection, self::$leftSection]
-			);
-		MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
-		return file_put_contents($filepath, $json);
 	}
 
 	/**
@@ -475,8 +467,8 @@ class AreaProtector{
 	}
 
 
-	public static $section = 5;//区画の大きさ
-	public static $sections = [];//データ領域
+	public static $section = 7; // 区画の大きさ
+	public static $sections = []; // データ領域
 
 	public static $digDefault = 48;
 	public static $pileDefault = 80;

@@ -6,6 +6,8 @@ use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\utils\MainLogger;
 
+# Eard
+use Eard\Settings;
 
 /****
 *
@@ -227,26 +229,20 @@ class BlockObjectManager {
 	*	このclass::BlockObjectmanagerで使っている変数を保存
 	*/
 	public static function load(){
-		$path = __DIR__."/../data/";
-		$filepath = "{$path}blockObject.sra";
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$indexNo = $data[0];
-				self::$index = $data[1];
-				MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully loaded");
-			}
+		$data = Settings::load('BlockObjectManager');
+		if($data){
+			self::$indexNo = $data[0];
+			self::$index = $data[1];
+			MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully loaded");
 		}
 	}
+
 	public static function save(){
-		$path = __DIR__."/../data/";
-		if(!file_exists($path)){
-			@mkdir($path);
+		$data = [self::$indexNo, self::$index];
+		$result = Settings::save('BlockObjectManager', $data);
+		if($result){
+			MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully saved");
 		}
-		$filepath = "{$path}blockObject.sra";
-		$json = serialize([self::$indexNo, self::$index]);
-		MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully saved");
-		return file_put_contents($filepath, $json);
 	}
 
 	public function onTime(){

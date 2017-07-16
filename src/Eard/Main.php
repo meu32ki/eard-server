@@ -38,6 +38,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$this->getServer()->getPluginManager()->registerEvents(new Event(), $this);
 
 		#Muni関連
+		Settings::init(); //たぶん一番最初に持ってくるべき
 		DB::mysqlConnect(true);
 		AreaProtector::load();
 		Account::load();

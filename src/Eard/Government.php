@@ -71,29 +71,29 @@ class Government{
 		self::$CentralBankFirst = 1000 * 10000;
 		self::$CentralBankMeu = Meu::get(1000 * 10000, 100000); //100000は政府のUniqueNo
 
-		$json = @file_get_contents($filepath);
-		if($json){
-			if($data = unserialize($json)){
-				self::$CentralBankFirst = $data[0];
-				self::$CentralBankMeu = Meu::get($data[1], 100000); //100000は政府のUniqueNo
-				MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
-			}
+		//データがある場合はそっちが優先される
+		$data = Settings::load('Government');
+		if($data){
+			self::$CentralBankFirst = $data[0];
+			self::$CentralBankMeu = Meu::get($data[1], 100000); //100000は政府のUniqueNo
+			MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
+		}else{
+			MainLogger::getLogger()->notice("§eGovernment: No data found. Set the amount of Meu");
 		}
 	}
-	//return bool
+
+
 	public static function save(){
-		$path = __DIR__."/data/";
-		if(!file_exists($path)){
-			@mkdir($path);
-		}
-		$filepath = "{$path}Government.sra";
-		$json = serialize([
+		$data = [
 				self::$CentralBankFirst,
 				self::$CentralBankMeu->getAmount()
-			]);
-		MainLogger::getLogger()->notice("§aGovernment: data has been saved");
-		return file_put_contents($filepath, $json);
+			];
+		$result = Settings::save('Government', $data);
+		if($result){
+			MainLogger::getLogger()->notice("§aGovernment: data has been saved");
+		}
 	}
+
 
 	public static $CentralBankFirst, $CentralBankMeu;
 
