@@ -27,6 +27,10 @@ commands:
   description: "Muni: Government"
   usage: "/gv [ameu|vmeu|give]"
   permission: muni
+ co:
+  description: "Muni: Connection"
+  usage: "/co <number>"
+  permission: muni
  enemy:
   description: "エネミーを呼び出します"
   usage: "/enemy <type>"

@@ -75,6 +75,7 @@ class Event implements Listener{
 
 	public function J(PlayerJoinEvent $e){
 		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
+		Connection::recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
 	}
 
 
@@ -87,10 +88,12 @@ class Event implements Listener{
 				$playerData->getMenu()->close();
 			}
 
+			Connection::recordLogout($player->getName()); //　オンラインテーブルから記録消す
+
 			$e->setQuitMessage(Chat::getQuitMessage($player->getDisplayName()));
 
 			$playerData->onUpdateTime();
-			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。
+			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。セーブされないデータが出てきてしまうかもしれないから。
 		}
 	}
 

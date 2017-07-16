@@ -37,9 +37,14 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		date_default_timezone_set('asia/tokyo');
 		$this->getServer()->getPluginManager()->registerEvents(new Event(), $this);
 
-		#Muni関連
+		# DB系
 		Settings::init(); //たぶん一番最初に持ってくるべき
 		DB::mysqlConnect(true);
+		Connection::load();
+		//Connection::setup();
+		Connection::makeOnline();
+
+		# Muni関連
 		AreaProtector::load();
 		Account::load();
 		BlockObjectManager::load();
@@ -57,6 +62,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		BlockObjectManager::save();	
 		Account::save();
 		AreaProtector::save();
+
+		# DB系
+		Connection::makeOffline();
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){
@@ -156,9 +164,22 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 							return true;
 						break;
 					}
+				}
+				return false;				
+			break;
+			case "co": // Connection
+				if(isset($a[0])){
+					$place = $a[0];
+					if( (int) $place != 0){
+						Connection::write($place);
+						return true;
+					}else{
+						$s->sendMessage(Chat::SystemToPlayer("/co 数字 で入力してくれ"));						
+					}
 				}else{
-
-				}				
+					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
+				}
+				return false;
 			break;
 			case "enemy":
 				if($s instanceof Player && count($a) >= 1){
