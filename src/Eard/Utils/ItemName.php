@@ -1,5 +1,5 @@
 <?php
-namespace Eard;
+namespace Eard\Utils;
 
 
 use pocketmine\item\Item;
