@@ -234,6 +234,8 @@ class BlockObjectManager {
 			self::$indexNo = $data[0];
 			self::$index = $data[1];
 			MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully loaded");
+		}else{
+			MainLogger::getLogger()->notice("§eBlockObjectManager: data will be automatically created.");
 		}
 	}
 

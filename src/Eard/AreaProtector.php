@@ -422,6 +422,8 @@ class AreaProtector{
 			self::$affordableSection = $data[0];
 			self::$leftSection = $data[1];
 			MainLogger::getLogger()->notice("§aAreaProtector: data has been loaded");
+		}else{
+			MainLogger::getLogger()->notice("§eAreaProtector: data will be automatically created in default number. is this the fiest time?");
 		}
 	}
 
