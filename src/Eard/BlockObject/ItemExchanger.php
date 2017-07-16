@@ -111,6 +111,8 @@ class ItemExchanger implements BlockObject, ChatInput {
 			}
 			$ar[] = ["戻る", 2];
 		break;
+		case 5: case 6: case 7: case 8: case 9: case 10: case 11: case 12:
+			$playerData = Account::get($player);			
 		case 5: $meu = $playerData->getMeu(); break;
 		case 6: $meu = $playerData->getMeu()->spilit(10000); break;
 		case 7: $meu = $playerData->getMeu()->spilit(5000); break;
@@ -120,7 +122,6 @@ class ItemExchanger implements BlockObject, ChatInput {
 		case 11: $meu = $playerData->getMeu()->spilit(50); break;
 		case 12: $meu = $playerData->getMeu()->spilit(10); break;
 		case 5: case 6: case 7: case 8: case 9: case 10: case 11: case 12:
-			$playerData = Account::get($player);
 			$playerMeuAmount = $playerData->getMeu()->getAmount();
 			$result = $this->set($playerData, $meu) ? "セットしました" : "なんかエラー";
 			$itemText = $this->getAsText($player);
