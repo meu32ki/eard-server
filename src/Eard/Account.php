@@ -577,8 +577,10 @@ class Account{
 
 	public static function save(){
 		//全員分のデータセーブ
-		foreach(self::$accounts as $playerData){
-			$playerData->updateData();
+		if(self::$accounts){
+			foreach(self::$accounts as $playerData){
+				$playerData->updateData();
+			}
 		}
 
 		//記録データセーブ
