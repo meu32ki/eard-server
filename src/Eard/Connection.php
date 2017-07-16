@@ -6,9 +6,6 @@ namespace Eard;
 # Basic
 use pocketmine\utils\MainLogger;
 
-# Packet
-use pocketmine\network\protocol\TransferPacket;
-
 
 class Connection {
 	
@@ -55,10 +52,7 @@ class Connection {
 
 
 		// 実際飛ばす処理
-		$pk = new TransferPacket;
-		$pk->address = self::$resource_addr;
-		$pk->port = self::$resource_port;
-		$player->directDataPacket($pk);
+		$player->transfer(self::$resource_addr, self::$resource_port);
 
 		// quitが呼ばれてしまう問題の修正をせねば
 	}
