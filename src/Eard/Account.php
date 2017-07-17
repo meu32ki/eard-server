@@ -430,9 +430,9 @@ class Account{
 	/**
 	*	データを、DBから取得し,newされたこのclassにセットする。
 	*	@param string | 新たに読むプレイヤーの名前 or すでにclass::Playerがセットしてあるのであればそのプレイヤーのデータを読む
-	*	@return void
+	*	@return bool でーたがあったかどうか
 	*/
-    public function loadData($name = ""){
+    public function loadData($name = "", $isfromweb = false){
     	if(!$name) $name = strtolower($this->player->getName());
 
 		$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
@@ -479,9 +479,12 @@ class Account{
 
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
+					return true;
 				}else{
 					//れつがみつからなかった ＝　データがなかった初回
-					$this->saveData();
+					if(!$isfromweb){ //webからの場合はデータを作らない
+						$this->saveData();
+					}
 				}
 			}else{
 				MainLogger::getLogger()->error("Account: No results found, maybe the query failed?");
@@ -489,7 +492,7 @@ class Account{
 		}else{
 			MainLogger::getLogger()->error("Account: DB has gone. You need restarting the server.");
 		}
-	
+		return false;
 	}
 
 	/**
