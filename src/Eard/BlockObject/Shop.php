@@ -105,7 +105,6 @@ class Shop implements BlockObject {
 				$this->flags[$player->getName()][1] += 1;				
 			}
 			$ar = $this->getPriceList($player);
-			print_r($ar);
 		break;
 		case 3: // 買う もどる
 			if(!isset( $this->flags[$player->getName()] )){
@@ -149,6 +148,29 @@ class Shop implements BlockObject {
 		return $ar;
 	}
 
+
+	/*
+		$this->flags = [
+			$name => 
+				[
+					0 => 画面の種類 (1 = かう 2 = うる)
+					1 => ページ数
+				],
+		];
+		$this->price = [
+			1 => // 買うときのリスト
+				[
+
+
+				],
+			2 => // 売るときのリスト
+				[
+
+
+				],
+			
+		]
+	*/
 	public function getPriceList($player){
 		$flag = $this->flags[$player->getName()][0];
 		if(isset($this->price[$flag])){
@@ -183,7 +205,12 @@ class Shop implements BlockObject {
 			}
 			return $out;
 		}else{
-			return [];
+			$out = [
+				["アイテム交換", false],
+				["リストがありません",false],
+				["戻る",1],
+			};
+			return $out;
 		}
 	}
 
