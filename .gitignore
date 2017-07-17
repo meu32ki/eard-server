@@ -1,3 +1,4 @@
 src/Eard/sections/
 src/Eard/data/
 src/Eard/DB.php
+src/Eard/Connection.php
