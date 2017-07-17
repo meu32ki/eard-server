@@ -166,7 +166,7 @@ class Connection {
 	*	@return int 	-1 ~ 1 (-1...取得/接続不可 0...クエリ失敗 1...クエリ成功)
 	*/
 	public static function recordLogout($name){
-		if($place){
+		if(self::$place){
 			$sql = "DELETE FROM statistics_player WHERE name = '{$name}'; ";
 			$result = DB::get()->query($sql);
 			return $result;
