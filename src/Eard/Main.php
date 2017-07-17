@@ -169,17 +169,30 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			break;
 			case "co": // Connection
 				if(isset($a[0])){
-					$place = $a[0];
-					if( (int) $place != 0){
-						Connection::write($place);
-						return true;
-					}else{
-						$s->sendMessage(Chat::SystemToPlayer("/co 数字 で入力してくれ"));						
+					$p = strtolower($a[0]);
+					if($p === "place"){
+						if(isset($a[1])){
+							$place = $a[1];
+							Connection::write($place);
+							return true;
+						}else{
+							$s->sendMessage(Chat::SystemToPlayer("/co place <数字> で入力してくれ"));						
+						}
+					}else if($p === "addr"){
+						if(isset($a[1]) && isset($a[2])){
+							$place = (int) $a[1];
+							$addrtxt = $a[2];
+							$result = Connection::writeAddr($place, $addrtxt);
+							$out = $result ? Chat::SystemToPlayer("セーブ完了") : Chat::SystemToPlayer("なんかセーブできなかったらしい");
+							$s->sendMessage($out);
+						}else{
+							$s->sendMessage(Chat::SystemToPlayer("/co addr address:port で入力してくれ"));				
+						}
 					}
 				}else{
-					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
+					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /co [place|addr]"));
 				}
-				return false;
+				return true;
 			break;
 			case "enemy":
 				if($s instanceof Player && count($a) >= 1){

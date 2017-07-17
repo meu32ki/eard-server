@@ -10,11 +10,11 @@ use pocketmine\utils\MainLogger;
 class Connection {
 	
 
-	private static $urban_addr = "play.32ki.net";
-	private static $urban_port = "19139";
+	private static $urban_addr = "";
+	private static $urban_port = "";
 
-	private static $resource_addr = "xxhunter.ddns.net";
-	private static $resource_port = "19132";
+	private static $resource_addr = "";
+	private static $resource_port = "";
 
 	private static $place = 0; //このサバは、どちらに当たるのかを指定
 
@@ -217,21 +217,75 @@ class Connection {
 		$data = Settings::load('Connection');
 		if($data){
 			self::$place = $data[0];
-			MainLogger::getLogger()->notice("§aConnection: data has been loaded");
+			MainLogger::getLogger()->notice("§aConnection: place data has been loaded");
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: Cannnot load data. You should set your 'place' immedeately!");
+			MainLogger::getLogger()->notice("§eConnection: Cannnot load place data. You should set your 'connection place' immedeately!");
+		}
+
+		$data = Settings::load('ConnectionAddr');
+		if($data){
+			self::$urban_addr = $data[0];
+			self::$urban_port = $data[1];
+
+			self::$resource_addr = $data[2];
+			self::$resource_port = $data[3];
+
+			$flag = true;
+			if(!self::$urban_addr || !self::$urban_port){
+				$flag = false;
+				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems URBAN value is empty. It'll no longer work properly!");
+			}
+			if(self::$resource_addr || !self::$resource_port){
+				$flag = false;
+				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems RESOURCE value is empty. It'll no longer work properly!");
+			}
+			if($flag) MainLogger::getLogger()->notice("§aConnection: addr data has been loaded");
+		}else{
+			MainLogger::getLogger()->notice("§eConnection: Cannnot load addr data. You should set your 'connection addr' immedeately!");
 		}
 	}
 
 
 	//このサーバーの場所番号を書き込み、番号をせーぶする。
-	public static function write($place){
+	public static function writePlace($place){
 		self::$place = $place;
 		//毎回セーブする必要はない。起動中に書き換わらないから。コマンドでセーブするのみ。
-		$data = [self::$place];
+		$data = [
+			self::$place
+		];
+
 		$result = Settings::save('Connection', $data);
 		if($result){
-			MainLogger::getLogger()->notice("§aConnection: data has been saved");
+			MainLogger::getLogger()->notice("§aConnection: place data has been saved");
+		}
+	}
+
+	public static function writeAddr($place, $txt){
+		$ar = explode(":", $txt);
+		$addr = $ar[0];
+		$port = isset($ar[1]) ? $ar[1] : 0;
+		if($port && (int) $port > 0){
+			if($place === 1){
+				self::$urban_addr = $addr;
+				self::$urban_port = $port;
+			}elseif($place === 2){
+				self::$resource_addr = $addr;
+				self::$resource_port = $port;
+			}
+			$data2 = [
+				self::$urban_addr,
+				self::$urban_port,
+				self::$resource_addr,
+				self::$resource_port
+			];
+			$result = Settings::save('ConnectionAddr', $data2);
+			if($result){
+				MainLogger::getLogger()->notice("§aConnection: addr data has been saved");
+				return true;
+			}
+			return false;
+		}else{
+			return false;
 		}
 	}
 
