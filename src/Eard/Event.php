@@ -155,35 +155,6 @@ class Event implements Listener{
 	}
 
 
-
-	public function D(DataPacketReceiveEvent $e){
-		$packet = $e->getPacket();
-		$player = $e->getPlayer();
-		$name = $player->getName();
-		switch($packet::NETWORK_ID){
-			case ProtocolInfo::PLAYER_ACTION_PACKET:
-				//壊し始めたとき
-/*				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
-					$x = $packet->x; $y = $packet->y; $z = $packet->z;
-					if(!Settings::$allowBreakAnywhere){
-						AreaProtector::Edit($player, $x, $y, $z);
-						//キャンセルとかはさせられないので、表示を出すだけ。
-					}else{
-						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
-					}
-				}
-*/
-				$x = $packet->x; $y = $packet->y; $z = $packet->z;
-				//echo "AKPK: {$x}, {$y}, {$z}, {$packet->action}\n";
-			break;
-			case ProtocolInfo::REMOVE_BLOCK_PACKET:
-				//echo "RMPK: {$x}, {$y}, {$z}\n";				
-			break;
-		}
-	}
-
-
-
 	public function Place(BlockPlaceEvent $e){
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
@@ -249,6 +220,34 @@ class Event implements Listener{
 		}
 		return true;
 	}
+
+
+	public function D(DataPacketReceiveEvent $e){
+		$packet = $e->getPacket();
+		$player = $e->getPlayer();
+		$name = $player->getName();
+		switch($packet::NETWORK_ID){
+			case ProtocolInfo::PLAYER_ACTION_PACKET:
+				//壊し始めたとき
+/*				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
+					$x = $packet->x; $y = $packet->y; $z = $packet->z;
+					if(!Settings::$allowBreakAnywhere){
+						AreaProtector::Edit($player, $x, $y, $z);
+						//キャンセルとかはさせられないので、表示を出すだけ。
+					}else{
+						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+					}
+				}
+*/
+				$x = $packet->x; $y = $packet->y; $z = $packet->z;
+				//echo "AKPK: {$x}, {$y}, {$z}, {$packet->action}\n";
+			break;
+			case ProtocolInfo::REMOVE_BLOCK_PACKET:
+				//echo "RMPK: {$x}, {$y}, {$z}\n";				
+			break;
+		}
+	}
+
 
 /*
 	public function D(DataPacketReceiveEvent $e){
