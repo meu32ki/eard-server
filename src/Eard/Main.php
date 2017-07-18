@@ -39,7 +39,14 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# DB系
 		Settings::init(); //たぶん一番最初に持ってくるべき
-		DB::mysqlConnect(true);
+		$connected = DB::mysqlConnect(true);
+		if($connected){
+			//正常にmysqlにつなげた場合のみ。
+			$this->reconnect();
+		}
+	}
+
+	public function reconnect(){
 		Connection::load();
 		//Connection::setup();
 		Connection::makeOnline();
@@ -186,11 +193,41 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 							$out = $result ? Chat::SystemToPlayer("セーブ完了") : Chat::SystemToPlayer("なんかセーブできなかったらしい");
 							$s->sendMessage($out);
 						}else{
-							$s->sendMessage(Chat::SystemToPlayer("/co addr address:port で入力してくれ"));				
+							$s->sendMessage(Chat::SystemToPlayer("/co addr address:port のように入力"));				
 						}
 					}
 				}else{
 					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /co [place|addr]"));
+				}
+				return true;
+			break;
+			case "db": // Data base connect info
+				if(isset($a[0])){
+					$p = strtolower($a[0]);
+					$value = isset($a[1]) ? $a[1] : "";
+					if(!$value){
+						$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /co {$p} <{$p}> のように入力"));
+						return true;
+					}
+					switch($p){
+						case "addr":
+							DB::writeAddr($value);
+						break;
+						case "user":
+							DB::writeUser($value);
+						break;
+						case "pass":
+							DB::writePass($value);
+						break;
+						case "name":
+							DB::writename($value);
+						break;
+						default:
+							$s->sendMessage(Chat::SystemToPlayer("パラメータ異常 /co [addr|user|pass|name] で入力"));
+						break;
+					}
+				}else{
+					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /co [addr|user|pass|name]"));
 				}
 				return true;
 			break;
