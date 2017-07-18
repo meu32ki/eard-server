@@ -178,12 +178,7 @@ class Chat {
 	*	@return string | 最終的にできた参加時メッセージ
 	*/
 	public static function getJoinMessage($name){
-		// ↓ 本当はDBから持ってきたほうがいいんだろうけどとりあえずこのまま 2017/7/19
-		if(Connection::isLivingArea()){
-			$placeName = "生活区域";
-		}elseif(Connection::isResourceArea()){
-			$placeName = "資源区域";
-		}
+		$placeName = Connection::getPlace()->getName();
 		return self::System("§bお知らせ", "{$name} がEardの {$placeName} にやって来た");
 	}
 
@@ -199,11 +194,10 @@ class Chat {
 	*	別のサバ(ワールド)へ飛ぶ場合のメッセージを取得する
 	*/
 	public static function getTransferMessage($name){
-		// ↓ 本当はDBから持ってきたほうがいいんだろうけどとりあえずこのまま 2017/7/19
-		if(Connection::isLivingArea()){
-			$placeName = "資源区域";
-		}elseif(Connection::isResourceArea()){
-			$placeName = "生活区域";
+		if(Connection::getPlace()->isLivingArea()){
+			$placeName = Connection::getPlaceByNo(2)->getName();
+		}elseif(Connection::getPlace()->isResourceArea()){
+			$placeName = Connection::getPlaceByNo(1)->getName();
 		}
 		return self::System("§bお知らせ", "{$name} はEardの {$placeName} へと向かった");
 	}

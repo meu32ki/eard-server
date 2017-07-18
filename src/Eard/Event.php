@@ -75,7 +75,7 @@ class Event implements Listener{
 
 	public function J(PlayerJoinEvent $e){
 		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
-		Connection::recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
+		Connection::getPlace()->recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
 	}
 
 
@@ -88,7 +88,7 @@ class Event implements Listener{
 				$playerData->getMenu()->close();
 			}
 
-			Connection::recordLogout($player->getName()); //　オンラインテーブルから記録消す
+			Connection::getPlace()->recordLogout($player->getName()); //　オンラインテーブルから記録消す
 
 			$msg = $playerData->isNowTransfering() ? Chat::getTransferMessage($player->getDisplayName()) : Chat::getQuitMessage($player->getDisplayName());
 			$e->setQuitMessage($msg);
@@ -159,7 +159,7 @@ class Event implements Listener{
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
-		if(Connection::isLivingArea()){
+		if(Connection::getPlace()->isLivingArea()){
 			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{
@@ -174,7 +174,7 @@ class Event implements Listener{
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
-		if(Connection::isLivingArea()){
+		if(Connection::getPlace()->isLivingArea()){
 			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{

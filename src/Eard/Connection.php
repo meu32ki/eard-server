@@ -9,6 +9,7 @@ use pocketmine\utils\MainLogger;
 
 class Connection {
 	
+	//placeをオブジェクトごとに分ける作業 2017/7/19
 
 	private static $urban_addr = "";
 	private static $urban_port = "";
@@ -16,16 +17,10 @@ class Connection {
 	private static $resource_addr = "";
 	private static $resource_port = "";
 
-	private static $place = 0; //このサバは、どちらに当たるのかを指定
+	private static $placeNo = 0; //このサバは、どちらに当たるのかを指定
+	private static $places = [];
 
-
-	const STAT_ONLINE     = 1;
-	const STAT_OFFLINE    = 2;
-	const STAT_PREPAREING = 3;
-	const STAT_UNKNOWN	  = 4;
-
-/*
-	プレイヤーの鯖間転送
+/*	プレイヤーの鯖間転送
 */
 
 	/**
@@ -43,8 +38,8 @@ class Connection {
 
 
 		// このplaceがセットされているか？
-		if(!self::$place){
-			MainLogger::getLogger()->notice("§eConnection: Transfer has been canceled. You should set your 'place' immedeately!");
+		if(!self::$placeNo){
+			MainLogger::getLogger()->notice("§eConnection: Transfer has been canceled. You should set your 'placeNo' immedeately!");
 			return -1;
 		}
 
@@ -87,12 +82,29 @@ class Connection {
 	}
 
 
-
-/*
-	サーバーのステータス
+/*	全般
 */
 
-	//初期セットアップ。データベースのセットアップ。
+	/**
+	*	今空いている、このさばの、placeを返す。webからは使うな。
+	*	@return Place
+	*/
+	public static function getPlace(){
+		return self::$places[self::$placeNo];
+	}
+
+	/**
+	*	placeの番号からPlaceを取得する。
+	*	@param int placeNo
+	*	@return Place
+	*/
+	public static function getPlaceByNo($placeNo){
+		return self::$places[$placeNo];
+	}
+
+	/**
+	*	初期セットアップ。データベースのセットアップ。
+	*/
 	public static function setup(){
 		$sql = "INSERT INTO statistics_server (name, place, stat) VALUES ('せいかつ', '1', '".self::STAT_PREPAREING."'); ";
 		$sql2 = "INSERT INTO statistics_server (name, place, stat) VALUES ('しげん', '2', '".self::STAT_PREPAREING."'); ";
@@ -101,145 +113,12 @@ class Connection {
 		$result2 = $db->query($sql2);
 	}
 
-	/**
-	*	鯖をつけたとき、オンラインだよーって記録するやつ。
-	*	placeの値が設定されていないときは、何もしない。
-	*/
-	public static function makeOnline(){
-		$stat = self::STAT_ONLINE;
-		$place = self::$place;
-		if($place){
-			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
-			$result = DB::get()->query($sql);
-			if($result){
-				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§aオンライン状態§f」と記録しました");
-			}else{
-				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
-			}
-		}else{
-			MainLogger::getLogger()->notice("§eConnection: 値が設定されていません。サーバーの状態は記録されていません");
-		}
-	}
-
-	/**
-	*	鯖をけしたとき、オフラインだよーって記録するやつ。
-	*	placeの値が設定されていないときは、何もしない。
-	*/
-	public static function makeOffline(){
-		$stat = self::STAT_OFFLINE;
-		$place = self::$place;
-		if($place){
-			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
-			$result = DB::get()->query($sql);
-			if($result){
-				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§cオフライン状態§f」と記録しました");
-			}else{
-				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
-			}
-		}else{
-			MainLogger::getLogger()->notice("§eConnection: 値が設定されていません。サーバーの状態は記録されていません");
-		}
-	}
-
-	/**
-	*	placeに割り当てられているサーバーの状態を確認する。タイムアウトになっていた場合は4が帰る
-	*	@param int place(場所番号/鯖番号) (生活区域 = 1, 資源区域 = 2)
-	*	@return int 0 ~ 4 (0...エラー 1-4 ステータス表示)
-	*/
-	public static function getStatus($place){
-		$sql = "SELECT stat,lastupdate FROM statistics_server WHERE place = {$place}; ";
-		$result = DB::get()->query($sql);
-		if($result){
-			$stat = 0;
-			while($row = $result->fetch_assoc()){
-				$stat = (int) $row['stat'];
-				$updatedTime = $row['lastupdate'];
-			}
-			if(time() < strtotime($updatedTime) + 300){//5分以上前のデータであったらタイムアウトで4を返す
-				$stat = self::STAT_UNKNOWN;
-			}
-			return $stat;
-		}else{
-			return 0;
-		}
-	}
-
-	/**
-	*	Web用
-	*	@param 
-	*	@return String [Opened|Closed|Lost Connection|]
-	*/
-	public static function getStatusTxt($place){
-		$stat = self::getStatus($place);
-		switch($stat){
-			case self::STAT_ONLINE:
-				$out = "Opened"; break;
-			case self::STAT_OFFLINE:
-				$out = "Closed"; break;
-			case self::STAT_PREPAREING:
-				$out = "Prepareing"; break;
-			case self::STAT_UNKNOWN:
-				$out = "Lost Connection"; break;
-			default:
-				$out = "[ERROR]"; break;
-		}
-		return $out;
-	}
-
-/*
-	プレイヤーのステータス
+/*	プレイヤーのステータス
 */
 
 	/**
-	*	そのプレイヤーがログインしたよーってことをDBに記録する。
-	*	webから、オンラインかオフラインか見れるようにするため
-	*	@param String 	プレイヤー名
-	*	@return bool 	クエリが成功したか
-	*/
-	public static function recordLogin($name){
-		$place = self::$place; // 場所番号/鯖番号 (生活区域 = 1, 資源区域 = 2)
-		if($place){
-			$sql = "INSERT INTO statistics_player (name, place, date) VALUES ('{$name}', '{$place}', now() ); ";
-			$result = DB::get()->query($sql);
-			return $result;
-		}else{
-			MainLogger::getLogger()->notice("§eConnection: Cannot record player. You should set your 'place' immedeately!");
-		}
-	}
-
-
-	/**
-	*	そのプレイヤーがログアウトしたよーってことをDBに記録する。(削除する)
-	*	@param String 	プレイヤー名
-	*	@param Int 		場所番号(生活区域 = 1, 資源区域 = 2)
-	*	@return int 	-1 ~ 1 (-1...取得/接続不可 0...クエリ失敗 1...クエリ成功)
-	*/
-	public static function recordLogout($name){
-		if(self::$place){
-			$sql = "DELETE FROM statistics_player WHERE name = '{$name}'; ";
-			$result = DB::get()->query($sql);
-			return $result;
-		}
-	}
-
-
-	/**
-	*	プレイヤーのいる場所が移った時に、記録する。Transferの場合のみなのでprivate
-	*	@param String 	プレイヤー名
-	*	@param Int 		場所番号(生活区域 = 1, 資源区域 = 2)
-	*	@return bool 	クエリが成功したか
-	*/
-	private static function recordUpdate($name){
-		$place = self::$place; // 場所番号/鯖番号 (生活区域 = 1, 資源区域 = 2)
-		$sql = "UPDATE statistics_player SET place = {$place} WHERE name = '{$name}'; ";
-		$result = DB::get()->query($sql);
-		return $result;
-	}
-
-
-	/**
 	*	webで使うだろうからpublic
-	*	該当プレイヤーが、ログインしていると記録してあるかをチェック。
+	*	該当プレイヤーが、ログインしていると記録してあるかをチェック。どちらかのサバに？
 	*	@param String 	プレイヤー名
 	*	@return Int  	-1 ~ 2 (-1...取得/接続不可 0...いない 1...生活区域 2...資源区域)
 	*/
@@ -247,79 +126,64 @@ class Connection {
 		$sql = "SELECT * FROM statistics_player WHERE name = '{$name}'; ";
 		$result = DB::get()->query($sql);
 		if($result){
-			$place = 0;
+			$placeNo = 0;
 			while($row = $result->fetch_assoc()){
-				$place = $row['place'];
+				$placeNo = $row['place'];
 			}
-			return $place;
+			return $placeNo;
 		}else{
 			return -1;
 		}
 	}
 
-	/**
-	*	web用
-	*	ログインしていると記録されているプレイヤーを全員返す
-	*	@param String 	プレイヤー名
-	*	@return String[] プレイヤー名がはいってるarray
-	*/
-	public static function getLoginPlayersNameBy($place){
-		$sql = "SELECT * FROM statistics_player WHERE place = {$place}; ";
-		$result = DB::get()->query($sql);
-		if($result){
-			$out = [];
-			while($row = $result->fetch_assoc()){
-				$out[] = $row['name'];
-			}
-			return $out;
-		}else{
-			return ['32ki_dummy'];
-		}
-	}
 
-/*
-	クラスで使うデータ
+/*	クラスで使うデータ
 */
 
 	public static function load(){
 		$data = Settings::load('Connection');
 		if($data){
-			self::$place = (int) $data[0];
+			self::$placeNo = (int) $data[0];
 			MainLogger::getLogger()->notice("§aConnection: place data has been loaded");
 		}else{
 			MainLogger::getLogger()->notice("§eConnection: Cannnot load place data. You should set your 'connection place' immedeately!");
 		}
 
+		self::$places[1] = new Place(1);
+		self::$places[2] = new Place(2);
+
 		$data = Settings::load('ConnectionAddr');
 		if($data){
-			self::$urban_addr = $data[0];
-			self::$urban_port = $data[1];
 
-			self::$resource_addr = $data[2];
-			self::$resource_port = $data[3];
+			$living = self::getPlaceByNo(1);
+			$living->setAddr($data[0]);
+			$living->setPort($data[1]);
+
+			$resource = self::getPlaceByNo(2);
+			$resource->setAddr($data[2]);
+			$resource->setPort($data[3]);
 
 			$flag = true;
-			if(!self::$urban_addr || !self::$urban_port){
+			if( !$living->getAddr() || !$living->getPort() ){
 				$flag = false;
-				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems URBAN value is empty. It'll no longer work properly!");
+				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems LIVING value is empty. It'll no longer work properly!");
 			}
-			if(!self::$resource_addr || !self::$resource_port){
+			if( !$resource->getAddr() || !$resource->getPort() ){
 				$flag = false;
 				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems RESOURCE value is empty. It'll no longer work properly!");
 			}
+
 			if($flag) MainLogger::getLogger()->notice("§aConnection: addr data has been loaded");
 		}else{
 			MainLogger::getLogger()->notice("§eConnection: Cannnot load addr data. You should set your 'connection addr' immedeately!");
 		}
 	}
 
-
-	//このサーバーの場所番号を書き込み、番号をせーぶする。
-	public static function writePlace($place){
-		self::$place = $place;
+	public static function writePlace($placeNo){
+		self::$placeNo = $placeNo;
 		//毎回セーブする必要はない。起動中に書き換わらないから。コマンドでセーブするのみ。
 		$data = [
-			self::$place
+			self::$placeNo
 		];
 
 		$result = Settings::save('Connection', $data);
@@ -328,23 +192,22 @@ class Connection {
 		}
 	}
 
-	public static function writeAddr($place, $txt){
+	public static function writeAddr($placeNo, $txt){
 		$ar = explode(":", $txt);
 		$addr = $ar[0];
 		$port = isset($ar[1]) ? $ar[1] : 0;
 		if($port && (int) $port > 0){
-			if($place === 1){
-				self::$urban_addr = $addr;
-				self::$urban_port = $port;
-			}elseif($place === 2){
-				self::$resource_addr = $addr;
-				self::$resource_port = $port;
-			}
+			$place = self::getPlaceByNo($placeNo);
+			$place->setAddr($port);
+			$place->setPort($addr);
+
+			$living = self::getPlaceByNo(1);
+			$resource = self::getPlaceByNo(2);
 			$data2 = [
-				self::$urban_addr,
-				self::$urban_port,
-				self::$resource_addr,
-				self::$resource_port
+				$living->getAddr(),
+				$living->getPort(),
+				$resource->getAddr(),
+				$resource->getPort()
 			];
 			$result = Settings::save('ConnectionAddr', $data2);
 			if($result){
@@ -355,23 +218,5 @@ class Connection {
 		}else{
 			return false;
 		}
-	}
-
-
-	/**
-	*	webからの場合にのみ使って
-	*/
-	public static function handleWeb(){
-		self::$place = 100;
-	}
-
-	/**
-	*	ここ(今空いているこの鯖)が、生活区域なのか資源区域なのか
-	*/
-	public static function isLivingArea(){
-		return self::$place === 1;
-	}
-	public static function isResourceArea(){
-		return self::$place === 2;
 	}
 }
