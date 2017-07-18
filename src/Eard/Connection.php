@@ -141,6 +141,51 @@ class Connection {
 		}
 	}
 
+	/**
+	*	placeに割り当てられているサーバーの状態を確認する。タイムアウトになっていた場合は4が帰る
+	*	@param int place(場所番号/鯖番号) (生活区域 = 1, 資源区域 = 2)
+	*	@return int 0 ~ 4 (0...エラー 1-4 ステータス表示)
+	*/
+	public static function getStatus($place){
+		$sql = "SELECT stat,lastupdate FROM statistics_server WHERE place = {$place}; ";
+		$result = DB::get()->query($sql);
+		if($result){
+			$stat = 0;
+			while($row = $result->fetch_assoc()){
+				$stat = (int) $row['stat'];
+				$updatedTime = $row['lastupdate'];
+			}
+			if(time() < strtotime($updatedTime) + 300){//5分以上前のデータであったらタイムアウトで4を返す
+				$stat = self::STAT_UNKNOWN;
+			}
+			return $stat;
+		}else{
+			return 0;
+		}
+	}
+
+	/**
+	*	Web用
+	*	@param 
+	*	@return String [Opened|Closed|Lost Connection|]
+	*/
+	public static function getStatusTxt($place){
+		$stat = self::getStatus($place);
+		switch($stat){
+			case self::STAT_ONLINE:
+				$out = "Opened"; break;
+			case self::STAT_OFFLINE:
+				$out = "Closed"; break;
+			case self::STAT_PREPAREING:
+				$out = "Prepareing"; break;
+			case self::STAT_UNKNOWN:
+				$out = "Lost Connection"; break;
+			default:
+				$out = "[ERROR]"; break;
+		}
+		return $out;
+	}
+
 /*
 	プレイヤーのステータス
 */
@@ -212,6 +257,25 @@ class Connection {
 		}
 	}
 
+	/**
+	*	web用
+	*	ログインしていると記録されているプレイヤーを全員返す
+	*	@param String 	プレイヤー名
+	*	@return String[] プレイヤー名がはいってるarray
+	*/
+	public static function getLoginPlayersNameBy($place){
+		$sql = "SELECT * FROM statistics_player WHERE place = {$place}; ";
+		$result = DB::get()->query($sql);
+		if($result){
+			$out = [];
+			while($row = $result->fetch_assoc()){
+				$out[] = $row['name'];
+			}
+			return $out;
+		}else{
+			return ['32ki_dummy'];
+		}
+	}
 
 /*
 	クラスで使うデータ
