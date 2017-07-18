@@ -235,7 +235,7 @@ class Connection {
 				$flag = false;
 				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems URBAN value is empty. It'll no longer work properly!");
 			}
-			if(self::$resource_addr || !self::$resource_port){
+			if(!self::$resource_addr || !self::$resource_port){
 				$flag = false;
 				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems RESOURCE value is empty. It'll no longer work properly!");
 			}
