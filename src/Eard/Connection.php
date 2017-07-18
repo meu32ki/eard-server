@@ -51,10 +51,14 @@ class Connection {
 		// 転送先が開いているかチェック
 
 
-		// 実際飛ばす処理
-		$player->transfer(self::$resource_addr, self::$resource_port);
 
-		// quitが呼ばれてしまう問題の修正をせねば
+		// 転送モードに移行、これをいれると、quitの時のメッセージが変わる
+		$PlayerData->setNowTransfering(true);
+
+		// 実際飛ばす処理
+		$player->transfer(self::$resource_addr, self::$resource_port); // あらゆる処理の最後に持ってくるべき
+		//$PlayerData->setNowTransfering(false);
+	
 	}
 
 
@@ -216,7 +220,7 @@ class Connection {
 	public static function load(){
 		$data = Settings::load('Connection');
 		if($data){
-			self::$place = $data[0];
+			self::$place = (int) $data[0];
 			MainLogger::getLogger()->notice("§aConnection: place data has been loaded");
 		}else{
 			MainLogger::getLogger()->notice("§eConnection: Cannnot load place data. You should set your 'connection place' immedeately!");
@@ -298,7 +302,7 @@ class Connection {
 	}
 
 	/**
-	*	ここが、生活区域なのか資源区域なのか
+	*	ここ(今空いているこの鯖)が、生活区域なのか資源区域なのか
 	*/
 	public static function isLivingArea(){
 		return self::$place === 1;

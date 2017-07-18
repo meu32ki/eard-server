@@ -90,7 +90,8 @@ class Event implements Listener{
 
 			Connection::recordLogout($player->getName()); //　オンラインテーブルから記録消す
 
-			$e->setQuitMessage(Chat::getQuitMessage($player->getDisplayName()));
+			$msg = $playerData->isNowTransfering() ? Chat::getTransferMessage($player->getDisplayName()) : Chat::getQuitMessage($player->getDisplayName());
+			$e->setQuitMessage($msg);
 
 			$playerData->onUpdateTime();
 			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。セーブされないデータが出てきてしまうかもしれないから。

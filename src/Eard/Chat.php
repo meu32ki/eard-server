@@ -189,6 +189,20 @@ class Chat {
 		return self::System("§bお知らせ", "{$name} が地球へ戻っていった");
 	}
 
+	/**
+	*	別のサバ(ワールド)へ飛ぶ場合のメッセージを取得する
+	*/
+	public static function getTransferMessage($name){
+		// ↓ 本当はDBから持ってきたほうがいいんだろうけどとりあえずこのまま 2017/7/19
+		if(Connection::isLivingArea()){
+			$placeName = "資源区域";
+		}elseif(Connection::isResourceArea()){
+			$placeName = "生活区域";
+		}
+		// $placeNameが出ないエラーが起きた場合即刻コード見直せ 起きるべきじゃない
+		return self::System("§bお知らせ", "{$name} は「{$placeName}」へ向かった");
+	}
+
 	const CHATMODE_VOICE = 1;//30マスいない
 	const CHATMODE_ALL = 2;//全体
 	const CHATMODE_PLAYER = 3; //tell
