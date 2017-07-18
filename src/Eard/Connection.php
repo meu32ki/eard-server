@@ -109,7 +109,7 @@ class Connection {
 		$stat = self::STAT_ONLINE;
 		$place = self::$place;
 		if($place){
-			$sql = "UPDATE statistics_server SET stat = {$stat} WHERE place = {$place}; ";
+			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
 			$result = DB::get()->query($sql);
 			if($result){
 				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§aオンライン状態§f」と記録しました");
@@ -129,7 +129,7 @@ class Connection {
 		$stat = self::STAT_OFFLINE;
 		$place = self::$place;
 		if($place){
-			$sql = "UPDATE statistics_server SET stat = {$stat} WHERE place = {$place}; ";
+			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
 			$result = DB::get()->query($sql);
 			if($result){
 				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§cオフライン状態§f」と記録しました");
