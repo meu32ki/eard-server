@@ -178,7 +178,13 @@ class Chat {
 	*	@return string | 最終的にできた参加時メッセージ
 	*/
 	public static function getJoinMessage($name){
-		return self::System("§bお知らせ", "{$name} がEardにやって来た");
+		// ↓ 本当はDBから持ってきたほうがいいんだろうけどとりあえずこのまま 2017/7/19
+		if(Connection::isLivingArea()){
+			$placeName = "生活区域";
+		}elseif(Connection::isResourceArea()){
+			$placeName = "資源区域";
+		}
+		return self::System("§bお知らせ", "{$name} がEardの {$placeName} にやって来た");
 	}
 
 	/**
@@ -199,8 +205,7 @@ class Chat {
 		}elseif(Connection::isResourceArea()){
 			$placeName = "生活区域";
 		}
-		// $placeNameが出ないエラーが起きた場合即刻コード見直せ 起きるべきじゃない
-		return self::System("§bお知らせ", "{$name} は「{$placeName}」へ向かった");
+		return self::System("§bお知らせ", "{$name} はEardの {$placeName} へと向かった");
 	}
 
 	const CHATMODE_VOICE = 1;//30マスいない
