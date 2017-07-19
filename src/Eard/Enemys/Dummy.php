@@ -97,8 +97,8 @@ class Dummy extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Dummy')),
-				new StringTag("Name", 'GreekMythology_GreekMythologySiren')
+				new StringTag("Data", EnemyRegister::loadSkinData('Crosser')),
+				new StringTag("Name", 'MagicTheGathering_MagicTheGatheringNicolBolas')
 			]),
 		]);
 		$custom_name = self::getEnemyName();

@@ -7,11 +7,9 @@ use Eard\Main;
 use pocketmine\Player;
 use pocketmine\Server;
 
-use pocketmine\block\Block;
-
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\networks\protocol\AddEntityPacket;
+use pocketmine\networks\protocol\MobArmorEquipmentPacket;
+use pocketmine\networks\protocol\AnimatePacket;
 
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -19,7 +17,6 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
-use pocketmine\level\particle\DestroyBlockParticle;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -37,36 +34,21 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Hopper extends Humanoid implements Enemy{
+class Crosser extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ホッパー";
+		return "クロッサー";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_HOPPER;
+		return EnemyRegister::TYPE_CROSSER;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 40;
-	}
-
-	//召喚時のポータルのサイズを取得
-	public static function getSize(){
-		return 1;
-	}
-
-	//召喚時ポータルアニメーションタイプを取得
-	public static function getAnimationType(){
-		return EnemySpawn::TYPE_COMMON;
-	}
-
-	//召喚時のポータルアニメーションの中心座標を取得
-	public static function getCentralPosition(){
-		return new Vector3(0, 0, 0);
+		return 60;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -79,15 +61,30 @@ class Hopper extends Humanoid implements Enemy{
 			[Item::PUMPKIN_SEEDS, 0, 1, 20],
 			[Item::MELON_SEEDS, 0, 1, 20],
 			[Item::WHEAT_SEEDS, 0, 1, 20],
-			[Item::IRON_INGOT , 0, 1, 5],
+			[Item::GOLD_INGOT , 0, 1, 5],
 		];
+	}
+
+	//召喚時のポータルのサイズを取得
+	public static function getSize(){
+		return 1.5;
+	}
+
+	//召喚時ポータルアニメーションタイプを取得
+	public static function getAnimationType(){
+		return EnemySpawn::TYPE_COMMON;
+	}
+
+	//召喚時のポータルアニメーションの中心座標を取得
+	public static function getCentralPosition(){
+		return new Vector3(0, 0.7, 0);
 	}
 
 	public static function summon($level, $x, $y, $z){
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
 				new DoubleTag("", $x),
-				new DoubleTag("", $y-1),
+				new DoubleTag("", $y),
 				new DoubleTag("", $z)
 			]),
 			"Motion" => new ListTag("Motion", [
@@ -100,18 +97,17 @@ class Hopper extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Hopper')),
-				new StringTag("Name", 'JTTW_JTTWShaWujing')
+				new StringTag("Data", EnemyRegister::loadSkinData('Crosser')),
+				new StringTag("Name", 'MagicTheGathering_MagicTheGatheringNicolBolas')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Hopper($level, $nbt);
-		$random_hp = 1+(mt_rand(-10, 10)/100);
-		$entity->setMaxHealth(round(self::getHP()+$random_hp));
-		$entity->setHealth(round(self::getHP()+$random_hp));
+		$entity = new Crosser($level, $nbt);
+		$entity->setMaxHealth(self::getHP());
+		$entity->setHealth(self::getHP());
 		AI::setSize($entity, self::getSize());
 		if($entity instanceof Entity){
 			$entity->spawnToAll();
@@ -127,44 +123,27 @@ class Hopper extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		$this->pitch = 90;
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if(AI::getRate($this)){
-			if($this->charge){
-				$this->yaw += mt_rand(-60, 60);
-				if($this->target){
-					AI::lookAt($this, $this->target);
-				}
-				AI::setRate($this, 20);
-				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.2);
-				AI::rangeAttack($this, 2.5, 3);
-				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
-				$this->charge = false;
-			}else{
-				$this->motionX = 0;
-				$this->motionZ = 0;
-				AI::rangeAttack($this, 2.5, 3);
-				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
-				AI::setRate($this, 20);
-				$this->charge = true;
-			}
+			$this->yaw += mt_rand(-60, 60);
+			AI::setRate($this, 40);
 		}
-		//AI::walkFront($this, 0.08);
+		$can = AI::walkFront($this, 0.25);
+		if(!$can){
+			AI::jump($this);
+		}
 		parent::onUpdate($tick);
 	}
 
 	public function attack($damage, EntityDamageEvent $source){
 		parent::attack($damage, $source);
-		if($source instanceof EntityDamageByEntityEvent){
-			$damager = $source->getDamager();
-			$this->target = $damager;
-		}
 	}
-
+	
 	public function getName(){
 		return self::getEnemyName();
 	}

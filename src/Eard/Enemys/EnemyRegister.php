@@ -15,6 +15,7 @@ class EnemyRegister{
 
 	const TYPE_DUMMY = 0;//ここで識別番号を定義
 	const TYPE_HOPPER = 1;
+	const TYPE_CROSSER = 2;
 
 	private static $instance = null;
 	public static $register = [];
@@ -22,6 +23,7 @@ class EnemyRegister{
 	public function __construct(){
 		self::register(Dummy::class, Dummy::getEnemyType());
 		self::register(Hopper::class, Hopper::getEnemyType());
+		self::register(Crosser::class, Crosser::getEnemyType());
 
 		self::$instance = $this;
 	}
