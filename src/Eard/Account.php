@@ -129,6 +129,7 @@ class Account{
 /* Menu
 */
 	/**
+	*	webからはつかわないっしょ
 	*	プレイヤーがいつも手に持っている「砂糖」。いつでも展開することができる。
 	*	呼び出しタイミング: ログイン時あたり？
 	*/
@@ -330,6 +331,7 @@ class Account{
 		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = $authority;
 		return true;
 	}
+
 	/**
 	*	所持しているセクションをすべて返す。
 	*	@return array
@@ -486,7 +488,7 @@ class Account{
 					// めもりにてんかい
 					$this->data = $data; //メモリにコンニチハ
 
-					// Meuは展開する
+					// Meuはwebからとか関係なしに展開する
 					$this->meu = Meu::get($this->data[1], $this->getUniqueNo());
 
 

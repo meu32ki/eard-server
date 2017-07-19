@@ -328,6 +328,8 @@ class Menu implements ChatInput {
 				Connection::goToResourceArea($playerData);
 			break;
 
+
+
 //閉じてるよ画面
 			case 100:
 				$ar = [
