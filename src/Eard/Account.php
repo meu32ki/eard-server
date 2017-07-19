@@ -39,7 +39,6 @@ class Account{
     	if(!isset(self::$accounts[$name])){
     		//書道
     		$account = new Account();
-    		$account->initMenu();
     		self::$accounts[$name] = $account;
     	}
     	return self::$accounts[$name];
@@ -58,7 +57,6 @@ class Account{
     			//オフライン用のデータようにしか使っていない。
     			// todo 20170523 このままでは、サバ内にいないプレイヤーが所有する土地で設置破壊するたびにでーたをnewしてしまうので、なんとかしなくては。
 	    		$account = new Account();
-	    		$account->initMenu();
 	    		self::$accounts[$name] = $account;
 				return $account;
     		}
