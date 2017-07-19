@@ -140,8 +140,6 @@ class Menu implements ChatInput {
 					["GPS (座標情報)",3],
 					["チャット",20],
 					["メール",10],
-					//["オンラインショップ",5],
-					//["ヘルプ",6],
 					["資源区域に移動",30],
 					["§f■ メニューを閉じる",false],
 				];
@@ -328,9 +326,6 @@ class Menu implements ChatInput {
 
 			case 30:
 				Connection::goToResourceArea($playerData);
-				$ar = [
-					["転送中です...",false],
-				];
 			break;
 
 //閉じてるよ画面
