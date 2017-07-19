@@ -50,9 +50,10 @@ class Event implements Listener{
 		$playerData = Account::get($player);
 
 		//playerData関連の準備
-		$playerData->setPlayer($player);//	touitusuruna 
+		$playerData->setPlayer($player);//	touitusuruna
 		$playerData->loadData();
 		$playerData->initMenu();
+		$playerData->initItemBox();
 		$playerData->onLoadTime();
 
 		#権限関係
@@ -110,33 +111,44 @@ class Event implements Listener{
 		switch($id){
 			case Menu::$menuItem:
 				$playerData->getMenu()->useMenu($e);
+				$e->setCancelled(true);
+				return; // チェストをタップするとおかしくなるので
 			break;
 			case Item::BOOK: //dev用
 				Account::get($player)->dumpData(); //セーブデータの中身出力
 			break;
 		}
-
 		$block = $e->getBlock();
-		if($e->getAction() == 3 or $e->getAction() == 0){
-			//長押し
-			$x = $block->x; $y = $block->y; $z = $block->z;
-			if($x && $y && $z){
-				/*
-				if(Settings::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
-					//キャンセルとかはさせられないので、表示を出すだけ。
-					$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
-				}*/
-				//　↑　これだすと、長押しのアイテムが使えなくなる
-				//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
-				blockObjectManager::startBreak($x, $y, $z, $player);
-			}
-		}else{
-			$x = $block->x; $y = $block->y; $z = $block->z;
-			//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
-			//ふつうにたっぷ]
-			$r = blockObjectManager::tap($block, $player);
-			//echo $r ? "true\n" : "false\n";
-			$e->setCancelled( $r );
+		switch($block->getId()){
+			case 130: // エンダーチェスト
+				$playerData = Account::get($player);
+				$inv = $playerData->getItemBox();
+				$player->addWindow($inv);
+				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+			break;
+			default: // それいがい
+				if($e->getAction() == 3 or $e->getAction() == 0){
+					//長押し
+					$x = $block->x; $y = $block->y; $z = $block->z;
+					if($x && $y && $z){
+						/*
+						if(Settings::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
+							//キャンセルとかはさせられないので、表示を出すだけ。
+							$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+						}*/
+						//　↑　これだすと、長押しのアイテムが使えなくなる
+						//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
+						blockObjectManager::startBreak($x, $y, $z, $player);
+					}
+				}else{
+					$x = $block->x; $y = $block->y; $z = $block->z;
+					//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
+					//ふつうにたっぷ]
+					$r = blockObjectManager::tap($block, $player);
+					//echo $r ? "true\n" : "false\n";
+					$e->setCancelled( $r );
+				}
+			break;
 		}
 	}
 

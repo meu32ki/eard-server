@@ -78,10 +78,10 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
-				//$no = isset($a[0]) ? $a[0] : 0;
-				$playerData = Account::getByName('meu32ki');
+				$playerData = Account::getByName('32ki');
 				$player = $playerData->getPlayer();
-				AreaProtector::cal($player);
+				$inv = $playerData->getItemBox();
+				$player->addWindow($inv);
 				return true;
 			break;
 			case "ap": // Area Protector 土地関連

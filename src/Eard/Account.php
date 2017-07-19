@@ -142,6 +142,23 @@ class Account{
 	private $menu;
 
 
+/* ItemBox
+*/
+	/**
+	*	webからはつかわないっしょ
+	*	setItemBoxは作る必要はない。(自動でセーブされるので)
+	*	プレイヤーが何を持ってるか、データだけを取得したい場合はこのメソッドを使う必要はない。実際にインベントリを開けて出し入れしたい場合につかうべし。
+	*	loadPlayerのあとでsetPlayerのあと。
+	*/
+	public function initItemBox(){
+		$this->itemBox = new ItemBox($this);
+	}
+	public function getItemBox(){
+		return $this->itemBox;
+	}
+	private $itemBox = null;
+
+
 /* Chat
 */
 	/**
@@ -411,6 +428,20 @@ class Account{
 	}
 
 
+	/**
+	*	@param array $itemArray [ [$id, $meta,$stack], [$id,$meta,$stack]...]
+	*/
+	public function setItemArray($itemArray){
+		$this->data[7] = $itemArray;
+		return true;
+	}
+
+	public function getItemArray(){
+		return $this->data[7];
+	}
+
+	
+
 	private $data = [];
 	private static $newdata = [
 		0, // no 二回目の入室以降から使える
@@ -420,6 +451,7 @@ class Account{
 		[], // 所持するせくしょんず
 		[], // らいせんす
 		[], // 土地の共有設定
+		[ [0,0,0] ] //ItemBoxのアイテムの中身
 	];
 
 
@@ -538,7 +570,9 @@ class Account{
 	public function updateData($quit = false){
 		//Meuの量を
 		$this->data[1] = $this->meu->getAmount();
-
+		if( $itemBox = $this->getItemBox()){// itemBoxは必ず展開されているわけではないから
+			$itemBox->write();
+		}
 		// セーブ
 		$name = $this->getPlayer()->getName();
 		$data = serialize($this->data);
