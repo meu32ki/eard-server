@@ -110,9 +110,9 @@ class Humanoid extends Human{
 					$this->motionY *= -0.5;
 				}
 
-				if(!self::canThrough($this->getLevel()->getBlockIdAt($this->x, $this->y-1.65, $this->z))){
+				/*if(!self::canThrough($this->getLevel()->getBlockIdAt($this->x, $this->y-1.65, $this->z))){
 					$this->motionY = $this->gravity;
-				}
+				}*/
 
 				$this->updateMovement();
 			}
