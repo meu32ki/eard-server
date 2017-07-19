@@ -24,6 +24,7 @@ use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 
 # NetWork
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\PlayerActionPacket;
@@ -248,6 +249,43 @@ class Event implements Listener{
 			break;
 		}
 	}
+
+/*
+	public function PacketSend(DataPacketSendEvent $e){
+		$pk = $e->getPacket();
+		$player = $e->getPlayer();
+		$name = $player->getName();
+		switch($pk::NETWORK_ID){
+			case ProtocolInfo::INVENTORY_ACTION_PACKET;
+				echo "InventoryAction\n";
+			break;
+			case ProtocolInfo::CONTAINER_OPEN_PACKET;
+				echo "ContainerOpen\n";
+				//echo " {$pk->windowid} {$pk->type} {$pk->x} {$pk->y} {$pk->z} {$pk->entityId}\n \n";
+			break;
+			case ProtocolInfo::CONTAINER_CLOSE_PACKET;
+				echo "ContainerClose\n";
+			break;
+			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
+				echo "ContainerSetSlot\n";
+			break;
+			case ProtocolInfo::CONTAINER_SET_DATA_PACKET;
+				echo "ContainerSetData\n";
+			break;
+			case ProtocolInfo::CONTAINER_SET_CONTENT_PACKET;
+				echo "ContainerSetContent\n";
+				echo $pk->windowid." ";
+				echo $pk->targetEid." ";
+				print_r($pk->slots); echo " ";
+				//print_r($pk->hotbar); echo " ";
+				echo "\n";
+			break;
+			case ProtocolInfo::CONTAINER_SET_DATA_PACKET;
+				echo "ContainerSetData\n";
+			break;
+		}
+	}
+*/
 
 
 /*
