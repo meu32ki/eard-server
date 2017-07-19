@@ -178,7 +178,8 @@ class Chat {
 	*	@return string | 最終的にできた参加時メッセージ
 	*/
 	public static function getJoinMessage($name){
-		return self::System("§bお知らせ", "{$name} がEardにやって来た");
+		$placeName = Connection::getPlace()->getName();
+		return self::System("§bお知らせ", "{$name} がEardの {$placeName} にやって来た");
 	}
 
 	/**
@@ -187,6 +188,18 @@ class Chat {
 	*/
 	public static function getQuitMessage($name){
 		return self::System("§bお知らせ", "{$name} が地球へ戻っていった");
+	}
+
+	/**
+	*	別のサバ(ワールド)へ飛ぶ場合のメッセージを取得する
+	*/
+	public static function getTransferMessage($name){
+		if(Connection::getPlace()->isLivingArea()){
+			$placeName = Connection::getPlaceByNo(2)->getName();
+		}elseif(Connection::getPlace()->isResourceArea()){
+			$placeName = Connection::getPlaceByNo(1)->getName();
+		}
+		return self::System("§bお知らせ", "{$name} はEardの {$placeName} へと向かった");
 	}
 
 	const CHATMODE_VOICE = 1;//30マスいない

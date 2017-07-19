@@ -423,6 +423,20 @@ class Account{
 	];
 
 
+/* 転送
+*/
+
+	/*
+		鯖から出るときに、チェックしておくだけ。
+		quitの瞬間に使うだけだから、dbへ書き込む必要はない。
+	*/
+	public function setNowTransfering($flag){
+		$this->isNowTransfering = $flag;
+	}
+	public function isNowTransfering(){
+		return $this->isNowTransfering;
+	}
+	private $isNowTransfering = false;
 
 /* save / load
 */
