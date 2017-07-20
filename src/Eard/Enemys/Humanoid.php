@@ -73,7 +73,7 @@ class Humanoid extends Human{
 				for($i = 0; $i < $count; $i++){
 					if(mt_rand(1, 1000) <= $percent*10){
 						shuffle($items);
-						$item = $item[0];
+						$item = $items[0];
 						list($id, $data, $amount) = $item;
 						$drops[] = Item::get($id, $data, $amount);
 					}
