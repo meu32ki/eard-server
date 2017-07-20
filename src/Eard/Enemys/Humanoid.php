@@ -68,10 +68,21 @@ class Humanoid extends Human{
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getDamager() instanceof Player){
 			$all_drops = static::getAllDrops();
 			foreach($all_drops as $key => $value){
-				list($id, $data, $amount, $percent) = $value;
+				//list($id, $data, $amount, $percent) = $value;
+				list($percent, $count, $items) = $value;
+				for($i = 0; $i < $count; $i++){
+					if(mt_rand(1, 1000) <= $percent*10){
+						shuffle($items);
+						$item = $item[0];
+						list($id, $data, $amount) = $item;
+						$drops[] = Item::get($id, $data, $amount);
+					}
+				}
+				/*
 				if(mt_rand(0, 1000) < $percent*10){
 					$drops[] = Item::get($id, $data, $amount);
 				}
+				*/
 			}
 		}
 		return $drops;
