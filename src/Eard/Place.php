@@ -133,13 +133,13 @@ class Place {
 		$stat = self::getStatus();
 		switch($stat){
 			case self::STAT_ONLINE:
-				$out = "Opened"; break;
+				$out = "Opened (転送可能)"; break;
 			case self::STAT_OFFLINE:
-				$out = "Closed"; break;
+				$out = "Closed (転送不可能)"; break;
 			case self::STAT_PREPAREING:
-				$out = "Prepareing"; break;
+				$out = "Prepareing (転送不可。政府が調査中)"; break;
 			case self::STAT_UNKNOWN:
-				$out = "Lost Connection"; break;
+				$out = "Lost Connection (Eardとの通信不良)"; break;
 			default:
 				$out = "[ERROR]"; break;
 		}
