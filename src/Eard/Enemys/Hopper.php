@@ -92,28 +92,36 @@ class Hopper extends Humanoid implements Enemy{
 				],
 			],
 			*/
-			[100, 2,
+			[100, 1,
 				[
-					[Item::GUNPOWDER, 0, 1],
+					[Item::APPLE, 0, 1],
+				],
+			],
+			[100, 1,
+				[
 					[Item::DYE, 15, 1],//骨粉
 				],
 			],
-			[75, 1,
+			[80, 2,
+				[
+					[Item::POTATO, 0, 1],
+					[Item::CARROT, 0, 1],
+				],
+			],
+			[60, 1,
 				[
 					[Item::GUNPOWDER, 0, 1],
 					[Item::DYE, 15, 1],//骨粉
-				],
-			],
-			[25, 1,
-				[
-					[Item::PUMPKIN_SEEDS, 0, 1],
-					[Item::MELON_SEEDS, 0, 1],
-					[Item::WHEAT_SEEDS, 0, 1],
 				],
 			],
 			[5, 1,
 				[
-					[Item::IRON_INGOT , 0, 1],
+					[Item::IRON_INGOT, 0, 1],
+				],
+			],
+			[3, 1,
+				[
+					[Item::EMERALD , 0, 1],
 				],
 			],
 		];
@@ -169,8 +177,8 @@ class Hopper extends Humanoid implements Enemy{
 	}
 
 	public function onUpdate($tick){
-		if(AI::getRate($this)){
-			if($this->charge){
+		if($this->getHealth() > 0 && AI::getRate($this)){
+			if($this->charge && $this->onGround){
 				$this->yaw += mt_rand(-60, 60);
 				if($this->target){
 					AI::lookAt($this, $this->target);

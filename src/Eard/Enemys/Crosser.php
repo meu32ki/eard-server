@@ -78,13 +78,20 @@ class Crosser extends Humanoid implements Enemy{
 					[Item::LEATHER, 0, 1],
 				],
 			],
-			[75, 1,
+			[75, 2,
 				[
+					[Item::RAW_RABBIT, 0, 1],
 					[Item::LEATHER, 0, 1],
 					[Item::IRON_NUGGET, 0, 1],
+					[Item::IRON_NUGGET, 0, 2],
 				],
 			],
 			[25, 1,
+				[
+					[Item::IRON_NUGGET, 0, 3],
+				],
+			],
+			[15, 1,
 				[
 					[Item::IRON_INGOT, 0, 1],
 				],
@@ -167,7 +174,7 @@ class Crosser extends Humanoid implements Enemy{
 	}
 
 	public function onUpdate($tick){
-		if(AI::getRate($this)){
+		if($this->getHealth() > 0 && AI::getRate($this)){
 			if($this->target = AI::searchTarget($this)){
 				AI::lookAt($this, $this->target);
 				$this->pitch += 90;

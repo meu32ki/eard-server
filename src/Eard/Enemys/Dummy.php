@@ -164,7 +164,7 @@ class Dummy extends Humanoid implements Enemy{
 	}
 
 	public function onUpdate($tick){
-		if(AI::getRate($this)){
+		if($this->getHealth() > 0 && AI::getRate($this)){
 			$this->yaw += mt_rand(-60, 60);
 			AI::setRate($this, 40);
 		}
