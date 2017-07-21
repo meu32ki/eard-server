@@ -38,6 +38,8 @@ use Eard\Settings;
 use Eard\Menu;
 use Eard\BlockObject\BlockObjectManager;
 
+# Enemy
+use Eard\Enemys\Humanoid;
 
 /***
 *
@@ -230,6 +232,10 @@ class Event implements Listener{
 				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 				MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
 				$e->setCancelled(true);
+			}
+
+			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){
+				$damager->attackTo($e);
 			}
 		}
 		return true;

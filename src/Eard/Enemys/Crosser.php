@@ -7,9 +7,9 @@ use Eard\Main;
 use pocketmine\Player;
 use pocketmine\Server;
 
-use pocketmine\networks\protocol\AddEntityPacket;
-use pocketmine\networks\protocol\MobArmorEquipmentPacket;
-use pocketmine\networks\protocol\AnimatePacket;
+use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\protocol\AnimatePacket;
 
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -48,26 +48,63 @@ class Crosser extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 60;
+		return 50;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
 	public static function getAllDrops(){
 		//火薬 骨粉 種(スイカ/かぼちゃ/麦になるやつ)
 		//5%の確率で鉄インゴットも
-		return [
+		/*return [
 			[Item::GUNPOWDER, 0, 1, 70],
 			[Item::DYE, 15, 1, 40],//骨粉
 			[Item::PUMPKIN_SEEDS, 0, 1, 20],
 			[Item::MELON_SEEDS, 0, 1, 20],
 			[Item::WHEAT_SEEDS, 0, 1, 20],
 			[Item::GOLD_INGOT , 0, 1, 5],
+		];*/
+		return [
+			/*
+			[テーブルのドロップ率, ドロップ判定回数,
+				[
+					[アイテムID, データ値, 個数],
+					[...]
+				],
+			],
+			*/
+			[100, 2,
+				[
+					[Item::RAW_RABBIT, 0, 1],
+					[Item::LEATHER, 0, 1],
+				],
+			],
+			[75, 1,
+				[
+					[Item::LEATHER, 0, 1],
+					[Item::IRON_NUGGET, 0, 1],
+				],
+			],
+			[25, 1,
+				[
+					[Item::IRON_INGOT, 0, 1],
+				],
+			],
+			[10, 1,
+				[
+					[Item::GOLD_NUGGET , 0, 1],
+				],
+			],
+			[5, 1,
+				[
+					[Item::EMERALD , 0, 1],
+				],
+			],
 		];
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 1.5;
+		return 1;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -124,20 +161,37 @@ class Crosser extends Humanoid implements Enemy{
 		$this->charge = 0;
 		$this->mode = 0;
 		$this->pitch = 90;
+		$this->setSneaking(1);
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if(AI::getRate($this)){
-			$this->yaw += mt_rand(-60, 60);
-			AI::setRate($this, 40);
+			if($this->target = AI::searchTarget($this)){
+				AI::lookAt($this, $this->target);
+				$this->pitch += 90;
+				AI::rangeAttack($this, 2.25, 4);
+				AI::setRate($this, 12);
+			}else{
+				$this->yaw += mt_rand(-60, 60);
+				AI::setRate($this, 40);
+			}
 		}
-		$can = AI::walkFront($this, 0.25);
+		$can = AI::walkFront($this, 0.15);
 		if(!$can){
 			AI::jump($this);
 		}
 		parent::onUpdate($tick);
+	}
+
+	public function attackTo(EntityDamageEvent $source){
+		$victim = $source->getEntity();
+		$source->setKnockBack(1);
+		$pk = new AnimatePacket();
+		$pk->eid = $this->getId();
+		$pk->action = 1;//ArmSwing
+		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
 	}
 
 	public function attack($damage, EntityDamageEvent $source){

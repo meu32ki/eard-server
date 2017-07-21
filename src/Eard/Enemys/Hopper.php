@@ -73,6 +73,7 @@ class Hopper extends Humanoid implements Enemy{
 	public static function getAllDrops(){
 		//火薬 骨粉 種(スイカ/かぼちゃ/麦になるやつ)
 		//5%の確率で鉄インゴットも
+/*
 		return [
 			[Item::GUNPOWDER, 0, 1, 70],
 			[Item::DYE, 15, 1, 40],//骨粉
@@ -80,6 +81,41 @@ class Hopper extends Humanoid implements Enemy{
 			[Item::MELON_SEEDS, 0, 1, 20],
 			[Item::WHEAT_SEEDS, 0, 1, 20],
 			[Item::IRON_INGOT , 0, 1, 5],
+		];
+		*/
+		return [
+			/*
+			[テーブルのドロップ率, ドロップ判定回数,
+				[
+					[アイテムID, データ値, 個数],
+					[...]
+				],
+			],
+			*/
+			[100, 2,
+				[
+					[Item::GUNPOWDER, 0, 1],
+					[Item::DYE, 15, 1],//骨粉
+				],
+			],
+			[75, 1,
+				[
+					[Item::GUNPOWDER, 0, 1],
+					[Item::DYE, 15, 1],//骨粉
+				],
+			],
+			[25, 1,
+				[
+					[Item::PUMPKIN_SEEDS, 0, 1],
+					[Item::MELON_SEEDS, 0, 1],
+					[Item::WHEAT_SEEDS, 0, 1],
+				],
+			],
+			[5, 1,
+				[
+					[Item::IRON_INGOT , 0, 1],
+				],
+			],
 		];
 	}
 
