@@ -10,6 +10,12 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\ContainerClosePacket;
 use pocketmine\network\protocol\ContainerOpenPacket;
 
+use pocketmine\nbt\NBT;
+use pocketmine\network\protocol\BlockEntityDataPacket;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
+
 
 class ItemBox extends BaseInventory {
 	
@@ -88,6 +94,24 @@ class ItemBox extends BaseInventory {
 		// ダミーチェスト送ったと記録
 		$blocks = [[$x, $y, $z, $id, $meta]];
 		$this->playerData->setSentBlock($blocks);
+
+		// NBT送る(チェスト開けたときのインベントリ名変更)　from pocketmine\tile\spawnable
+		$str = $who->getName()."専用 アイテムボックス";
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$c = new CompoundTag("", [
+			new StringTag("id", "Chest"),
+			new IntTag("x", $x),
+			new IntTag("y", $y),
+			new IntTag("z", $z),
+			new StringTag("CustomName", $str)
+		]);
+		$nbt->setData($c);
+		$pk = new BlockEntityDataPacket();
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->namedtag = $nbt->write(true);
+		$who->dataPacket($pk);
 
 		// コンテナあける
 		parent::onOpen($who);
