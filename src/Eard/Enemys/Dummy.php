@@ -88,7 +88,7 @@ class Dummy extends Humanoid implements Enemy{
 			],
 			[25, 1,
 				[
-					[Item::PUMPKIN_SEEDS, 0, 1, 20],
+					[Item::PUMPKIN_SEEDS, 0, 1],
 					[Item::MELON_SEEDS, 0, 1],
 					[Item::WHEAT_SEEDS, 0, 1],
 				],
