@@ -1,6 +1,6 @@
 <?php
 
-namespace Eard;
+namespace Eard\Account;
 
 use pocketmine\Player;
 

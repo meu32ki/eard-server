@@ -29,7 +29,8 @@ class Place {
 		$ar = [
 			0 => "",
 			1 => "生活区域",
-			2 => "資源区域"
+			2 => "資源区域",
+			9 => "開発区域",
 		];
 		return $ar[$this->place];
 	}
@@ -56,7 +57,7 @@ class Place {
 		return $this->place === 1;
 	}
 	public function isResourceArea(){
-		return $this->place === 2;
+		return $this->place === 2 or $this->place === 9; //dev鯖でも、resourceAreaでtrueかえす
 	}
 
 /*	サーバー(place)自体のステータス
@@ -78,7 +79,7 @@ class Place {
 				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
 			}
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: 値が設定されていません。サーバーの状態は記録されていません");
+			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
 		}
 	}
 
@@ -98,7 +99,7 @@ class Place {
 				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
 			}
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: 値が設定されていません。サーバーの状態は記録されていません");
+			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
 		}
 	}
 
@@ -184,7 +185,7 @@ class Place {
 			$result = DB::get()->query($sql);
 			return $result;
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: Cannot record player. You should set your 'place' immedeately!");
+			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
 		}
 	}
 

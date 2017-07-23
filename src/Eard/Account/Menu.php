@@ -1,5 +1,5 @@
 <?php
-namespace Eard;
+namespace Eard\Account;
 
 
 # Basic
