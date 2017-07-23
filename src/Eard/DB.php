@@ -4,6 +4,7 @@ namespace Eard;
 
 use pocketmine\utils\MainLogger;
 
+
 class DB{
 
 	public static $mysqli = null;

@@ -23,6 +23,7 @@ use Eard\BlockObject\BlockObjectManager;
 use Eard\Enemys\EnemyRegister;
 use Eard\Utils\ItemName;
 
+
 /***
 *
 *	コマンド関係のみ

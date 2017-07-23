@@ -172,7 +172,7 @@ class Shop implements BlockObject {
 		]
 	*/
 	public function getPriceList($player){
-		$flag = $this->flags[$player->getName()][0];
+		$flag = $this->flags[$player->getName()][0]; //買うモードか売るモード
 		if(isset($this->price[$flag])){
 			echo "ｓ";
 			$startIndex = ( $this->flags[$player->getName()][1] - 1 ) * 8;
