@@ -9,6 +9,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\MobEquipmentPacket;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -33,6 +34,16 @@ class Humanoid extends Human{
 
 	protected $gravity = 0.14;
 	public $attackingTick = 0;
+	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
+	public $noRainBiomes = [
+		Biome::HELL => true, 
+		Biome::END => true,
+		Biome::DESERT => true,
+		Biome::DESERT_HILLS => true,
+		Biome::MESA => true,
+		Biome::MESA_PLATEAU_F => true,
+		Biome::MESA_PLATEAU => true,
+	];
 	/**
 	 * 貫通できるブロックかを返す
 	 *
@@ -102,6 +113,11 @@ class Humanoid extends Human{
 				return true;
 			}
 			if($this->isAlive()){
+				$weather = $this->level->getWeather()->getWeather();
+				if($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset($this->noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))]) && $this->getHealth() > 0){
+					$this->deadTicks = 0;
+					$this->attack(2, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
+				}
 
 				$this->motionY -= $this->gravity;
 

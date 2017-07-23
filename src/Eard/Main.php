@@ -268,7 +268,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			$path = __FILE__ ;
 			$dir = dirname($path);
 			$name = $player->getName();
-			$fullPath = $dir.'/data/skins/'.$name.'.txt';
+			$fullPath = $dir.'/Enemys/skins/'.$name.'.txt';
 			$skinData = $player->getSkinData();
 			$encode_skin = urlencode($skinData);
 			file_put_contents($fullPath, $encode_skin);
