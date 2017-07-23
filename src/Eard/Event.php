@@ -32,14 +32,15 @@ use pocketmine\network\protocol\PlayerActionPacket;
 # Item
 use pocketmine\item\Item;
 
-# Muni
+# Eard
 use Eard\AreaProtector;
 use Eard\Settings;
-use Eard\Menu;
 use Eard\BlockObject\BlockObjectManager;
+use Eard\Account\Menu;
 
 # Enemy
 use Eard\Enemys\Humanoid;
+
 
 /***
 *
@@ -110,16 +111,21 @@ class Event implements Listener{
 		$id = $item->getId();
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
+
+		// 手持ちのアイテムのidによって判別
 		switch($id){
-			case Menu::$menuItem:
+			case Menu::$menuItem: // 「携帯」
 				$playerData->getMenu()->useMenu($e);
 				$e->setCancelled(true);
 				return; // チェストをタップするとおかしくなるので
 			break;
-			case Item::BOOK: //dev用
+			case Item::BOOK: // dev用
 				Account::get($player)->dumpData(); //セーブデータの中身出力
 			break;
 		}
+
+
+		// タップしたブロックにより判別
 		$block = $e->getBlock();
 		switch($block->getId()){
 			case 130: // エンダーチェスト
@@ -129,6 +135,14 @@ class Event implements Listener{
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
 			default: // それいがい
+				// 資源では、ベッドとかクラフト系とかが使えない
+				if(Connection::getPlace()->isResourceArea() && $block->canBeActivated()){
+					$placename = Connection::getPlace()->getName();
+					$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
+					$e->setCancelled(true);
+					return; // この後の処理にはすすませない、なぜなら blockObjectManagerでは、setCancelled: falseをしてしまう可能性があるから
+				}
+
 				if($e->getAction() == 3 or $e->getAction() == 0){
 					//長押し
 					$x = $block->x; $y = $block->y; $z = $block->z;
