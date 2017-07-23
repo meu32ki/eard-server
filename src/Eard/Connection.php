@@ -151,6 +151,7 @@ class Connection {
 
 		self::$places[1] = new Place(1);
 		self::$places[2] = new Place(2);
+		self::$places[9] = new Place(9); //開発用のさばの場合
 
 		$data = Settings::load('ConnectionAddr');
 		if($data){
