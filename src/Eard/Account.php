@@ -6,6 +6,10 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
+use Eard\Account\Menu;
+use Eard\Account\Mail;
+use Eard\Account\itemBox;
+
 
 /***
 *

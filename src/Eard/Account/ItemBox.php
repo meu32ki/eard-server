@@ -1,5 +1,5 @@
 <?php
-namespace Eard;
+namespace Eard\Account;
 
 use pocketmine\Player;
 use pocketmine\item\Item;
