@@ -22,6 +22,7 @@ use Eard\AreaProtector;
 use Eard\BlockObject\BlockObjectManager;
 use Eard\Enemys\EnemyRegister;
 use Eard\Utils\ItemName;
+use Eard\Enemys\Spawn;
 
 /***
 *
@@ -44,6 +45,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			//正常にmysqlにつなげた場合のみ。
 			$this->reconnect();
 		}
+		Spawn::init(false);//生活区域ならtrue、資源区域ならfalse
 	}
 
 	public function reconnect(){

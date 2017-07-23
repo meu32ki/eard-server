@@ -29,7 +29,6 @@ class EnemySpawn extends Task{
 		$this->size = $class::getSize();
 		$this->particle = [];
 		$this->count = 0;
-		$c = 0;
 		for ($yaw = 0; $yaw < 360; $yaw += M_PI/$this->size*3) { 
 			for ($pitch = 0; $pitch < 360; $pitch += M_PI/$this->size*3) {
 				$rad_y = deg2rad($yaw);
@@ -45,10 +44,8 @@ class EnemySpawn extends Task{
 				}else{
 					$this->particle[$dis][] = new CriticalParticle($p, 1);
 				}
-				++$c;
 			}
 		}
-		var_dump($c);
 	}
 
 	public function onRun($tick){
