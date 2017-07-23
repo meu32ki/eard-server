@@ -180,7 +180,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 					if($p === "place"){
 						if(isset($a[1])){
 							$place = $a[1];
-							Connection::write($place);
+							Connection::writePlace($place);
 							return true;
 						}else{
 							$s->sendMessage(Chat::SystemToPlayer("/co place <数字> で入力してくれ"));						
