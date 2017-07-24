@@ -96,7 +96,7 @@ class Government{
 	}
 
 
-	public static $CentralBankFirst, $CentralBankMeu;
+	private static $CentralBankFirst, $CentralBankMeu;
 
 
 	/**

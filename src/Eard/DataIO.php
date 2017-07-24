@@ -21,7 +21,9 @@ class DataIO{
 
 	}
 
+	public static function saveIntoDB(){
 
+	}
 
 
 	/**
