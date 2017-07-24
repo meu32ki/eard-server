@@ -8,6 +8,9 @@ use pocketmine\entity\Entity;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\AddEntityPacket;
 
+# Eard
+use Eard\Account;
+
 
 trait BlockMenu {
 
@@ -17,7 +20,7 @@ trait BlockMenu {
 */
 
 	//useするclassではかならず これらを持っててね
-	abstract public function getObjNo();
+	abstract public function getObjIndexNo();
 	abstract public function getPageAr();
 
 /********************
@@ -95,7 +98,7 @@ trait BlockMenu {
 
 	private function getAddPacket($text){
 		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = 900000 + $this->getObjNo();
+		$pk->entityRuntimeId = 900000 + $this->getObjIndexNo();
 		$pk->type = ItemEntity::NETWORK_ID;
 		$pk->x = $this->x;
 		$pk->y = $this->y - 0.75;
@@ -119,7 +122,7 @@ trait BlockMenu {
 
 	public function getRemovePacket(){
 		$pk = new RemoveEntityPacket;
-		$pk->eid = 900000 + $this->getObjNo();
+		$pk->eid = 900000 + $this->getObjIndexNo();
 		return $pk;
 	}
 

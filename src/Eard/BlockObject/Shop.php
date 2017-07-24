@@ -22,8 +22,8 @@ class Shop implements BlockObject {
 ********************/
 
 	public $x, $y, $z;
-	public $objNo;
-	public static $kind = 2;
+	public $indexNo;
+	public static $objNo = 2;
 
 	public function Place(Player $player){
 		$name = $player->getName();
@@ -66,8 +66,8 @@ class Shop implements BlockObject {
 		return true;
 	}
 
-	public function getObjNo(){
-		return $this->objNo;
+	public function getObjIndexNo(){
+		return $this->indexNo;
 	}
 
 

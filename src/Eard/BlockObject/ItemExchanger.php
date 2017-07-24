@@ -20,8 +20,8 @@ class ItemExchanger implements BlockObject, ChatInput {
 ********************/
 
 	public $x, $y, $z;
-	public $objNo;
-	public static $kind = 1;
+	public $indexNo;
+	public static $objNo = 1;
 
 	public function Place(Player $player){
 		$player->sendMessage(Chat::Format("アイテム交換", "タップして起動"));
@@ -54,8 +54,8 @@ class ItemExchanger implements BlockObject, ChatInput {
 		return true;
 	}
 
-	public function getObjNo(){
-		return $this->objNo;
+	public function getObjIndexNo(){
+		return $this->indexNo;
 	}
 
 
