@@ -7,7 +7,7 @@ use pocketmine\block\Block;
 use pocketmine\utils\MainLogger;
 
 # Eard
-use Eard\Settings;
+use Eard\DataIO;
 
 /****
 *
@@ -229,7 +229,7 @@ class BlockObjectManager {
 	*	このclass::BlockObjectmanagerで使っている変数を保存
 	*/
 	public static function load(){
-		$data = Settings::load('BlockObjectManager');
+		$data = DataIO::load('BlockObjectManager');
 		if($data){
 			self::$indexNo = $data[0];
 			self::$index = $data[1];
@@ -241,7 +241,7 @@ class BlockObjectManager {
 
 	public static function save(){
 		$data = [self::$indexNo, self::$index];
-		$result = Settings::save('BlockObjectManager', $data);
+		$result = DataIO::save('BlockObjectManager', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully saved");
 		}

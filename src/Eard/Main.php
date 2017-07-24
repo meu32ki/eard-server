@@ -40,7 +40,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$this->getServer()->getPluginManager()->registerEvents(new Event(), $this);
 
 		# DB系
-		Settings::init(); //たぶん一番最初に持ってくるべき
+		DataIO::init(); //たぶん一番最初に持ってくるべき
 		$connected = DB::mysqlConnect(true);
 		if($connected){
 			//正常にmysqlにつなげた場合のみ。

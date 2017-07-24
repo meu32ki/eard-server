@@ -418,7 +418,7 @@ class AreaProtector{
 
 
 	public static function load(){
-		$data = Settings::load('AreaProtector');
+		$data = DataIO::load('AreaProtector');
 		if($data){
 			self::$affordableSection = $data[0];
 			self::$leftSection = $data[1];
@@ -431,7 +431,7 @@ class AreaProtector{
 
 	public static function save(){
 		$data = [self::$affordableSection, self::$leftSection];
-		$result = Settings::save('AreaProtector', $data);
+		$result = DataIO::save('AreaProtector', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
 		}

@@ -623,7 +623,7 @@ class Account{
 	*	このclass::Accountで使っている変数を保存
 	*/
 	public static function load(){
-		$data = Settings::load('Account');
+		$data = DataIO::load('Account');
 		if($data){
 			self::$namelist = $data;
 			MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
@@ -639,7 +639,7 @@ class Account{
 		}
 
 		//記録データセーブ
-		$data = Settings::save('Account', self::$namelist);
+		$data = DataIO::save('Account', self::$namelist);
 		if($data){
 			MainLogger::getLogger()->notice("§aAccount: offline list has saved");
 		}

@@ -4,6 +4,7 @@ namespace Eard;
 
 use pocketmine\utils\MainLogger;
 
+
 /****
 *
 *	通貨管理する政府
@@ -72,7 +73,7 @@ class Government{
 		self::$CentralBankMeu = Meu::get(1000 * 10000, 100000); //100000は政府のUniqueNo
 
 		//データがある場合はそっちが優先される
-		$data = Settings::load('Government');
+		$data = DataIO::load('Government');
 		if($data){
 			self::$CentralBankFirst = $data[0];
 			self::$CentralBankMeu = Meu::get($data[1], 100000); //100000は政府のUniqueNo
@@ -88,7 +89,7 @@ class Government{
 				self::$CentralBankFirst,
 				self::$CentralBankMeu->getAmount()
 			];
-		$result = Settings::save('Government', $data);
+		$result = DataIO::save('Government', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aGovernment: data has been saved");
 		}

@@ -20,7 +20,7 @@ class DB{
 	public static function mysqlConnect($isFromServer = false){
 		MainLogger::getLogger()->notice("§aDB: Connecting to the database...");
 		
-		$data = Settings::load('DB');
+		$data = DataIO::load('DB');
 		if($data){
 			if(!isset($data[0]) || !isset($data[1]) || !isset($data[2]) || !isset($data[3])){
 				MainLogger::getLogger()->notice("§eDB: Empty infomation can cause malfunctioning. use command /db to correct this error!");
@@ -81,7 +81,7 @@ class DB{
 			self::$pass,
 			self::$name
 		];
-		return Settings::save('DB', $data);
+		return DataIO::save('DB', $data);
 	}
 
 	public static $addr, $user, $pass, $name;

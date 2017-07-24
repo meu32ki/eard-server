@@ -94,7 +94,7 @@ class Connection {
 	}
 
 	/**
-	*	placeの番号からPlaceを取得する。
+	*	placeの番号からPlaceを取得する。webからつかってもおっけー
 	*	@param int placeNo
 	*	@return Place
 	*/
@@ -141,7 +141,7 @@ class Connection {
 */
 
 	public static function load(){
-		$data = Settings::load('Connection');
+		$data = DataIO::load('Connection');
 		if($data){
 			self::$placeNo = (int) $data[0];
 			MainLogger::getLogger()->notice("§aConnection: place data has been loaded");
@@ -153,7 +153,7 @@ class Connection {
 		self::$places[2] = new Place(2);
 		self::$places[9] = new Place(9); //開発用のさばの場合
 
-		$data = Settings::load('ConnectionAddr');
+		$data = DataIO::load('ConnectionAddr');
 		if($data){
 
 			$living = self::getPlaceByNo(1);
@@ -187,7 +187,7 @@ class Connection {
 			self::$placeNo
 		];
 
-		$result = Settings::save('Connection', $data);
+		$result = DataIO::save('Connection', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aConnection: place data has been saved");
 		}
@@ -210,7 +210,7 @@ class Connection {
 				$resource->getAddr(),
 				$resource->getPort()
 			];
-			$result = Settings::save('ConnectionAddr', $data2);
+			$result = DataIO::save('ConnectionAddr', $data2);
 			if($result){
 				MainLogger::getLogger()->notice("§aConnection: addr data has been saved");
 				return true;

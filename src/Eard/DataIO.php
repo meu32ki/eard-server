@@ -4,12 +4,10 @@ namespace Eard;
 
 /***
 *
-*	設定項目。独自に設定したい事柄があればここに入れていく。
+*	データの読み書きをする奴。
+*	各クラスにおいてのｓ設定項目があればそちらに記入すること。ここは、ただ読み書きするだけ。
 */
-class Settings{
-
-	//true = プロテクトに関係なく壊せるように
-	public static $allowBreakAnywhere = true;
+class DataIO{
 
 
 	public static function init(){
@@ -18,6 +16,13 @@ class Settings{
 			@mkdir(self::$path);
 		}
 	}
+
+	public static function loadFromDB(){
+
+	}
+
+
+
 
 	/**
 	* 各オブジェクトでひつようになった設定ファイルの読み込み
