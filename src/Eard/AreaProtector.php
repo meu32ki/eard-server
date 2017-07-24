@@ -16,6 +16,10 @@ use pocketmine\utils\MainLogger;
 */
 class AreaProtector{
 
+	//true = プロテクトに関係なく壊せるように
+	public static $allowBreakAnywhere = true;
+
+
 	// return int | sectionno;
 	public static function calculateSectionNo($xorz){
 		return ceil( $xorz / (self::$section + 1) ) - 1;

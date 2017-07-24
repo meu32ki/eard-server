@@ -148,7 +148,7 @@ class Event implements Listener{
 					$x = $block->x; $y = $block->y; $z = $block->z;
 					if($x && $y && $z){
 						/*
-						if(Settings::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
+						if(AreaProtector::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
 							//キャンセルとかはさせられないので、表示を出すだけ。
 							$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
 						}*/
@@ -190,7 +190,7 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if(Connection::getPlace()->isLivingArea()){
-			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+			if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{
 				$e->setCancelled( blockObjectManager::place($block, $player) );
@@ -205,7 +205,7 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if(Connection::getPlace()->isLivingArea()){
-			if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+			if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{
 				//echo "BB: ";
@@ -265,7 +265,7 @@ class Event implements Listener{
 				//壊し始めたとき
 /*				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
 					$x = $packet->x; $y = $packet->y; $z = $packet->z;
-					if(!Settings::$allowBreakAnywhere){
+					if(!AreaProtector::$allowBreakAnywhere){
 						AreaProtector::Edit($player, $x, $y, $z);
 						//キャンセルとかはさせられないので、表示を出すだけ。
 					}else{
@@ -334,7 +334,7 @@ class Event implements Listener{
 						//gamemode 0 : くる xyzあり
 						//gamemode 2 : こない
 						$x = $packet->x; $y = $packet->y; $z = $packet->z;
-						if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+						if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 							//$player->setGamemode(2);
 						}
 					break;
@@ -360,7 +360,7 @@ class Event implements Listener{
 				if($packet->face >= 0 and $packet->face <= 5){
 					//ブロックの設置破壊
 					$x = $packet->x; $y = $packet->y; $z = $packet->z;
-					if(!Settings::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+					if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
 						$player->setGamemode(2);
 					}else{
 						$player->setGamemode(0);
