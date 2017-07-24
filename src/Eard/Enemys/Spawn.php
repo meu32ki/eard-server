@@ -6,6 +6,7 @@ namespace Eard\Enemys;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\scheduler\Task;
+use pocketmine\level\generator\biome\Biome;
 
 class Spawn extends Task{
 	public $spawnType = true;
@@ -42,15 +43,14 @@ class Spawn extends Task{
 		$list = self::$wihts[$this->spawnType];
 		foreach (Server::getInstance()->getOnlinePlayers() as $key => $player) {
 			foreach ($list as $type => $boolean) {
-				if((!$boolean && !$isNight) || mt_rand(0, 18) !== 1){
-					continue;
-				}
 				$yaw = mt_rand(0, 360);
 				$rad = deg2rad($yaw);
 				$x = (int) $player->x - sin($rad)*mt_rand(25, 35);
 				$z = (int) $player->z + cos($rad)*mt_rand(25, 35);
 				$biome = $level->getBiomeId($x, $z);
-				if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
+				if((!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, 18) !== 1){
+					continue;
+				}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
 					$y = $level->getHighestBlockAt($x, $z)+2;
 					EnemyRegister::summon($level, $type, $x+0.5, $y, $z+0.5);
 				}
