@@ -37,6 +37,10 @@ class EnemyRegister{
 		EnemySpawn::call($className, new Position($x, $y, $z, $level), $className::getAnimationType());
 	}
 
+	public static function getClass($type){
+		return self::$register[$type];
+	}
+
 	/**summonで呼び出せるように登録
 	 */
 	public static function register($className, $type){
