@@ -17,6 +17,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\generator\biome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -122,6 +123,34 @@ class Crosser extends Humanoid implements Enemy{
 	//召喚時のポータルアニメーションの中心座標を取得
 	public static function getCentralPosition(){
 		return new Vector3(0, 0.7, 0);
+	}
+
+	public static function getBiomes() : array{
+		return [
+			//雨なし
+			Biome::HELL => true, 
+			Biome::END => true,
+			Biome::DESERT => true,
+			Biome::DESERT_HILLS => true,
+			Biome::MESA => true,
+			Biome::MESA_PLATEAU_F => true,
+			Biome::MESA_PLATEAU => true,
+			//雨あり
+			Biome::OCEAN => true,
+			Biome::PLAINS => true,
+			Biome::MOUNTAINS => true,
+			Biome::FOREST => true,
+			//Biome::TAIGA => true,
+			Biome::SWAMP => true,
+			//Biome::RIVER => true,
+			//Biome::ICE_PLAINS => true,
+			Biome::SMALL_MOUNTAINS => true,
+			Biome::BIRCH_FOREST => true,
+		];
+	}
+
+	public static function getSpawnRate() : int{
+		return 16;
 	}
 
 	public static function summon($level, $x, $y, $z){

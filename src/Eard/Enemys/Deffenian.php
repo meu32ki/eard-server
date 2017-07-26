@@ -116,6 +116,37 @@ class Deffenian extends Humanoid implements Enemy{
 		return new Vector3(0, 0.7, 0);
 	}
 
+	//スポーンするバイオームの配列　[ID => true, ...]
+	public static function getBiomes() : array{
+		//コピペ用全種類を置いておく
+		return [
+			//雨なし
+			Biome::HELL => true, 
+			Biome::END => true,
+			Biome::DESERT => true,
+			Biome::DESERT_HILLS => true,
+			Biome::MESA => true,
+			Biome::MESA_PLATEAU_F => true,
+			Biome::MESA_PLATEAU => true,
+			//雨あり
+			Biome::OCEAN => true,
+			Biome::PLAINS => true,
+			Biome::MOUNTAINS => true,
+			Biome::FOREST => true,
+			Biome::TAIGA => true,
+			Biome::SWAMP => true,
+			Biome::RIVER => true,
+			Biome::ICE_PLAINS => true,
+			Biome::SMALL_MOUNTAINS => true,
+			Biome::BIRCH_FOREST => true,
+		];
+	}
+
+	//スポーンする頻度を返す(大きいほどスポーンしにくい)
+	public static function getSpawnRate() : int{
+		return 5;
+	}
+	
 	public static function summon($level, $x, $y, $z){
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [

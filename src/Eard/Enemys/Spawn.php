@@ -43,12 +43,17 @@ class Spawn extends Task{
 		$list = self::$wihts[$this->spawnType];
 		foreach (Server::getInstance()->getOnlinePlayers() as $key => $player) {
 			foreach ($list as $type => $boolean) {
+				$class = EnemyRegister::getClass($type);
 				$yaw = mt_rand(0, 360);
 				$rad = deg2rad($yaw);
 				$x = (int) $player->x - sin($rad)*mt_rand(25, 35);
 				$z = (int) $player->z + cos($rad)*mt_rand(25, 35);
 				$biome = $level->getBiomeId($x, $z);
-				if((!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, 18) !== 1){
+				$rate = $class::getSpawnRate();
+				if(!$isNight){
+					$rate *= 2;
+				}
+				if(!isset($class::getBiomes()[$biome]) || (!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, $rate) !== 1){
 					continue;
 				}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
 					$y = $level->getHighestBlockAt($x, $z)+2;
