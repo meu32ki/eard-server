@@ -574,9 +574,12 @@ class Account{
 	public function updateData($quit = false){
 		//Meuの量を
 		$this->data[1] = $this->meu->getAmount();
+
+		// itemBoxがつかわれていたようであればセーブ
 		if( $itemBox = $this->getItemBox()){// itemBoxは必ず展開されているわけではないから
-			$itemBox->write();
+			$this->setItemArray($itemBox->getItemArray());
 		}
+
 		// セーブ
 		$name = $this->getPlayer()->getName();
 		$data = serialize($this->data);
