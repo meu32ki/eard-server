@@ -34,4 +34,10 @@ interface Enemy{
 
 	//召喚時のポータルアニメーションの中心座標を取得
 	public static function getCentralPosition();
+
+	//スポーンするバイオームの配列　[ID => true, ...]
+	public static function getBiomes() : array;
+
+	//スポーンする頻度を返す(大きいほどスポーンしにくい)
+	public static function getSpawnRate() : int;
 }
