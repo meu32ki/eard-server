@@ -173,6 +173,7 @@ class BlockObjectManager {
 					$obj->z = $z;
 					$obj->indexNo = $indexNo;
 
+					$obj->setData($objData[1]);
 					return $obj;
 				}else{
 					// self::$blocks上にうまくオブジェクトのデータの読み出しができない

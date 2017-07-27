@@ -9,7 +9,8 @@ use pocketmine\item\Item;
 # Eard
 use Eard\BlockObject\ItemName;
 use Eard\Chat;
-
+use Eard\Account;
+use Eard\ChestIO;
 
 /****
 *
@@ -41,7 +42,7 @@ class Shop implements BlockObject {
 
 	public function StartBreak(Player $player){
 		$this->MenuLongTap($player);
-		if($this->owner === $player){
+		if($this->owner === strtolower($player->getName()) ){
 			return false; //こわせる
 		}
 		return true;
@@ -60,17 +61,25 @@ class Shop implements BlockObject {
 	}
 
 	public function getData(){
-		return [];
+		echo "shop: getdata\n";
+		if($this->inv){ // 一度でも、管理画面が開かれているようなら
+			$this->itemArray = $this->inv->getItemArray();
+		}
+		$data = [
+			$this->owner,
+			$this->itemArray
+		];
+		return $data;
 	}
 	public function setData($data){
+		$this->owner = $data[0];
+		$this->itemArray = $data[1];
 		return true;
 	}
 
 	public function getObjIndexNo(){
 		return $this->indexNo;
 	}
-
-
 
 	public function Chat(Player $player, String $txt){
 
@@ -136,11 +145,26 @@ class Shop implements BlockObject {
 			$this->getPrice( $flag, $indexOfPriceList );
 		break;
 		case 50: // 管理画面
-
+			$ar = [
+				["ショップ 管理画面", false],
+				["アイテムを出し入れする",51],
+				["トップへ戻る",1],
+			];
+		break;
+		case 51: // 管理画面 アイテム出し入れ
+			if(!$this->inv){
+				$this->inv = new ChestIO($player);
+				$this->inv->setItemArray($this->itemArray);
+			}
+			$player->addWindow($this->inv); // インヴェントリ画面送る
+			$ar = [
+				["ショップ 管理画面", false],
+				["管理トップへ",50],
+			];		
 		break;
 		default: 
 			$ar = [
-				["アイテム交換", false],
+				["ショップ", false],
 				["ページがありません",1],
 			];
 		break;
@@ -148,6 +172,10 @@ class Shop implements BlockObject {
 		return $ar;
 	}
 
+
+/********************
+	Shop関連
+********************/
 
 	/*
 		$this->flags = [
@@ -209,21 +237,33 @@ class Shop implements BlockObject {
 				["アイテム交換", false],
 				["リストがありません",false],
 				["戻る",1],
-			};
+			];
 			return $out;
 		}
+	}
+
+	public function setPriceList($pricelist){
+		// 今いじってる人ががいれば、更新したとの通知 
+		foreach($this->flags as $name => $data){
+			$player = Account::get($name)->getPlayer();
+			if($player instanceof Player && $player->isOnline()){
+				$player->sendMessage(Chat::Format("ショップ", "個人", "ショップの価格リストが更新されました。"));
+			}
+		}
+
+		// 更新
+		$this->price = $pricelist;
+		$this->flags = [];
+		return true;
 	}
 
 	public function getPrice( $flag, $index ){
 		array_slice($this->price[$flag], $index, 1);
 	}
 
+	public function setPrice($id, $meta, $flag, $price){
 
-
-
-
-
-	private $owner; //string
+	}
 
 	public function sellToPlayer(Player $player, Item $item){
 
@@ -232,10 +272,10 @@ class Shop implements BlockObject {
 
 	}
 
-
-	public function setPrice($id, $meta, $flag, $price){
-
-	}
-
+	private $owner; //string
 	private $price = [];
+	private $flags = [];
+
+	private $inv = null; // ChestIO
+	private $itemArray = []; // inv保存用
 }
