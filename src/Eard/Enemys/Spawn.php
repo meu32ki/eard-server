@@ -20,6 +20,7 @@ class Spawn extends Task{
 		self::SHIGEN => [
 			EnemyRegister::TYPE_HOPPER => true,
 			EnemyRegister::TYPE_CROSSER => false,
+			EnemyRegister::TYPE_MANGLER => false,
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
