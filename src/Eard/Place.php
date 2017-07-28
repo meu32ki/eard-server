@@ -30,7 +30,8 @@ class Place {
 			0 => "",
 			1 => "生活区域",
 			2 => "資源区域",
-			9 => "開発区域",
+			8 => "開発区域-生活",
+			9 => "開発区域-資源",
 		];
 		return $ar[$this->place];
 	}
@@ -54,10 +55,13 @@ class Place {
 	*	@return bool
 	*/
 	public function isLivingArea(){
-		return $this->place === 1;
+		return $this->place === 1 or $this->place === 8;
 	}
 	public function isResourceArea(){
 		return $this->place === 2 or $this->place === 9; //dev鯖でも、resourceAreaでtrueかえす
+	}
+	public function isDevServer(){
+		return $this->place === 8 or $this->place === 9;
 	}
 
 /*	サーバー(place)自体のステータス
