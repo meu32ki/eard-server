@@ -433,9 +433,10 @@ class Account{
 
 
 	/**
-	*	@param array $itemArray [ [$id, $meta,$stack], [$id,$meta,$stack]...]
+	*	@param array $itemArray [ [$id,$meta,$stack], [$id,$meta,$stack]...]
 	*/
 	public function setItemArray($itemArray){
+		// $itemArrayの要素数に注意して。27以上だとあけられないかも
 		$this->data[7] = $itemArray;
 		return true;
 	}
