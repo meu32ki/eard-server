@@ -20,6 +20,7 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\particle\DestroyBlockParticle;
+use pocketmine\level\particle\SpellParticle;
 use pocketmine\level\generator\biome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
@@ -38,26 +39,29 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Hopper extends Humanoid implements Enemy{
+class Mangler extends Humanoid implements Enemy{
+
+	protected $gravity = 0;
+	public $attackingTick = 0;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ホッパー";
+		return "マングラー";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_HOPPER;
+		return EnemyRegister::TYPE_MANGLER;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 40;
+		return 25;
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 1;
+		return 1.5;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -67,35 +71,35 @@ class Hopper extends Humanoid implements Enemy{
 
 	//召喚時のポータルアニメーションの中心座標を取得
 	public static function getCentralPosition(){
-		return new Vector3(0, 0, 0);
+		return new Vector3(0, 1, 0);
 	}
 
 	public static function getBiomes() : array{
 		return [
 			//雨なし
-			//Biome::HELL => true, 
-			//Biome::END => true,
+			Biome::HELL => true, 
+			Biome::END => true,
 			//Biome::DESERT => true,
 			//Biome::DESERT_HILLS => true,
 			//Biome::MESA => true,
 			//Biome::MESA_PLATEAU_F => true,
 			//Biome::MESA_PLATEAU => true,
 			//雨あり
-			Biome::OCEAN => true,
-			Biome::PLAINS => true,
+			//Biome::OCEAN => true,
+			//Biome::PLAINS => true,
 			Biome::MOUNTAINS => true,
 			Biome::FOREST => true,
 			Biome::TAIGA => true,
 			Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			Biome::ICE_PLAINS => true,
-			Biome::SMALL_MOUNTAINS => true,
+			//Biome::ICE_PLAINS => true,
+			//Biome::SMALL_MOUNTAINS => true,
 			Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	public static function getSpawnRate() : int{
-		return 12;
+		return 32;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -123,32 +127,35 @@ class Hopper extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::APPLE, 0, 1],
+					[Item::STRING, 0, 1],
 				],
 			],
 			[100, 1,
 				[
-					[Item::DYE, 15, 1],//骨粉
+					[Item::PRISMARINE_SHARD, 0, 1],
 				],
 			],
-			[80, 2,
+			[85, 2,
 				[
-					[Item::POTATO, 0, 1],
-					[Item::CARROT, 0, 1],
-				],
+					[Item::STRING, 0, 1],
+					[Item::STRING, 0, 2],
+					[Item::PRISMARINE_SHARD, 0, 1],
+					[Item::PRISMARINE_SHARD, 0, 2],
+				]
 			],
-			[60, 1,
+			[70, 2,
 				[
-					[Item::GUNPOWDER, 0, 1],
-					[Item::DYE, 15, 1],//骨粉
+					[Item::BEETROOT_SEEDS, 0, 1],
+					[Item::RAW_CHICKEN, 0, 1],
+					[Item::PRISMARINE_SHARD, 0, 1],
 				],
 			],
-			[5, 1,
+			[9, 1,
 				[
 					[Item::IRON_INGOT, 0, 1],
 				],
 			],
-			[3, 1,
+			[7, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],
@@ -173,7 +180,7 @@ class Hopper extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Hopper')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Mangler')),
 				new StringTag("Name", 'JTTW_JTTWShaWujing')
 			]),
 		]);
@@ -181,7 +188,7 @@ class Hopper extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Hopper($level, $nbt);
+		$entity = new Mangler($level, $nbt);
 		$random_hp = 1+(mt_rand(-10, 10)/100);
 		$entity->setMaxHealth(round(self::getHP()+$random_hp));
 		$entity->setHealth(round(self::getHP()+$random_hp));
@@ -200,33 +207,98 @@ class Hopper extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
+		$this->walk = true;
+		$this->walkSpeed = 0.2;
+		$this->float = true;
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
-			if($this->charge && $this->onGround){
-				$this->yaw += mt_rand(-60, 60);
-				if($this->target){
-					AI::lookAt($this, $this->target);
+			$this->timings->startTiming();
+			$this->target = AI::searchTarget($this, 500);
+			if($this->target && ($disq = $this->distanceSquared($this->target)) <= 250){
+				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
+				switch($this->charge){
+					case 0:
+						AI::setRate($this, 40);
+						AI::lookAt($this, $this->target);
+						$this->walk = true;
+						$this->walkSpeed = -0.025;
+						$this->float = -1;
+						$this->charge = 1;
+					break;
+					case 1:
+						AI::setRate($this, 30);
+						AI::lookAt($this, $this->target);
+						$this->walk = true;
+						$this->walkSpeed = 0.5;
+						if(AI::getFrontVector($this, true)->y > 0){
+							$this->float = 1;
+						}else{
+							$this->float = 0;	
+						}
+						$this->charge = 2;
+					break;
+					case 2:
+						AI::setRate($this, 30);
+						AI::lookAt($this, $this->target);
+						$this->walk = true;
+						$this->walkSpeed = 0.2;
+						$this->float = mt_rand(0, 1);
+						$this->charge = 0;
+					break;
 				}
-				AI::setRate($this, 20);
-				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.2);
-				AI::rangeAttack($this, 2.5, 3);
-				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
-				$this->charge = false;
+			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 500){
+				AI::setRate($this, 9);
+				AI::lookAt($this, $this->target);
+				$this->walk = true;
+				$this->float = mt_rand(0, 1);
 			}else{
-				$this->motionX = 0;
-				$this->motionZ = 0;
-				AI::rangeAttack($this, 2.5, 3);
-				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
-				AI::setRate($this, 20);
-				$this->charge = true;
+				AI::setRate($this, 25);
+				$this->target = false;
+				$this->yaw += mt_rand(-40, 40);
+				$this->walk = true;
+				$this->walkSpeed = 0.2;
+				$this->float = mt_rand(0, 1);
+				$this->pitch = 0;
+				$this->charge = 0;		
+			}
+		}else if($this->getHealth() > 0){
+			switch($this->charge){
+				case 0:
+					;
+				break;
+				case 1:
+					;
+				break;
+				case 2:
+					AI::rangeAttack($this, 3.5, 7);
+					$this->level->addParticle(new SpellParticle($this, 41, 234, 229));
+				break;
 			}
 		}
-		//AI::walkFront($this, 0.08);
+
+		if($this->float !== -1){
+			if($this->float && 100 > $this->y){
+				$this->motionY = ($this->motionY+0.2)/2;
+			}else{
+				$this->motionY = ($this->motionY-0.2)/2;
+			}
+		}
+
+		if($this->charge == 2){
+			$v = AI::getFrontVector($this, true);
+			$this->move($v->x, $v->y, $v->z);
+		}elseif($this->walk){
+			$can = AI::walkFront($this, $this->walkSpeed);
+			if(!$can){
+				$this->yaw = mt_rand(1, 360);
+			}
+		}		//AI::walkFront($this, 0.08);
 		parent::onUpdate($tick);
 	}
 

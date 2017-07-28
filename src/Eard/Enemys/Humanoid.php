@@ -10,6 +10,7 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\particle\SpellParticle;
 
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\MobEquipmentPacket;
@@ -115,7 +116,7 @@ class Humanoid extends Human{
 			}
 			if($this->isAlive()){
 				$weather = $this->level->getWeather()->getWeather();
-				if($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))]) && $this->getHealth() > 0){
+				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || ($id = $this->level->getBlock($this)->getId() === 9 || $id === 8)) && $this->getHealth() > 0){
 					$this->deadTicks = 0;
 					$this->attack(2, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
 				}
@@ -155,5 +156,10 @@ class Humanoid extends Human{
 			$source->setCancelled(true);
 		}
 		parent::attack($damage, $source);
+	}
+
+	public function kill(){
+		$this->level->addParticle(new SpellParticle($this, 20, 220, 20));
+		parent::kill();
 	}
 }
