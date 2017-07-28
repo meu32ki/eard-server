@@ -245,16 +245,6 @@ class Account{
 	}
 
 	/**
-	*	必ず、別クラスにて、差し引きし終わった形のMeuをセットすること。
-	*	@param Meu
-	*	@return bool
-	*/
-	public function setMeu(Meu $meu){
-		$this->meu = $meu;
-		return true;
-	}
-
-	/**
 	*	所持ミューをMeuにして詰めて返す。Meuの扱い方についてはclass::Meuにて。
 	*	@return Meu | 所持金料などのデータ
 	*/
