@@ -40,10 +40,11 @@ class Meu {
 	*	@param int $amount
 	*	@return bool
 	*/
+	/* duplicated
 	public function setAmount($amount){
 		$this->amount = $amount;
 		return true;
-	}
+	}*/
 
 	/**
 	*	@return int
@@ -65,7 +66,7 @@ class Meu {
 	/**
 	*	分割する。playerの全額面のなかから、一部だけを切り取りたい時に。
 	*	@param int | 取り出したいmeu
-	*	@return Meu　or false
+	*	@return Meu　or null
 	*/
 	public function spilit($spilitAmount){
 		if($spilitAmount <= $this->amount){
@@ -74,7 +75,7 @@ class Meu {
 			return self::get($spilitAmount, $this->uniqueNo);
 		}else{
 			//残りが0以下になっちゃう
-			return false;
+			return null;
 		}
 	}
 

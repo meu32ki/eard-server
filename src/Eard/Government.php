@@ -25,7 +25,7 @@ class Government{
 			return false;
 		}
 
-		self::$CentralBankMeu->setAmount($newLeft);
+		self::$CentralBankMeu　= Meu::get($newLeft, 100000);
 		self::$CentralBankFirst = $amount;
 		return true;
 	}
@@ -34,8 +34,8 @@ class Government{
 	/**
 	*	政府から、そのぷれいやー/会社に対して送金する。
 	*	会社のはまだできてない
-	*	@param Account | あげる対象
-	*	@param int | あげる量
+	*	@param Account | 政府があげる対象
+	*	@param int | 政府があげる量
 	*	@return bool
 	*/
 	public static function giveMeu(Account $playerData, $amount){
@@ -45,6 +45,29 @@ class Government{
 			if($bankMeu->sufficient($amount)){
 				$givenMeu = $bankMeu->spilit($amount);
 				$playerData->getMeu()->merge($givenMeu);
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+
+
+	/**
+	*	そのぷれいやー/会社から政府に対して送金する。
+	*	@param Account | 政府に対してあげる対象
+	*	@param int | プレイヤーがあげる量
+	*	@return bool
+	*/
+	public static function receiveMeu(Account $playerData, $amount){
+		$uniqueNo = $playerData->getUniqueNo();
+		if($uniqueNo < 100000){ //会社にはおくれない
+			$meu = $playerData->getMeu();
+			if($meu->sufficient($amount)){
+				$receivedMeu = $meu->spilit($amount);
+				self::$CentralBankMeu->merge($receivedMeu);
 				return true;
 			}else{
 				return false;
