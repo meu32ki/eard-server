@@ -135,8 +135,9 @@ class Event implements Listener{
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
 			default: // それいがい
-				// 資源では、ベッドとかクラフト系とかが使えない
-				if(Connection::getPlace()->isResourceArea() && $block->canBeActivated()){
+				// 資源では、ベッドとかクラフト系とかが使えない。おけるが、使えない。
+				$place = Connection::getPlace();
+				if($place->isResourceArea() && $place->isRestrected($block->getId())){
 					$placename = Connection::getPlace()->getName();
 					$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
 					$e->setCancelled(true);
