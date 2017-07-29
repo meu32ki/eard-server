@@ -29,7 +29,7 @@ class Spawn extends Task{
 
 	public static function init($spawnType){
 		$task = new Spawn($spawnType);
-		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 20);
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 30);
 	}
 
 	public function __construct($spawnType){
@@ -42,24 +42,28 @@ class Spawn extends Task{
 		$isNight = ($time%24000 >= 13700);
 		$weather = $level->getWeather()->getWeather();
 		$list = self::$wihts[$this->spawnType];
-		foreach (Server::getInstance()->getOnlinePlayers() as $key => $player) {
-			foreach ($list as $type => $boolean) {
-				$class = EnemyRegister::getClass($type);
-				$yaw = mt_rand(0, 360);
-				$rad = deg2rad($yaw);
-				$x = (int) $player->x - sin($rad)*mt_rand(25, 35);
-				$z = (int) $player->z + cos($rad)*mt_rand(25, 35);
-				$biome = $level->getBiomeId($x, $z);
-				$rate = $class::getSpawnRate();
-				if(!$isNight){
-					$rate *= 2;
-				}
-				if(!isset($class::getBiomes()[$biome]) || (!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, $rate) !== 1){
-					continue;
-				}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
-					$y = $level->getHighestBlockAt($x, $z)+2;
-					EnemyRegister::summon($level, $type, $x+0.5, $y, $z+0.5);
-				}
+		$plst = Server::getInstance()->getOnlinePlayers();
+		shuffle($plst);
+		if(!isset($plst[0])){
+			return false;
+		}
+		$player = $plst[0];
+		foreach ($list as $type => $boolean) {
+			$class = EnemyRegister::getClass($type);
+			$yaw = mt_rand(0, 360);
+			$rad = deg2rad($yaw);
+			$x = (int) $player->x - sin($rad)*mt_rand(25, 35);
+			$z = (int) $player->z + cos($rad)*mt_rand(25, 35);
+			$biome = $level->getBiomeId($x, $z);
+			$rate = $class::getSpawnRate();
+			if(!$isNight){
+				$rate *= 2;
+			}
+			if(!isset($class::getBiomes()[$biome]) || (!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, $rate) !== 1){
+				continue;
+			}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
+				$y = $level->getHighestBlockAt($x, $z)+2;
+				EnemyRegister::summon($level, $type, $x+0.5, $y, $z+0.5);
 			}
 		}
 	}

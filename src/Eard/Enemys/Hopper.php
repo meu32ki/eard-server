@@ -95,7 +95,7 @@ class Hopper extends Humanoid implements Enemy{
 	}
 
 	public static function getSpawnRate() : int{
-		return 12;
+		return 20;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]

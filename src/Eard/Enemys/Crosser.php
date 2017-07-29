@@ -90,6 +90,7 @@ class Crosser extends Humanoid implements Enemy{
 			[25, 1,
 				[
 					[Item::IRON_NUGGET, 0, 3],
+					[Item::DYE, 0, 1],//イカスミ
 				],
 			],
 			[15, 1,
