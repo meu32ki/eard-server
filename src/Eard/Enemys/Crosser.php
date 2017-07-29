@@ -49,7 +49,7 @@ class Crosser extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 50;
+		return 25;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -150,7 +150,7 @@ class Crosser extends Humanoid implements Enemy{
 	}
 
 	public static function getSpawnRate() : int{
-		return 16;
+		return 20;
 	}
 
 	public static function summon($level, $x, $y, $z){
@@ -223,7 +223,7 @@ class Crosser extends Humanoid implements Enemy{
 
 	public function attackTo(EntityDamageEvent $source){
 		$victim = $source->getEntity();
-		$source->setKnockBack(1);
+		if(!$victim->isSneaking()) $source->setKnockBack(1);
 		$pk = new AnimatePacket();
 		$pk->eid = $this->getId();
 		$pk->action = 1;//ArmSwing
