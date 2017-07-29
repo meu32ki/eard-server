@@ -37,6 +37,8 @@ class Humanoid extends Human{
 	protected $gravity = 0.14;
 	public $attackingTick = 0;
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
+	public $returnTime = 300;//出現から自動で消えるまでの時間(秒)
+	public $spawnTime = 0;
 	public static $noRainBiomes = [
 		Biome::HELL => true, 
 		Biome::END => true,
@@ -74,6 +76,11 @@ class Humanoid extends Human{
 				return false;
 			break;
 		}
+	}
+
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+		$this->spawnTime = microtime(true);
 	}
 
 	public function getDrops(){
@@ -115,8 +122,13 @@ class Humanoid extends Human{
 				return true;
 			}
 			if($this->isAlive()){
+				if($this->spawnTime + $this->returnTime < microtime(true)){
+					#todo ここで消えるアニメーション
+					$this->close();
+					return true;
+				}
 				$weather = $this->level->getWeather()->getWeather();
-				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || ($id = $this->level->getBlock($this)->getId() === 9 || $id === 8)) && $this->getHealth() > 0){
+				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || (($id = $this->level->getBlock($this)->getId()) === 9 || $id === 8)) && $this->getHealth() > 0){
 					$this->deadTicks = 0;
 					$this->attack(2, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
 				}
