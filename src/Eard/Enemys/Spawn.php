@@ -21,6 +21,7 @@ class Spawn extends Task{
 			EnemyRegister::TYPE_HOPPER => true,
 			EnemyRegister::TYPE_CROSSER => false,
 			EnemyRegister::TYPE_MANGLER => false,
+			EnemyRegister::TYPE_RAYZER => false,
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
@@ -29,7 +30,7 @@ class Spawn extends Task{
 
 	public static function init($spawnType){
 		$task = new Spawn($spawnType);
-		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 30);
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 20);
 	}
 
 	public function __construct($spawnType){
@@ -39,7 +40,7 @@ class Spawn extends Task{
 	public function onRun($tick){
 		$level = Server::getInstance()->getDefaultLevel();
 		$time = $level->getTime();
-		$isNight = ($time%24000 >= 13700);
+		$isNight = ($time%24000 >= 14000);
 		$weather = $level->getWeather()->getWeather();
 		$list = self::$wihts[$this->spawnType];
 		$plst = Server::getInstance()->getOnlinePlayers();

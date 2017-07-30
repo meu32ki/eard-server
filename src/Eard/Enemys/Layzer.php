@@ -18,6 +18,8 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\particle\SpellParticle;
+use pocketmine\level\particle\RedstoneParticle;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -35,16 +37,16 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Dummy extends Humanoid implements Enemy{
+class Layzer extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ダミーエネミー";
+		return "レイザー";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_DUMMY;
+		return EnemyRegister::TYPE_LAYZER;
 	}
 
 	//最大HPを取得
@@ -104,7 +106,7 @@ class Dummy extends Humanoid implements Enemy{
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 2;
+		return 1;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -132,20 +134,20 @@ class Dummy extends Humanoid implements Enemy{
 			//雨あり
 			Biome::OCEAN => true,
 			Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
-			Biome::TAIGA => true,
+			//Biome::MOUNTAINS => true,
+			//Biome::FOREST => true,
+			//Biome::TAIGA => true,
 			Biome::SWAMP => true,
-			Biome::RIVER => true,
+			//Biome::RIVER => true,
 			Biome::ICE_PLAINS => true,
-			Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			//Biome::SMALL_MOUNTAINS => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	//スポーンする頻度を返す(大きいほどスポーンしにくい)
 	public static function getSpawnRate() : int{
-		return 5;
+		return 45;
 	}
 
 	public static function summon($level, $x, $y, $z){
@@ -173,7 +175,7 @@ class Dummy extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Dummy($level, $nbt);
+		$entity = new Layzer($level, $nbt);
 		$entity->setMaxHealth(self::getHP());
 		$entity->setHealth(self::getHP());
 		AI::setSize($entity, self::getSize());
@@ -191,16 +193,65 @@ class Dummy extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
+		$this->walk = true;
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
-			$this->yaw += mt_rand(-60, 60);
-			AI::setRate($this, 40);
+			if($this->target = AI::searchTarget($this)){
+				switch($this->mode){
+					case 0:
+						AI::setRate($this, 20);
+						AI::lookAt($this, $this->target);
+						$this->mode = 1;
+						$this->charge = 0;
+						$this->walk = false;
+					break;
+					case 1:
+						switch($this->charge){
+							case 0:
+							case 1:
+							case 2:
+								$this->level->addParticle(new SpellParticle($this, 220, 20, 20));
+								AI::lookAt($this, $this->target);
+								++$this->charge;
+								AI::setRate($this, 7);
+							break;
+							case 3:
+							case 4:
+							case 5:
+							case 6:
+							case 7:
+								AI::chargerShot($this, 20, new RedstoneParticle($this, 1), new SpellParticle($this, 220, 20, 20), 6, 15, 0.8, true);
+								++$this->charge;
+								AI::lookAt($this, $this->target);
+								AI::setRate($this, 3);
+							break;
+							case 8:
+								$this->charge = 0;
+								$this->mode = 0;
+								$this->walk = true;
+								AI::lookAt($this, $this->target);
+								AI::setRate($this, 60);
+							break;
+						}
+					break;
+				}
+			}else{
+				$this->charge = 0;
+				$this->mode = 0;
+				$this->walk = true;
+				$this->yaw += mt_rand(-30, 30);
+			}
+
 		}
-		AI::walkFront($this);
+		if($this->walk){
+			AI::walkFront($this, 0.1);
+		}else{
+			AI::walkFront($this, 0.05);
+		}
 		parent::onUpdate($tick);
 	}
 

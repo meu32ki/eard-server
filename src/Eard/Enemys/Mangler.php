@@ -92,7 +92,7 @@ class Mangler extends Humanoid implements Enemy{
 			Biome::TAIGA => true,
 			Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			//Biome::ICE_PLAINS => true,
+			Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
 			Biome::BIRCH_FOREST => true,
 		];

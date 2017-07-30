@@ -279,4 +279,83 @@ abstract class AI{
 			}
 		}
 	}
+
+	/**
+	 * ビーム攻撃を実行
+	 * @param Entity  $enemy
+	 * @param int     $range
+	 * @param class   $particle1(弾道)
+	 * @param class   $particle2(着弾地点)
+	 * @param ...
+	 */
+	public static function chargerShot($enemy, $range, $particle1, $particle2, $damage = 30, $yr = 0, $rr = 0.8, $destroy = false){
+		$yaw = $enemy->yaw;
+		$yaw_rand = mt_rand(-$yr, $yr);
+		$pitch = $enemy->pitch;
+		$x = $enemy->x;
+		$y = $enemy->y+1.5;
+		$z = $enemy->z;
+		$rad_y = ($yaw+$yaw_rand)/180*M_PI;
+		$rad_p = ($pitch-180)/180*M_PI;
+		$xx = sin($rad_y)*cos($rad_p);
+		$yy = sin($rad_p);
+		$zz = -cos($rad_y)*cos($rad_p);
+		$level = Server::getInstance()->getDefaultLevel();
+		$no_break = true;
+		$r = 0;
+		for($p = 0; $p <= $range; $p += 0.5){
+			$sx = $x+$xx*$p;
+			$sy = $y+$yy*$p;
+			$sz = $z+$zz*$p;
+			$bid = $level->getBlockIdAt(floor($sx), floor($sy), floor($sz));
+			if(Humanoid::canThrough($bid)){
+				$r = $p;
+				$part = clone $particle1;
+				$part->x = $sx;
+				$part->y = $sy;
+				$part->z = $sz;
+				$level->addParticle($part);
+			}else{
+				$part = clone $particle2;
+				$part->x = $x+$xx*$r;
+				$part->y = $y+$yy*$r;
+				$part->z = $z+$zz*$r;
+				$level->addParticle($part);
+				$r = $p;
+				$no_break = false;
+				if($destroy){
+					$pos = new Vector3($sx, $sy, $sz);
+					$block = $level->getBlock($pos);
+					$air = ItemItem::get(0);
+					$drops = $block->getDrops($air);
+					if($drops !== []){
+						$block->onBreak($air);
+						$level->addParticle(new DestroyBlockParticle($pos, $block));
+						foreach ($drops as $key => $item){
+							$level->dropItem($pos, ItemItem::get($item[0], $item[1], $item[2]));
+						}
+					}
+				}
+				break;
+			}
+		}
+		$members_all = Server::getInstance()->getOnlinePlayers();
+		foreach ($members_all as $key => $player_v){
+			if($player_v instanceof Player){
+				$vx = $player_v->x;
+				$vy = $player_v->y+1.85;
+				$vz = $player_v->z;
+				$dis = sqrt(pow($x-$vx,2)+pow($y-$vy,2)+pow($z-$vz,2));
+				if($dis <= $r){
+					if(sqrt(pow($x+$xx*$dis-$vx,2)+pow($y+$yy*$dis-$vy,2)+pow($z+$zz*$dis-$vz,2)) <= $rr){
+						$knockback = 0;
+						$ev = new EntityDamageByEntityEvent($enemy, $player_v, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($damage), $knockback);
+						$player_v->attack(round($damage), $ev);
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 }
