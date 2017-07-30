@@ -46,7 +46,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			//正常にmysqlにつなげた場合のみ。
 			$this->reconnect();
 		}
-		Spawn::init(false);//生活区域ならtrue、資源区域ならfalse
+		Spawn::init(Connection::getPlace()->isLivingArea());//生活区域ならtrue、資源区域ならfalse
 	}
 
 	public function reconnect(){
