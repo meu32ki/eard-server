@@ -79,26 +79,42 @@ class Layzer extends Humanoid implements Enemy{
 			*/
 			[100, 2,
 				[
-					[Item::GUNPOWDER, 0, 1],
-					[Item::DYE, 15, 1],//骨粉
+					[Item::RAW_MUTTON, 0, 1],
+					[Item::FEATHER, 15, 1],//骨粉
 				],
 			],
 			[75, 1,
 				[
-					[Item::GUNPOWDER, 0, 1],
-					[Item::DYE, 15, 1],//骨粉
+					[Item::PUMPKIN_SEEDS, 0, 1],
+					[Item::MELON_SEEDS, 0, 1],
+					[Item::SEEDS, 0, 1],
+					[Item::FEATHER, 0, 1],
 				],
 			],
 			[25, 1,
 				[
-					[Item::PUMPKIN_SEEDS, 0, 1],
-					[Item::MELON_SEEDS, 0, 1],
-					[Item::WHEAT_SEEDS, 0, 1],
+					[Item::GOLD_SWORD, 0, 1],
+					[Item::GOLD_SHOVEL, 0, 1],
+					[Item::GOLD_PICKAXE, 0, 1],
+					[Item::GOLD_AXE, 0, 1],
+					[Item::GOLD_HOE, 0, 1],
+				],
+			],
+			[7, 1,
+				[
+					[Item::IRON_INGOT , 0, 1],
+					[Item::MAGMA_CREAM , 0, 1],
 				],
 			],
 			[5, 1,
 				[
-					[Item::IRON_INGOT , 0, 1],
+					[Item::GOLD_INGOT , 0, 1],
+					[Item::MAGMA_CREAM , 0, 1],
+				],
+			],
+			[4, 1,
+				[
+					[Item::EMERALD , 0, 1],
 				],
 			],
 		];

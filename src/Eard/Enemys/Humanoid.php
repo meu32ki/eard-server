@@ -67,6 +67,7 @@ class Humanoid extends Human{
 			case 50:
 			case 52:
 			case 65:
+			case 78:
 			case 101:
 			case 175:
 			case 208:

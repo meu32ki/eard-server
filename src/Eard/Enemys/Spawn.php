@@ -21,7 +21,7 @@ class Spawn extends Task{
 			EnemyRegister::TYPE_HOPPER => true,
 			EnemyRegister::TYPE_CROSSER => false,
 			EnemyRegister::TYPE_MANGLER => false,
-			EnemyRegister::TYPE_RAYZER => false,
+			EnemyRegister::TYPE_LAYZER => false,
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
