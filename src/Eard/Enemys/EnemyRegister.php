@@ -19,6 +19,7 @@ class EnemyRegister{
 	const TYPE_DEFFENIAN = 3;
 	const TYPE_MANGLER = 4;
 	const TYPE_LAYZER = 5;
+	const TYPE_STINGER = 6;
 
 	private static $instance = null;
 	public static $register = [];
@@ -30,6 +31,7 @@ class EnemyRegister{
 		self::register(Deffenian::class, Deffenian::getEnemyType());
 		self::register(Mangler::class, Mangler::getEnemyType());
 		self::register(Layzer::class, Layzer::getEnemyType());
+		self::register(Stinger::class, Stinger::getEnemyType());
 		self::$instance = $this;
 	}
 

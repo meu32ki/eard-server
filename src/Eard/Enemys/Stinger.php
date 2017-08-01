@@ -39,29 +39,29 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Mangler extends Humanoid implements Enemy{
+class Stinger extends Humanoid implements Enemy{
 
 	protected $gravity = 0;
 	public $attackingTick = 0;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "マングラー";
+		return "スティンガー";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_MANGLER;
+		return EnemyRegister::TYPE_STINGER;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 25;
+		return 15;
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 1.5;
+		return 1;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -77,8 +77,8 @@ class Mangler extends Humanoid implements Enemy{
 	public static function getBiomes() : array{
 		return [
 			//雨なし
-			Biome::HELL => true, 
-			Biome::END => true,
+			//Biome::HELL => true, 
+			//Biome::END => true,
 			//Biome::DESERT => true,
 			//Biome::DESERT_HILLS => true,
 			//Biome::MESA => true,
@@ -87,19 +87,19 @@ class Mangler extends Humanoid implements Enemy{
 			//雨あり
 			//Biome::OCEAN => true,
 			//Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
+			//Biome::MOUNTAINS => true,
 			Biome::FOREST => true,
-			Biome::TAIGA => true,
-			Biome::SWAMP => true,
+			//Biome::TAIGA => true,
+			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			Biome::ICE_PLAINS => true,
+			//Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
 			Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	public static function getSpawnRate() : int{
-		return 32;
+		return 28;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -127,27 +127,27 @@ class Mangler extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::STRING, 0, 1],
+					[Item::FLINT, 0, 1],
 				],
 			],
 			[100, 1,
 				[
-					[Item::PRISMARINE_SHARD, 0, 1],
+					[Item::RAW_BEEF, 0, 1],
 				],
 			],
 			[85, 2,
 				[
-					[Item::STRING, 0, 1],
-					[Item::STRING, 0, 2],
-					[Item::PRISMARINE_SHARD, 0, 1],
-					[Item::PRISMARINE_SHARD, 0, 2],
+					[Item::FLINT, 0, 1],
+					[Item::FLINT, 0, 2],
+					[Item::RAW_BEEF, 0, 1],
+					[Item::RAW_BEEF, 0, 2],
 				]
 			],
 			[70, 2,
 				[
-					[Item::BEETROOT_SEEDS, 0, 1],
-					[Item::RAW_CHICKEN, 0, 1],
-					[Item::PRISMARINE_SHARD, 0, 1],
+					[Item::FLINT, 0, 1],
+					[Item::FEATHER, 0, 1],
+					[Item::REDSTONE_DUST, 0, 1],
 				],
 			],
 			[9, 1,
@@ -155,14 +155,9 @@ class Mangler extends Humanoid implements Enemy{
 					[Item::IRON_INGOT, 0, 1],
 				],
 			],
-			[7, 1,
+			[3, 1,
 				[
 					[Item::EMERALD , 0, 1],
-				],
-			],
-			[2, 1,
-				[
-					[Item::DIAMOND , 0, 1],
 				],
 			],
 		];
@@ -185,7 +180,7 @@ class Mangler extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Mangler')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Stinger')),
 				new StringTag("Name", 'JTTW_JTTWShaWujing')
 			]),
 		]);
@@ -193,7 +188,7 @@ class Mangler extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Mangler($level, $nbt);
+		$entity = new Stinger($level, $nbt);
 		$random_hp = 1+(mt_rand(-10, 10)/100);
 		$entity->setMaxHealth(round(self::getHP()+$random_hp));
 		$entity->setHealth(round(self::getHP()+$random_hp));
@@ -224,12 +219,12 @@ class Mangler extends Humanoid implements Enemy{
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
 			$this->timings->startTiming();
-			$this->target = AI::searchTarget($this, 500);
+			$this->target = AI::searchTarget($this, 800);
 			if($this->target && ($disq = $this->distanceSquared($this->target)) <= 250){
 				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
 				switch($this->charge){
 					case 0:
-						AI::setRate($this, 40);
+						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
 						$this->walkSpeed = -0.025;
@@ -237,10 +232,10 @@ class Mangler extends Humanoid implements Enemy{
 						$this->charge = 1;
 					break;
 					case 1:
-						AI::setRate($this, 30);
+						AI::setRate($this, 20);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.5;
+						$this->walkSpeed = 1;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -252,22 +247,22 @@ class Mangler extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.2;
+						$this->walkSpeed = 0.4;
 						$this->float = mt_rand(0, 1);
 						$this->charge = 0;
 					break;
 				}
-			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 500){
-				AI::setRate($this, 9);
+			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 900){
+				AI::setRate($this, 7);
 				AI::lookAt($this, $this->target);
 				$this->walk = true;
 				$this->float = mt_rand(0, 1);
 			}else{
-				AI::setRate($this, 25);
+				AI::setRate($this, 20);
 				$this->target = false;
 				$this->yaw += mt_rand(-40, 40);
 				$this->walk = true;
-				$this->walkSpeed = 0.2;
+				$this->walkSpeed = 0.4;
 				$this->float = mt_rand(0, 1);
 				$this->pitch = 0;
 				$this->charge = 0;		
@@ -281,8 +276,8 @@ class Mangler extends Humanoid implements Enemy{
 					;
 				break;
 				case 2:
-					AI::rangeAttack($this, 3.5, 7);
-					$this->level->addParticle(new SpellParticle($this, 41, 234, 229));
+					AI::rangeAttack($this, 2.5, 3);
+					$this->level->addParticle(new SpellParticle($this, 234, 41, 229));
 				break;
 			}
 		}
@@ -313,6 +308,16 @@ class Mangler extends Humanoid implements Enemy{
 			$damager = $source->getDamager();
 			$this->target = $damager;
 		}
+	}
+
+	public function attackTo(EntityDamageEvent $source){
+		$victim = $source->getEntity();
+		if(mt_rand(0, 9) < 3){
+			$ef = Effect::getEffect(19);
+			$ef->setDuration(300);
+			$victim->addEffect($ef);
+		}
+
 	}
 
 	public function getName(){

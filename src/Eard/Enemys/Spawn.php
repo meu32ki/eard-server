@@ -22,6 +22,7 @@ class Spawn extends Task{
 			EnemyRegister::TYPE_CROSSER => false,
 			EnemyRegister::TYPE_MANGLER => false,
 			EnemyRegister::TYPE_LAYZER => false,
+			EnemyRegister::TYPE_STINGER => true
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
@@ -30,7 +31,7 @@ class Spawn extends Task{
 
 	public static function init($spawnType){
 		$task = new Spawn($spawnType);
-		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 20);
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 15);
 	}
 
 	public function __construct($spawnType){
@@ -49,6 +50,7 @@ class Spawn extends Task{
 			return false;
 		}
 		$player = $plst[0];
+		$c = count($plst);
 		foreach ($list as $type => $boolean) {
 			$class = EnemyRegister::getClass($type);
 			$yaw = mt_rand(0, 360);
@@ -60,6 +62,8 @@ class Spawn extends Task{
 			if(!$isNight){
 				$rate *= 2;
 			}
+			$rate /= $c/($c+1);
+			$rate = ceil($rate);
 			if(!isset($class::getBiomes()[$biome]) || (!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, $rate) !== 1){
 				continue;
 			}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){

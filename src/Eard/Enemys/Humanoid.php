@@ -37,7 +37,7 @@ class Humanoid extends Human{
 	protected $gravity = 0.14;
 	public $attackingTick = 0;
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
-	public $returnTime = 300;//出現から自動で消えるまでの時間(秒)
+	public $returnTime = 240;//出現から自動で消えるまでの時間(秒)
 	public $spawnTime = 0;
 	public static $noRainBiomes = [
 		Biome::HELL => true, 

@@ -165,7 +165,7 @@ class Deffenian extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("Data", EnemyRegister::loadSkinData('Deffenian')),
-				new StringTag("Name", 'Redstone_RedstoneScientist')
+				new StringTag("Name", 'Redstone_Redstone_Golem')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
