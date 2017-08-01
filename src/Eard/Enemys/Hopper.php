@@ -42,7 +42,7 @@ class Hopper extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ホッパー";
+		return "バッタ";
 	}
 
 	//エネミー識別番号を取得
