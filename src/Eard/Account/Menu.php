@@ -19,6 +19,7 @@ use Eard\AreaProtector;
 use Eard\Account;
 use Eard\Chat;
 use Eard\BlockObject\ChatInput;
+use Eard\Main;
 
 
 /***
@@ -27,7 +28,7 @@ use Eard\BlockObject\ChatInput;
 */
 class Menu implements ChatInput {
 
-	public static $menuItem = Item::SUGAR; //プロパティ名はほかで使ってるぞ
+	public static $menuItem = 416; //プロパティ名はほかで使ってるぞ
 	public static $selectItem = 351;
 
 	private $mailPage;

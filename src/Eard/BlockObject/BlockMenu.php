@@ -46,7 +46,7 @@ trait BlockMenu {
 			//現在のカーソル
 			$cursor = $this->menu[$player->getName()][1];
 			//カーソルから次のページ番号を探す
-			$pageNo = $this->menu[$player->getName()][2][ $this->menu[ $player->getName() ][3][$cursor] ][1];
+			$pageNo = $this->menu[$player->getName()][2][ $this->menu[$player->getName()][3][$cursor] ][1];
 			//次のページを送信用にセット、向こうで頑張って
 			$this->sendPageData($pageNo, $player);
 		}
@@ -74,7 +74,8 @@ trait BlockMenu {
 	}
 
 	/**
-	*	直接、ページ内容を送る。pageNoを指定すればびゅーんと。
+	*	直接、ページ内容を送る。pageNoを指定すればびゅーんととべるので
+	*	Chatや、getPageArからの指定でもいいぞ。
 	*/
 	public function sendPageData($pageNo, $player){
 		//おくったと記録し
@@ -100,9 +101,9 @@ trait BlockMenu {
 		$pk = new AddEntityPacket();
 		$pk->entityRuntimeId = 900000 + $this->getObjIndexNo();
 		$pk->type = ItemEntity::NETWORK_ID;
-		$pk->x = $this->x;
+		$pk->x = $this->x + 0.5;
 		$pk->y = $this->y - 0.75;
-		$pk->z = $this->z;
+		$pk->z = $this->z + 0.5;
 		$pk->speedX = 0;
 		$pk->speedY = 0;
 		$pk->speedZ = 0;
@@ -143,7 +144,8 @@ trait BlockMenu {
 		foreach($pageAr as $rowNo => $p){
 			//カーソルのところは オレンジ 選択できないところは白 選択できるところは灰色
 			$textcolor = $p[1] ? ($rowNo === $targetRowNo ? "§a" : "§7") : "§f";
-			$text .= $textcolor.$p[0]."\n";
+			$blank = isset($p[2]) ? $p[2] : "\n"; 
+			$text .= $textcolor.$p[0].$blank;
 		}
 		//パケット用意
 		$pk = self::getAddPacket($text);

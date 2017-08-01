@@ -61,6 +61,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Government::load();
 		new EnemyRegister();
 		ItemName::init();
+		// Earmazon::setup();
 		self::$instance = $this;
 	}
 
@@ -81,10 +82,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
-				$playerData = Account::getByName('32ki');
-				$player = $playerData->getPlayer();
-				$inv = $playerData->getItemBox();
-				$player->addWindow($inv);
+				Earmazon::check();
 				return true;
 			break;
 			case "ap": // Area Protector 土地関連

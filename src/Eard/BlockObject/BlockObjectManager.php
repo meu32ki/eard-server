@@ -35,6 +35,10 @@ class BlockObjectManager {
 		switch($block->getId()){
 			case 245: $objNo = 1; break; // ストーンカッター
 			case 247: $objNo = 2; break; // リアクターコア
+			case 131: $objNo = 3; break; // トリップワイヤーフック
+		}
+		if($player->getName() === "32ki" && $block->getId() === 245){
+			$objNo = 3;
 		}
 		if($objNo){
 			$obj = self::makeObject($block->x, $block->y, $block->z, $objNo);
@@ -120,6 +124,7 @@ class BlockObjectManager {
 		switch($objNo){
 			case 1: $obj = new ItemExchanger(); break;
 			case 2: $obj = new Shop(); break;
+			case 3: $obj = new EarmazonShop(); break;
 		}
 		return $obj;
 	}

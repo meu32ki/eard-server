@@ -239,8 +239,8 @@ class Event implements Listener{
 
 	public function Damaged(EntityDamageEvent $e){
 		if($e instanceof EntityDamageByEntityEvent){
-			$damager = $e->getDamager();//ダメージを与えた人
-			$victim = $e->getEntity();//喰らった人
+			$damager = $e->getDamager(); // ダメージを与えた人
+			$victim = $e->getEntity(); // 喰らった人
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player){
