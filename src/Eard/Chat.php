@@ -41,6 +41,7 @@ class Chat {
 		$consoleMsg = "";
 		
 
+		// ターゲット選択楽々チャット
 		$message = $e->getMessage();
 		$start = substr($message, 0, 1);
 		if( $start === "@" ){
@@ -67,6 +68,7 @@ class Chat {
 			return false;
 		}
 
+		// モードに従ったチャット
 		$e->setCancelled(true);
 		switch($chatmode){
 			case self::CHATMODE_VOICE:
