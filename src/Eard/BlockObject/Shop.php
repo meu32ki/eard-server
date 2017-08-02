@@ -32,11 +32,16 @@ class Shop implements BlockObject {
 		$player->sendMessage(Chat::Format("ショップ", "$name さんをオーナーとして設定しました"));
 		if(!$this->owner){
 			$this->owner = strtolower($name);
+			$this->name = "{$name}'s Shop";
 		}
 		return false;
 	}
 
 	public function Tap(Player $player){
+		if(!$this->inv){
+			$this->inv = new ChestIO($player);
+			$this->inv->setItemArray($this->itemArray);
+		}
 		$this->MenuTap($player);
 		return true; //キャンセルしないと、手持ちがブロックだった時に置いてしまう
 	}
@@ -62,7 +67,6 @@ class Shop implements BlockObject {
 	}
 
 	public function getData(){
-		echo "shop: getdata\n";
 		if($this->inv){ // 一度でも、管理画面が開かれているようなら
 			$this->itemArray = $this->inv->getItemArray();
 		}
@@ -153,10 +157,6 @@ class Shop implements BlockObject {
 			];
 		break;
 		case 51: // 管理画面 アイテム出し入れ
-			if(!$this->inv){
-				$this->inv = new ChestIO($player);
-				$this->inv->setItemArray($this->itemArray);
-			}
 			$player->addWindow($this->inv); // インヴェントリ画面送る
 			$ar = [
 				["ショップ 管理画面", false],
@@ -235,7 +235,7 @@ class Shop implements BlockObject {
 			return $out;
 		}else{
 			$out = [
-				["アイテム交換", false],
+				["ショップ", false],
 				["リストがありません",false],
 				["戻る",1],
 			];
