@@ -39,7 +39,7 @@ class Crosser extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "クロッサー";
+		return "クワガタ";
 	}
 
 	//エネミー識別番号を取得
