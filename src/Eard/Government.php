@@ -2,6 +2,7 @@
 namespace Eard;
 
 
+# Basic
 use pocketmine\utils\MainLogger;
 
 
@@ -45,6 +46,11 @@ class Government{
 			if($bankMeu->sufficient($amount)){
 				$givenMeu = $bankMeu->spilit($amount);
 				$playerData->getMeu()->merge($givenMeu);
+				
+				$player = $playerData->getPlayer();
+				if($player){ // pmmpからであれば
+					MainLogger::getLogger()->info(Chat::Format("政府", "Console", "{$player->getName()} に対し {$amount}μ 送金した"));
+				}
 				return true;
 			}else{
 				return false;
@@ -68,6 +74,11 @@ class Government{
 			if($meu->sufficient($amount)){
 				$receivedMeu = $meu->spilit($amount);
 				self::$CentralBankMeu->merge($receivedMeu);
+
+				$player = $playerData->getPlayer();
+				if($player){ // pmmpからであれば
+					MainLogger::getLogger()->info(Chat::Format("政府", "Console", "{$player->getName()} から {$amount}μ 受け取った"));
+				}
 				return true;
 			}else{
 				return false;
