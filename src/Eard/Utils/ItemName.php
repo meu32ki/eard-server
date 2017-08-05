@@ -13,10 +13,7 @@ class ItemName{
 
 
 
-	public static function getNameOf($id, $meta){
-		$id = $item->getId();
-		$meta = $item->getMetadata();
-
+	public static function getNameOf(Int $id, Int $meta){
 		if( isset(self::$listById[$id][$meta]) ){
 			return self::$listById[$id][$meta]; //書いてあれば日本語名
 		}else{
@@ -34,6 +31,7 @@ class ItemName{
 			$listByCat[$i[0]][$i[1]] = isset($i[2]) ? $i[2] : 0;
 		}
 		self::$listById = $listById;
+		self::$listByCat = $listByCat;
 	}
 
 	public static function getListById(){
@@ -609,7 +607,7 @@ class ItemName{
 		"鞍" => [329,0,0],
 		"鉄のドア" => [330,0,8],
 		"レッドストーン" => [331,0,3],
-		"雪玉" => [332,0,8],
+		"雪玉" => [332,0,7],
 		"オークの木のボート" => [333,0,0],
 		"革" => [334,0,7],
 		"レンガ" => [336,0,7],
@@ -759,5 +757,7 @@ class ItemName{
 		"調理した鮭" => [463,0,9],
 		"エンチャントされたリンゴ" => [466,0,9],
 	];
+
 	private static $listById = [];
+	private static $listByCat = [];
 }
