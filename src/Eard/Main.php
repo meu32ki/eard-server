@@ -61,7 +61,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Government::load();
 		new EnemyRegister();
 		ItemName::init();
-		// Earmazon::setup();
+		Earmazon::setup();
 		self::$instance = $this;
 	}
 
