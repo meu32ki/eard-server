@@ -32,12 +32,15 @@ use pocketmine\network\protocol\PlayerActionPacket;
 # Item
 use pocketmine\item\Item;
 
+# Block
+use pocketmine\block\Block;
+
 # Eard
 use Eard\AreaProtector;
 use Eard\Settings;
 use Eard\BlockObject\BlockObjectManager;
 use Eard\Account\Menu;
-
+use Eard\Enemys\EnemyRegister;
 # Enemy
 use Eard\Enemys\Humanoid;
 
@@ -204,6 +207,7 @@ class Event implements Listener{
 	public function Break(BlockBreakEvent $e){
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
+		$level = $player->getLevel();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 		if(Connection::getPlace()->isLivingArea()){
 			if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
@@ -213,6 +217,12 @@ class Event implements Listener{
 				$r = blockObjectManager::break($block, $player);
 				//echo $r ? "true\n" : "false\n";
 				$e->setCancelled( $r );
+			}
+		}else{
+			$id = $block->getId();
+			$data = $block->getDamage();
+			if($id === Block::EMERALD_BLOCK && $data === 1){
+				EnemyRegister::summon($level, EnemyRegister::TYPE_JOOUBATI, $x+0.5, $y-4, $z+0.5);
 			}
 		}
 	}
@@ -239,8 +249,8 @@ class Event implements Listener{
 
 	public function Damaged(EntityDamageEvent $e){
 		if($e instanceof EntityDamageByEntityEvent){
-			$damager = $e->getDamager(); // ダメージを与えた人
-			$victim = $e->getEntity(); // 喰らった人
+			$damager = $e->getDamager();//ダメージを与えた人
+			$victim = $e->getEntity();//喰らった人
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player){

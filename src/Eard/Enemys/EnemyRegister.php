@@ -20,6 +20,9 @@ class EnemyRegister{
 	const TYPE_MANGLER = 4;
 	const TYPE_LAYZER = 5;
 	const TYPE_STINGER = 6;
+	const TYPE_KABUTO = 7;
+	const TYPE_KUMO = 8;
+	const TYPE_JOOUBATI = 9;
 
 	private static $instance = null;
 	public static $register = [];
@@ -32,6 +35,9 @@ class EnemyRegister{
 		self::register(Mangler::class, Mangler::getEnemyType());
 		self::register(Layzer::class, Layzer::getEnemyType());
 		self::register(Stinger::class, Stinger::getEnemyType());
+		self::register(Kabuto::class, Kabuto::getEnemyType());
+		self::register(Kumo::class, Kumo::getEnemyType());
+		self::register(Jooubati::class, Jooubati::getEnemyType());
 		self::$instance = $this;
 	}
 
