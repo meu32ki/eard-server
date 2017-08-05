@@ -182,7 +182,7 @@ class Chat {
 	*/
 	public static function getJoinMessage($name){
 		$placeName = Connection::getPlace()->getName();
-		return self::System("§bお知らせ", "{$name} がEardの {$placeName} にやって来た");
+		return self::System("§bお知らせ", "§f{$name} §7がEardの {$placeName} にやって来た");
 	}
 
 	/**
@@ -190,7 +190,7 @@ class Chat {
 	*	@return string | 最終的にできた退出時メッセージ
 	*/
 	public static function getQuitMessage($name){
-		return self::System("§bお知らせ", "{$name} が地球へ戻っていった");
+		return self::System("§bお知らせ", "§f{$name} §7が地球へ戻っていった");
 	}
 
 	/**
