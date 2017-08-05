@@ -243,6 +243,22 @@ class Event implements Listener{
 		if($playerData->getMenu()->isActive()){
 			$playerData->getMenu()->close();
 		}
+
+
+		// 死んだときのメッセージ
+		$cause = $player->getLastDamageCause();
+		if($cause instanceof EntityDamageByEntityEvent){
+			$en = $cause->getDamager();
+			if($en instanceof Player){
+				$killername = $en->getDisplayName();
+			}elseif($en instanceof Humanoid){
+				$killername = $en->getName();
+			}else{
+				$killername = "???";
+			}
+		}
+		$msg = Chat::System("§c{$e->getPlayer()->getName()} は {$killername} に殺された");
+		$e->setDeathMessage($msg);
 	}
 
 

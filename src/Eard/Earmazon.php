@@ -2,6 +2,7 @@
 
 Namespace Eard;
 
+use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;
 
@@ -22,35 +23,44 @@ class Earmazon {
 
 	public static function setup (){
 		$itemListById = ItemName::getListById();
+		$db = DB::get();
 
 		// ぶん回ししてセットアップする
 		MainLogger::getLogger()->notice("§aEarmazon: セットアップを開始します、、、");
 
-		$db = DB::get();
+/*
+		// itemstorageりせっと
+		$db->query("truncate earmazon_itemstorage;");
+		// itemstorage格納
 		$sql = "";
 		foreach($itemListById as $id => $m){
 			foreach($m as $meta => $name){
 				$firstchar = mb_substr($name, 0, 1);
 				// ↓　itemNameのうち、名前が（で始まっているものは、設置専用のブロック。tile:で始まるものも同じなので、のぞいておく必要がある
 				if( $firstchar !== "t" || $firstchar !== "("){
-					$sql .= "INSERT INTO earmazon_itemstorage (id, meta, amount) VALUES ('{$id}', '{$meta}', '0'); ";
+					$sql = "INSERT INTO earmazon_itemstorage (id, meta, amount) VALUES ('{$id}', '{$meta}', '0'); ";
+					$result = $db->query($sql);
 				}
 			}
 		}
-		$result = $db->query($sql);
+
 
 		// アイテムを数個格納
-
 		MainLogger::getLogger()->notice("§aEarmazon: アイテムを入れます、、、");
-		
 		self::addIntoStorage(Item::LOG, 0, 1000);
 		self::addIntoStorage(Item::WHEAT_SEEDS, 0, 10000);
+		self::addIntoStorage(Item::EMERALD, 0, 10000);
+		self::addIntoStorage(Item::ENDER_CHEST, 0, 5);
+		self::addIntoStorage(Item::COAL, 0, 200);
+*/
 
+/*
 		// 売却できる
+		$db->query("truncate earmazon_itemselllist;");
 		self::addSellUnit(Item::LOG, 0, 100, 10);
-		self::addBuyUnit(Item::WHEAT, 0, 8000, 30);
-		self::addBuyUnit(Item::WHEAT, 0, 2000, 50);
-		self::addBuyUnit(Item::BREAD, 0, 100, 150);
+		self::addSellUnit(Item::WHEAT, 0, 8000, 30);
+		self::addSellUnit(Item::WHEAT, 0, 2000, 45);
+		self::addSellUnit(Item::BREAD, 0, 100, 150);
 
 		self::addSellUnit(Item::IRON_INGOT, 0, 100, 400);
 		self::addSellUnit(Item::IRON_INGOT, 0, 100, 300);
@@ -60,6 +70,7 @@ class Earmazon {
 		self::addSellUnit(Item::EMERALD, 0, 50, 5000);
 
 		// プレイヤーがこの価格で購入できる
+		$db->query("truncate earmazon_itembuylist;");
 		self::addBuyUnit(Item::LOG, 0, 100, 50);
 		self::addBuyUnit(Item::WHEAT_SEEDS, 0, 10000, 2);
 
@@ -69,8 +80,12 @@ class Earmazon {
 		self::addBuyUnit(Item::EMERALD, 0, 10, 10000);
 
 		self::addBuyUnit(Item::ENDER_CHEST, 0, 5, 10000);
-		
+*/
+
 		MainLogger::getLogger()->notice("§aEarmazon: 完了");
+
+
+		self::check();
 	}
 
 
@@ -102,8 +117,10 @@ class Earmazon {
 	*/
 	public static function removeFromStorage($id, $meta, $amount){
 		$sql = "UPDATE earmazon_itemstorage SET amount = amount - {$amount} WHERE id = {$id} and meta = {$meta};";
+		echo $sql."\n";
 		$result = DB::get()->query($sql);
-		return $result;
+		echo $result;
+		return $result."\n";
 	}
 
 
@@ -116,7 +133,7 @@ class Earmazon {
 	public static function getStorageAmount($id, $meta){
 		$sql = "SELECT * FROM earmazon_itemstorage WHERE id = {$id} and meta = {$meta};";
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			if( $row = $result->fetch_assoc() ){
 				return $row['amount'];
 			}
@@ -137,7 +154,12 @@ class Earmazon {
 	*	@return bool
 	*/
 	public static function removeFromBuyUnit($unitno, $amount){
-		$sql = "UPDATE earmazon_itembuylist SET leftamount = leftamount - {$amount} WHERE unitno = {$unitno};";
+		$sql = "UPDATE earmazon_itembuylist SET leftamount = leftamount - {$amount} WHERE no = {$unitno};";
+		$result = DB::get()->query($sql);
+		return $result;
+	}
+	public static function addIntoBuyUnit($unitno, $amount){
+		$sql = "UPDATE earmazon_itembuylist SET leftamount = leftamount + {$amount} WHERE no = {$unitno};";
 		$result = DB::get()->query($sql);
 		return $result;
 	}
@@ -154,7 +176,7 @@ class Earmazon {
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			while( $row = $result->fetch_assoc() ){
 				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
@@ -175,7 +197,7 @@ class Earmazon {
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			while( $row = $result->fetch_assoc() ){
 				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
@@ -196,7 +218,7 @@ class Earmazon {
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			while( $row = $result->fetch_assoc() ){
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
@@ -210,11 +232,11 @@ class Earmazon {
 	*	@return Array [ $id, $meta, $amount, $price ]
 	*/
 	public static function getBuyUnit($unitno){
-		$sql = "SELECT id, meta, leftamount, price FROM earmazon_itembuylist WHERE unitno = {$unitno};";
+		$sql = "SELECT id, meta, leftamount, price FROM earmazon_itembuylist WHERE no = {$unitno};";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			if( $row = $result->fetch_assoc() ){
 				return [ $row['id'], $row['meta'], $row['leftamount'], $row['price'] ];
 			}
@@ -235,12 +257,15 @@ class Earmazon {
 		if(!$category){
 			return false; //カテゴリーが0 = 販売禁止 のアイテムは売れない
 		}
-		
+
 		$flag = $tokka ? 1 : 0; // tokkaは、つけると上の辺に表示させるとかして
-		$sql = "INSERT INTO earmazon_itembuylist (category, flag, id, meta, baseamount, leftamount, price) ".
-					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}'); ";
-		echo $sql;
+		$db = DB::get();
+		$sql = "INSERT INTO earmazon_itembuylist (category, flag, id, meta, baseamount, leftamount, price, date) ".
+					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}', now() ); ";
 		$result = $db->query($sql);
+
+		echo $sql.": {$result}\n";
+		echo $db->error;
 		return $result;
 	}
 
@@ -257,28 +282,37 @@ class Earmazon {
 		
 		// リストにあったものがまだ売れ残っているか
 		if(!$unitData){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "ユニットの情報が見当たりませんでした"));
 			return false;
 		}
 
-		$id = $unitdata[0];
-		$meta = $unitdata[1];
+		$id = $unitData[0];
+		$meta = $unitData[1];
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 		$storageamount = self::getStorageAmount($id, $meta);
+		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;
 
 		// ストレージに在庫がない 販売リストの点数が切れた ら売れないよね
+		if($storageamount == -1){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。そんなアイテムありません。"));			
+		}
+
 		if(!$storageamount or !$unitamount){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。Earmazonのストレージに在庫がありません。販売再開には、誰かがそのアイテムを売る必要があります。"));
 			return false;
 		}
 
 		// 64個以上のまとめうりは無理よ(おもにインベントリ関係がめんどくさいから)
 		if(64 < $amount){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。1スタック以上のまとめ買いはできません。このエラーが出たら報告してください。"));
 			return false;
 		}
 
 		// 在庫のほうが少なかったら売れないよね
 		// 販売リストのチェックも兼ねている
 		if($unitamount < $amount or $storageamount < $amount){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。あなたは、在庫にあるよりも多くの数量を指定しています。"));
 			return false;
 		}
 
@@ -293,6 +327,7 @@ class Earmazon {
 			$inv = $playerData->getItemBox();
 			$item = Item::get($id, $meta, $amount);
 			if(!$inv->canAddItem($item)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。手持ちのアイテムがいっぱいです。"));
 				// 手持ちのアイテムいっぱいだったらかえないよね
 				return false;
 			}
@@ -302,14 +337,26 @@ class Earmazon {
 			// payが足りているかの確認 プレイヤーからもらう処理
 			$pay = $price * $amount;
 			if(!Government::receiveMeu($playerData, $pay)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。お金が足りません。"));
 				return false;
 			}
 
 			// 販売りすとの点数からひいてく
-			if(self::removeFromBuyUnit($unitno, $amount)){
+			if(!self::removeFromBuyUnit($unitno, $amount)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "出るべきでないエラー。販売リストから減らす処理に失敗しました。"));
+				Government::giveMeu($playerData, $pay); // 送金処理を戻す
 				return false;
 			}
 
+			// ストレージから減らす
+			if(!self::removeFromStorage($id, $meta, $amount)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "出るべきでないエラー。ストレージから減らす処理に失敗しました。"));
+				self::addIntoBuyUnit($unitno, $amount); // 販売リストの点数戻す
+				Government::giveMeu($playerData, $pay); // 送金処理を戻す
+				return false;
+			}
+
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "購入完了。購入したアイテムはItemBoxに送られました。"));
 			$inv->addItem($item); // 追加しとけば鯖出るときに勝手にセーブされるから安心
 			return true;
 		}else{
@@ -336,6 +383,14 @@ class Earmazon {
 
 			// 販売りすとの点数からひいてく
 			if(self::removeFromBuyUnit($unitno, $amount)){
+				Government::giveMeu($playerData, $pay); // 送金処理を戻す
+				return false;
+			}
+
+			// ストレージから減らす
+			if(self::removeFromStorage($id, $meta, $amount)){
+				self::addIntoBuyUnit($unitno, $amount); // 販売リストの点数戻す
+				Government::giveMeu($playerData, $pay); // 送金処理を戻す
 				return false;
 			}
 
@@ -356,9 +411,34 @@ class Earmazon {
 	*	@return bool
 	*/
 	public static function removeFromSellUnit($unitno, $amount){
-		$sql = "UPDATE earmazon_itemselllist SET leftamount = leftamount - {$amount} WHERE unitno = {$unitno};";
+		$sql = "UPDATE earmazon_itemselllist SET leftamount = leftamount - {$amount} WHERE no = {$unitno};";
 		$result = DB::get()->query($sql);
 		return $result;
+	}
+	public static function addIntoSellUnit($unitno, $amount){
+		$sql = "UPDATE earmazon_itemselllist SET leftamount = leftamount + {$amount} WHERE no = {$unitno};";
+		$result = DB::get()->query($sql);
+		return $result;
+	}
+
+
+	/**
+	*	販売リストをすべて取得
+	*	@param Int ItemId
+	*	@param Int ItemDamage
+	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
+	*/
+	public static function searchSellUnit(){
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist;";
+
+		$unitdata = [];
+		$result = DB::get()->query($sql);
+		if($result){
+			while( $row = $result->fetch_assoc() ){
+				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
+			}
+		}
+		return $unitdata;
 	}
 
 
@@ -368,12 +448,12 @@ class Earmazon {
 	*	@param Int ItemDamage
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
-	public static function searchSellUnit($id, $meta){
+	public static function searchSellUnitById($id, $meta){
 		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE id = {$id} and meta = {$meta};";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			while( $row = $result->fetch_assoc() ){
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
@@ -393,7 +473,7 @@ class Earmazon {
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			while( $row = $result->fetch_assoc() ){
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
@@ -407,11 +487,11 @@ class Earmazon {
 	*	@return Array [$id, $meta, $amount, $price ]
 	*/
 	public static function getSellUnit($unitno){
-		$sql = "SELECT leftamount, price FROM earmazon_itemselllist WHERE unitno = {$unitno};";
+		$sql = "SELECT id, meta, leftamount, price FROM earmazon_itemselllist WHERE no = {$unitno};";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
-		if(!$result){
+		if($result){
 			if( $row = $result->fetch_assoc() ){
 				return [ $row['id'], $row['meta'], $row['leftamount'], $row['price'] ];
 			}
@@ -434,9 +514,14 @@ class Earmazon {
 		}
 		
 		$flag = $tokka ? 1 : 0; // tokkaは、つけると上の辺に表示させるとかして
-		$sql = "INSERT INTO earmazon_itemselllist (category, flag, id, meta, baseamount, leftamount, price) ".
-					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}'); ";
-		$result = DB::get()->query($sql);
+		$db = DB::get();
+		$sql = "INSERT INTO earmazon_itemselllist (category, flag, id, meta, baseamount, leftamount, price, date) ".
+					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}', now() ); ";
+		$result = $db->query($sql);
+
+		echo $sql."\n";
+		echo $db->error;
+
 		return $result;
 	}
 
@@ -456,8 +541,8 @@ class Earmazon {
 			return false;
 		}
 
-		$id = $unitdata[0];
-		$meta = $unitdata[1];
+		$id = $unitData[0];
+		$meta = $unitData[1];
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 
@@ -498,8 +583,16 @@ class Earmazon {
 			}
 
 			// 販売りすとの点数からひいてく
-			if(self::removeFromBuyUnit($unitno, $amount)){
+			if(!self::removeFromBuyUnit($unitno, $amount)){
+				Government::receiveMeu($playerData, $pay);
 				return false;
+			}
+
+			// ストレージに入れる
+			if(!self::addIntoStorage($id, $meta, $amount)){
+				self::addIntoBuyUnit($unitno, $amount);
+				Government::receiveMeu($playerData, $pay);
+				return false;				
 			}
 
 			$inv->remove($item, true); //trueはすぐに反映させるかどうか
@@ -507,6 +600,63 @@ class Earmazon {
 			// Webから
 			return false; // todo ちゃんと処理追加しろ
 		}
+	}
+
+/*	確認
+*/
+
+	public static function check(){
+		$db = DB::get();
+
+
+		echo "*****\nitem storage\n*****\n";
+		$sql = "SELECT * FROM earmazon_itemstorage WHERE amount != 0;";
+		$result = $db->query($sql);
+		if($result){
+			while( $row = $result->fetch_assoc() ){
+				foreach($row as $key => $d){
+					echo "{$key}:{$d} ";
+				}
+				echo "\n";
+			}
+		}else{
+			echo "skipped\n";
+		}
+		echo "\n\n";
+
+
+		echo "*****\nsell list\n*****\n";
+		$sql = "SELECT * FROM earmazon_itemselllist;";
+		$result = $db->query($sql);
+		if($result){
+			while( $row = $result->fetch_assoc() ){
+				foreach($row as $key => $d){
+					echo "{$key}:{$d} ";
+				}
+				echo "\n";
+			}
+		}else{
+			echo "skipped\n";
+		}
+		echo "\n\n";
+
+
+		echo "*****\nbuy list\n*****\n";
+		$sql = "SELECT * FROM earmazon_itembuylist;";
+		$result = $db->query($sql);
+		if($result){
+			while( $row = $result->fetch_assoc() ){
+				foreach($row as $key => $d){
+					echo "{$key}:{$d} ";
+				}
+				echo "\n";
+			}
+		}else{
+			echo "skipped\n";
+		}
+		echo "\n\n";
+
+
 	}
 
 }

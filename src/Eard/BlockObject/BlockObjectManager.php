@@ -35,11 +35,10 @@ class BlockObjectManager {
 		switch($block->getId()){
 			case 245: $objNo = 1; break; // ストーンカッター
 			case 247: $objNo = 2; break; // リアクターコア
-			case 131: $objNo = 3; break; // トリップワイヤーフック
+			case 379: $objNo = 3; break; // 調合台
+			case 117: $objNo = 3; break; // 調合台
 		}
-		if($player->getName() === "32ki" && $block->getId() === 245){
-			$objNo = 3;
-		}
+		echo $objNo;
 		if($objNo){
 			$obj = self::makeObject($block->x, $block->y, $block->z, $objNo);
 			$obj->Place($player);

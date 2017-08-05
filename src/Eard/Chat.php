@@ -170,8 +170,9 @@ class Chat {
 		return $out;
 	}
 
-	public static function System($arg1, $arg2){
-		$out = "§8システム §7> {$arg1} §7> {$arg2}";
+	public static function System($arg1, $arg2 = ""){
+		$arg2 = $arg2 ? " §7> {$arg2}" : "";
+		$out = "§8システム §7> {$arg1}{$arg2}";
 		return $out;
 	}
 
@@ -181,7 +182,7 @@ class Chat {
 	*/
 	public static function getJoinMessage($name){
 		$placeName = Connection::getPlace()->getName();
-		return self::System("§bお知らせ", "{$name} がEardの {$placeName} にやって来た");
+		return self::System("§bお知らせ", "§f{$name} §7がEardの {$placeName} にやって来た");
 	}
 
 	/**
@@ -189,7 +190,7 @@ class Chat {
 	*	@return string | 最終的にできた退出時メッセージ
 	*/
 	public static function getQuitMessage($name){
-		return self::System("§bお知らせ", "{$name} が地球へ戻っていった");
+		return self::System("§bお知らせ", "§f{$name} §7が地球へ戻っていった");
 	}
 
 	/**
