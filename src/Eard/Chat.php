@@ -170,8 +170,9 @@ class Chat {
 		return $out;
 	}
 
-	public static function System($arg1, $arg2){
-		$out = "§8システム §7> {$arg1} §7> {$arg2}";
+	public static function System($arg1, $arg2 = ""){
+		$arg2 = $arg2 ? " §7> {$arg2}" : "";
+		$out = "§8システム §7> {$arg1}{$arg2}";
 		return $out;
 	}
 
