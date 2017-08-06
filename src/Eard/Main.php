@@ -51,8 +51,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 	public function reconnect(){
 		Connection::load();
-		//Connection::setup();
-		Connection::getPlace()->makeOnline();
+		// Connection::setup();
 
 		# Muni関連
 		AreaProtector::load();
@@ -61,7 +60,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Government::load();
 		new EnemyRegister();
 		ItemName::init();
-		Earmazon::setup();
+		// Earmazon::setup();
 		self::$instance = $this;
 	}
 
@@ -261,6 +260,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		}
 	}
 
+
 	/*
 	 * スキンデータをセーブ
 	 */
@@ -278,6 +278,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		}
 		return false;
 	}
+
 
 	public static function getInstance(){
 		return self::$instance;

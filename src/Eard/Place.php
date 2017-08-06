@@ -34,7 +34,7 @@ class Place {
 			8 => "開発区域-生活",
 			9 => "開発区域-資源",
 		];
-		return $ar[$this->place];
+		return isset($ar[$this->place]) ? $ar[$this->place] : "";
 	}
 
 	public function getAddr(){
@@ -42,13 +42,6 @@ class Place {
 	}
 	public function getPort(){
 		return $this->port;
-	}
-
-	public function setAddr($addr){
-		$this->addr = $addr;
-	}
-	public function setPort($port){
-		$this->port = $port;
 	}
 
 	/**
@@ -88,8 +81,46 @@ class Place {
 */
 
 	/**
+	*	place番号における、ipとポートを、更新してdbに書き込み。
+	*/
+	public function writeAddrInfo($ip, $port){
+		$place = $this->place;
+		if($place){
+			$sql = "UPDATE statistics_server SET ip = '{$ip}', port = {$port} WHERE place = {$place}; ";
+			$result = DB::get()->query($sql);
+			if($result){
+				MainLogger::getLogger()->notice("§aPlace: このサーバーのIPは{$ip}:{$port}で、これを PlaceNo {$place} として記録しました");
+			}else{
+				MainLogger::getLogger()->notice("§cPlace: エラー。サーバーのIPは記録されていません。");
+			}
+		}else{
+			MainLogger::getLogger()->notice("§ePlace: エラー。このサーバーのplaceが設定されていません。サーバーのIPは記録されていません。");
+		}
+	}
+
+	/**
+	*	このplace番号における、ipとポートを、dbからロード。
+	*	@return void
+	*/
+	public function loadAddrInfo(){
+		$place = $this->place;
+		if($place){
+			$sql = "SELECT * from statistics_server WHERE place = {$place};";
+			$result = DB::get()->query($sql);
+			if($result){
+				while($row = $result->fetch_assoc()){
+					$ip = $row['ip']; $port = $row['port'];
+					$this->addr = (string) $ip;
+					$this->port = (int) $port;
+				}
+			}
+		}
+	}
+
+	/**
 	*	鯖をつけたとき、オンラインだよーって記録するやつ。
 	*	placeの値が設定されていないときは、何もしない。
+	*	@return void
 	*/
 	public function makeOnline(){
 		$stat = self::STAT_ONLINE;
@@ -98,18 +129,19 @@ class Place {
 			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
 			$result = DB::get()->query($sql);
 			if($result){
-				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§aオンライン状態§f」と記録しました");
+				MainLogger::getLogger()->notice("§aPlace: §fサーバーを「§aオンライン状態§f」と記録しました");
 			}else{
-				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
+				MainLogger::getLogger()->notice("§cPlace: エラー。サーバーの状態は記録されていません");
 			}
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
 		}
 	}
 
 	/**
 	*	鯖をけしたとき、オフラインだよーって記録するやつ。
 	*	placeの値が設定されていないときは、何もしない。
+	*	@return void
 	*/
 	public function makeOffline(){
 		$stat = self::STAT_OFFLINE;
@@ -118,12 +150,12 @@ class Place {
 			$sql = "UPDATE statistics_server SET stat = {$stat}, lastupdate = now() WHERE place = {$place}; ";
 			$result = DB::get()->query($sql);
 			if($result){
-				MainLogger::getLogger()->notice("§aConnection: §fサーバーを「§cオフライン状態§f」と記録しました");
+				MainLogger::getLogger()->notice("§aPlace: §fサーバーを「§cオフライン状態§f」と記録しました");
 			}else{
-				MainLogger::getLogger()->notice("§cConnection: エラー。サーバーの状態は記録されていません");
+				MainLogger::getLogger()->notice("§cPlace: エラー。サーバーの状態は記録されていません");
 			}
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。サーバーの状態は記録されていません");
 		}
 	}
 
@@ -142,7 +174,7 @@ class Place {
 				$stat = (int) $row['stat'];
 				$updatedTime = $row['lastupdate'];
 			}
-			if(time() < strtotime($updatedTime) + 300){//5分以上前のデータであったらタイムアウトで4を返す
+			if(time() < strtotime($updatedTime) + 180){//3分以上前のデータであったらタイムアウトで4を返す
 				$stat = self::STAT_UNKNOWN;
 			}
 			return $stat;
@@ -155,7 +187,7 @@ class Place {
 	*	@return String
 	*/
 	public function getStatusTxt(){
-		$stat = self::getStatus();
+		$stat = $this->getStatus();
 		switch($stat){
 			case self::STAT_ONLINE:
 				$out = "Opened (転送可能)"; break;
@@ -209,7 +241,7 @@ class Place {
 			$result = DB::get()->query($sql);
 			return $result;
 		}else{
-			MainLogger::getLogger()->notice("§eConnection: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
 		}
 	}
 
@@ -220,9 +252,14 @@ class Place {
 	*	@return int 	-1 ~ 1 (-1...取得/接続不可 0...クエリ失敗 1...クエリ成功)
 	*/
 	public function recordLogout($name){
-		$sql = "DELETE FROM statistics_player WHERE name = '{$name}'; ";
-		$result = DB::get()->query($sql);
-		return $result;
+		$place = $this->place; // 場所番号/鯖番号 (生活区域 = 1, 資源区域 = 2)
+		if($place){
+			$sql = "DELETE FROM statistics_player WHERE name = '{$name}'; ";
+			$result = DB::get()->query($sql);
+			return $result;
+		}else{
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
+		}
 	}
 
 	/**

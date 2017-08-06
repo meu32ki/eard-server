@@ -3,7 +3,7 @@ namespace Eard;
 
 
 # Basic
-//use pocketmine\Player;
+use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 # Event
@@ -247,6 +247,7 @@ class Event implements Listener{
 
 		// 死んだときのメッセージ
 		$cause = $player->getLastDamageCause();
+		$name = $e->getPlayer()->getName();
 		if($cause instanceof EntityDamageByEntityEvent){
 			$en = $cause->getDamager();
 			if($en instanceof Player){
@@ -256,8 +257,78 @@ class Event implements Listener{
 			}else{
 				$killername = "???";
 			}
+			$msg = Chat::System("§c{$name} は {$killername} に殺された");
+		}else{
+			switch($cause->getCause()){
+			case EntityDamageEvent::CAUSE_PROJECTILE:
+				if($cause instanceof EntityDamageByEntityEvent){
+					$en = $cause->getDamager();
+					if($en instanceof Player){
+						$message = "{$name} は {$en->getName()} に殺された";
+					}elseif($en instanceof Living){
+						$message = "{$name} は串刺しにされた";
+					}else{
+						$msg = "何かしらわからないけど爆発したくさい";
+					}
+				}
+				break;
+			case EntityDamageEvent::CAUSE_SUICIDE:
+				$message = "{$name} は殺された";
+				break;
+			case EntityDamageEvent::CAUSE_VOID:
+				$message = "{$name} な謎の空間へ落ちてしまった";
+				break;
+			case EntityDamageEvent::CAUSE_FALL:
+				if($cause instanceof EntityDamageEvent){
+					if($cause->getFinalDamage() > 2){
+						$message = "{$name} は高所から落下死した";
+						break;
+					}
+				}
+				$message = "{$name} は落ちたっぽい";
+				break;
+			case EntityDamageEvent::CAUSE_SUFFOCATION:
+				$message = "{$name} は埋まって死んだ";
+				break;
+			case EntityDamageEvent::CAUSE_LAVA:
+				$message = "{$name} は溶岩にのまれた";
+				break;
+			case EntityDamageEvent::CAUSE_FIRE:
+				$message = "{$name} は燃えて死んだ";
+				break;
+			case EntityDamageEvent::CAUSE_FIRE_TICK:
+				$message = "{$name} は火だるまになった";
+				break;
+			case EntityDamageEvent::CAUSE_DROWNING:
+				$message = "{$name} は溺死した";
+				break;
+			case EntityDamageEvent::CAUSE_CONTACT:
+				if($cause instanceof EntityDamageByBlockEvent){
+					if($cause->getDamager()->getId() === Block::CACTUS){
+						$message = "{$name} はサボテンに刺されて死んだ";
+					}
+				}
+				break;
+			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
+			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
+				if($cause instanceof EntityDamageByEntityEvent){
+					$en = $cause->getDamager();
+					if($en instanceof Player){
+						$message = "{$name} は爆発四散した";
+						break;
+					}
+				}else{
+					$message = "{$name} は爆発四散した";
+				}
+				break;
+			case EntityDamageEvent::CAUSE_MAGIC:
+				$message = "{$name} はなんか死んだ";
+				break;
+			case EntityDamageEvent::CAUSE_CUSTOM:
+				break;
+			}
+			$msg = Chat::System("§c{$message}");
 		}
-		$msg = Chat::System("§c{$e->getPlayer()->getName()} は {$killername} に殺された");
 		$e->setDeathMessage($msg);
 	}
 
@@ -269,7 +340,7 @@ class Event implements Listener{
 			$victim = $e->getEntity();//喰らった人
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
-			if($victim instanceof Player){
+			if($victim instanceof Player && $damager instanceof Player){
 				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 				MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
 				$e->setCancelled(true);
