@@ -283,7 +283,7 @@ class Jooubati extends Humanoid implements Enemy{
 					;
 				break;
 				case 2:
-					AI::rangeAttack($this, 23.5, 7);
+					AI::rangeAttack($this, 3.5, 7);
 					$this->level->addParticle(new SpellParticle($this, 234, 41, 89));
 				break;
 			}
