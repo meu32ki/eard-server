@@ -130,6 +130,7 @@ class Menu implements ChatInput {
 		$player = $playerData->getPlayer();
 		$inv = $player->getInventory();
 		$blank = $this->getBlank();
+		$uma = json_decode('"\u265E"');
 		switch($no){
 /*
 *	最初の画面 | 0
@@ -143,7 +144,7 @@ class Menu implements ChatInput {
 					["チャット",20],
 					["メール",10],
 					["エリア転送",30],
-					["§f■ メニューを閉じる",false],
+					["§f{$uma} メニューを閉じる",false],
 				];
 			break;
 /*
@@ -160,7 +161,7 @@ class Menu implements ChatInput {
 					["§7§l所持金§r {$meu}",false],
 					["§7§l自宅§r {$address}",false],
 					["§7§lプレイ§r {$time} {$day}日目",false],
-					["§f■ 戻る",false],
+					["§f{$uma} 戻る",false],
 				];
 			break;
 /*
@@ -185,7 +186,7 @@ class Menu implements ChatInput {
                     $ar[] = ["§7§l　価格§r §f{$price}",false];
 					$ar[] = ["この土地を買う",4];
 				}
-				$ar[] = ["§f■ 戻る",false];
+				$ar[] = ["§f{$uma} 戻る",false];
 			break;
 			case 4:
 				$x = round($player->x); $z = round($player->z);
@@ -196,7 +197,7 @@ class Menu implements ChatInput {
 					["購入します。よろしいですか？",false],
 					["いいえ",3],
 					["はい",5],
-					["§f■ トップへ戻る",false],
+					["§f{$uma} トップへ戻る",false],
 				];			
 			break;
 			case 5:
@@ -210,13 +211,13 @@ class Menu implements ChatInput {
 						["§2[[ 完了 ]]",false],
 						["§7住所 §f{$address} §7を",false],
 						["購入しました。",false],
-						["§f■ トップへ戻る",false],
+						["§f{$uma} トップへ戻る",false],
 					];
 				}else{
 					$ar = [
 						["§2[[ 失敗 ]]",false],
 						["§7購入できませんでした。",false],
-						["§f■ トップへ戻る",false],
+						["§f{$uma} トップへ戻る",false],
 					];
 				}
 			break;
@@ -262,7 +263,7 @@ class Menu implements ChatInput {
 
 			if($page > 0)   $ar[] = ["§a前のページへ", 9]; //最初のページでなければ 
 			if($cnt === 17) $ar[] = ["§a次のページへ", 11]; //要素が0でなければ
-			$ar[] = ["§f■ トップへ戻る",false];
+			$ar[] = ["§f{$uma} トップへ戻る",false];
 
 			break;
 
@@ -279,7 +280,7 @@ class Menu implements ChatInput {
 					["周囲",21],
 					["全体",22],
 					["指定プレイヤー(tell)",23],
-					["§f■ トップへ戻る",false],
+					["§f{$uma} トップへ戻る",false],
 				];
 			break;
 			case 21:
@@ -290,7 +291,7 @@ class Menu implements ChatInput {
 					["§2[[ チャットモード ]]",false],
 					["チャットを「周囲」に発言",false],
 					["に設定しました。",false],
-					["§f■ 戻る",false],
+					["§f{$uma} 戻る",false],
 				];
 			break;
 			case 22:
@@ -301,7 +302,7 @@ class Menu implements ChatInput {
 					["§2[[ チャットモード ]]",false],
 					["チャットを「全体」に発言",false],
 					["に設定しました。",false],
-					["§f■ 戻る",false],
+					["§f{$uma} 戻る",false],
 				];
 			break;
 			case 23:
@@ -313,7 +314,7 @@ class Menu implements ChatInput {
 					["§7[[ チャットモード ]]",false],
 					["プレイヤー名を入力してください",false],
 					["(チャット画面で打って送信)",false],
-					["§f■ やめる",false],
+					["§f{$uma} やめる",false],
 				];
 			break;
 			case 24:
@@ -322,7 +323,7 @@ class Menu implements ChatInput {
 					["§4[[ チャットモード ]]",false],
 					["チャットを{$targetName}さんに",false],
 					["直接送信します",false],
-					["§f■ 戻る",false],
+					["§f{$uma} 戻る",false],
 				];
 			break;
 			case 30:
@@ -343,7 +344,7 @@ class Menu implements ChatInput {
 					$p = Connection::getPlaceByNo(2);
 					$ar[] = ["{$p->getName()} へ行く", 32];
 				}
-				$ar[] = ["§f■ 戻る",false];
+				$ar[] = ["§f{$uma} 戻る",false];
 			break;
 			case 31: case 32: 
 				if($isFirst){
@@ -353,7 +354,7 @@ class Menu implements ChatInput {
 						$ar = [
 							["§4[[ 転送 ]]",false],
 							["エラー", false],			
-							["§f■ 戻る",false],
+							["§f{$uma} 戻る",false],
 						];
 					}
 				}
@@ -361,7 +362,7 @@ class Menu implements ChatInput {
 				$ar = [
 					["§4[[ 転送 ]]",false],
 					["エラー", false],			
-					["§f■ 戻る",false],
+					["§f{$uma} 戻る",false],
 				];
 			break;
 
