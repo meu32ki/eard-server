@@ -195,6 +195,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						}else{
 							$s->sendMessage(Chat::SystemToPlayer("/co addr address:port のように入力"));				
 						}
+					}else{
+						$s->sendMessage(Chat::SystemToPlayer("パラメータおかしいで、なおして /co [place|addr]"));
 					}
 				}else{
 					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /co [place|addr]"));
