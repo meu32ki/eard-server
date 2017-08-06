@@ -20,6 +20,7 @@ use Eard\Account;
 use Eard\Chat;
 use Eard\BlockObject\ChatInput;
 use Eard\Main;
+use Eard\Connection;
 
 
 /***
@@ -141,7 +142,7 @@ class Menu implements ChatInput {
 					["GPS (座標情報)",3],
 					["チャット",20],
 					["メール",10],
-					["資源区域に移動",30],
+					["エリア転送",30],
 					["§f■ メニューを閉じる",false],
 				];
 			break;
@@ -324,11 +325,45 @@ class Menu implements ChatInput {
 					["§f■ 戻る",false],
 				];
 			break;
-
 			case 30:
-				Connection::goToResourceArea($playerData);
-			break;
+				$ar = [
+					["§7[[ 転送 ]]",false],
+					["どこへ行きますか？", false],
+					["選択次第、即", false],
+					["転送開始します。", false],
+				];
 
+				// くそコード
+				$thisplace = Connection::getPlace();
+				if( Connection::getPlaceByNo(1) !== $thisplace){
+					$p = Connection::getPlaceByNo(1);
+					$ar[] = ["{$p->getName()} へ行く", 31];
+				}
+				if( Connection::getPlaceByNo(2) !== $thisplace){
+					$p = Connection::getPlaceByNo(2);
+					$ar[] = ["{$p->getName()} へ行く", 32];
+				}
+				$ar[] = ["§f■ 戻る",false];
+			break;
+			case 31: case 32: 
+				if($isFirst){
+					$placeNo = $no - 30;
+					$result = Connection::Transfer($playerData, Connection::getPlaceByNo($placeNo));
+					if($result === -1){
+						$ar = [
+							["§4[[ 転送 ]]",false],
+							["エラー", false],			
+							["§f■ 戻る",false],
+						];
+					}
+				}
+				// 1かいめで転送できてないということはエラーなので
+				$ar = [
+					["§4[[ 転送 ]]",false],
+					["エラー", false],			
+					["§f■ 戻る",false],
+				];
+			break;
 
 
 //閉じてるよ画面

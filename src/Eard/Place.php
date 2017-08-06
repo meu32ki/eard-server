@@ -174,7 +174,7 @@ class Place {
 				$stat = (int) $row['stat'];
 				$updatedTime = $row['lastupdate'];
 			}
-			if(time() < strtotime($updatedTime) + 300){//5分以上前のデータであったらタイムアウトで4を返す
+			if(time() < strtotime($updatedTime) + 180){//3分以上前のデータであったらタイムアウトで4を返す
 				$stat = self::STAT_UNKNOWN;
 			}
 			return $stat;
@@ -187,7 +187,7 @@ class Place {
 	*	@return String
 	*/
 	public function getStatusTxt(){
-		$stat = self::getStatus();
+		$stat = $this->getStatus();
 		switch($stat){
 			case self::STAT_ONLINE:
 				$out = "Opened (転送可能)"; break;

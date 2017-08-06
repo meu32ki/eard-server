@@ -20,7 +20,7 @@ class Connection {
 	*	生活側で使うメソッド。飛ばせるか確認の処理などをすべてこちらで行う。
 	*	@return Int 	-1 ~ 1 (-1..エラー発生, 0...不一致のため入れず 1...はいれる)
 	*/
-	public static function goToResourceArea(Account $PlayerData){
+	public static function Transfer(Account $PlayerData, Place $place){
 		$player = $PlayerData->getPlayer();
 		if(!$player){
 			MainLogger::getLogger()->notice("§cConnection: Player not found...");
@@ -37,16 +37,19 @@ class Connection {
 		}
 
 		// 転送先が開いているかチェック
-
+		if($place->getStatus() !== Place::STAT_ONLINE){
+			$statustxt = $place->getStatusTxt();
+			$msg = Chat::SystemToPlayer("現在転送先は {$statustxt} の状態なので、転送はできません。");
+			$player->sendMessage($msg);
+			return -1;
+		}
 
 
 		// 転送モードに移行、これをいれると、quitの時のメッセージが変わる
 		$PlayerData->setNowTransfering(true);
 
 		// 実際飛ばす処理
-		$player->transfer(self::$resource_addr, self::$resource_port); // あらゆる処理の最後に持ってくるべき
-		//$PlayerData->setNowTransfering(false);
-	
+		$player->transfer($place->getAddr(), $place->getPort()); // あらゆる処理の最後に持ってくるべき
 	}
 
 

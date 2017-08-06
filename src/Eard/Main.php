@@ -260,6 +260,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		}
 	}
 
+
 	/*
 	 * スキンデータをセーブ
 	 */
@@ -277,6 +278,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		}
 		return false;
 	}
+
 
 	public static function getInstance(){
 		return self::$instance;
