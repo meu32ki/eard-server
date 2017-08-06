@@ -51,8 +51,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 	public function reconnect(){
 		Connection::load();
-		//Connection::setup();
-		Connection::getPlace()->makeOnline();
+		// Connection::setup();
 
 		# Muni関連
 		AreaProtector::load();

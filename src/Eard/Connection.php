@@ -2,21 +2,14 @@
 
 namespace Eard;
 
-
 # Basic
+use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 
 class Connection {
 	
 	//placeをオブジェクトごとに分ける作業 2017/7/19
-
-	private static $urban_addr = "";
-	private static $urban_port = "";
-
-	private static $resource_addr = "";
-	private static $resource_port = "";
-
 	private static $placeNo = 0; //このサバは、どちらに当たるのかを指定
 	private static $places = [];
 
@@ -106,11 +99,14 @@ class Connection {
 	*	初期セットアップ。データベースのセットアップ。
 	*/
 	public static function setup(){
-		$sql = "INSERT INTO statistics_server (name, place, stat) VALUES ('せいかつ', '1', '".self::STAT_PREPAREING."'); ";
-		$sql2 = "INSERT INTO statistics_server (name, place, stat) VALUES ('しげん', '2', '".self::STAT_PREPAREING."'); ";
+		$sql = "INSERT INTO statistics_server (place, name, stat) VALUES ('1', '生活区域', '".Place::STAT_PREPAREING."'); ".
+				"INSERT INTO statistics_server (place, name, stat) VALUES ('2', '資源区域', '".Place::STAT_PREPAREING."'); ".
+				"INSERT INTO statistics_server (place, name, stat) VALUES ('8', '開発区域-生活', '".Place::STAT_PREPAREING."'); ".
+				"INSERT INTO statistics_server (place, name, stat) VALUES ('9', '開発区域-資源', '".Place::STAT_PREPAREING."'); ".
+				"";
+				echo $sql;
 		$db = DB::get();
 		$result = $db->query($sql);
-		$result2 = $db->query($sql2);
 	}
 
 /*	プレイヤーのステータス
@@ -136,7 +132,6 @@ class Connection {
 		}
 	}
 
-
 /*	クラスで使うデータ
 */
 
@@ -151,32 +146,26 @@ class Connection {
 
 		self::$places[1] = new Place(1);
 		self::$places[2] = new Place(2);
+		self::$places[8] = new Place(8); //開発用のさばの場合
 		self::$places[9] = new Place(9); //開発用のさばの場合
 
-		$data = DataIO::load('ConnectionAddr');
-		if($data){
+		// この鯖の情報を書き込む。オンラインにする。
+		if(self::$placeNo){
+			$place = self::$places[self::$placeNo];
 
-			$living = self::getPlaceByNo(1);
-			$living->setAddr($data[0]);
-			$living->setPort($data[1]);
+			// この鯖のIPをportの情報を書き込み
+			$ip = self::getIpOfThis();
+			$port = Server::getInstance()->getPort();
+			$place->writeAddrInfo($ip, $port);
 
-			$resource = self::getPlaceByNo(2);
-			$resource->setAddr($data[2]);
-			$resource->setPort($data[3]);
+			// この鯖をオンラインと記録
+			$place->makeOnline();
 
-			$flag = true;
-			if( !$living->getAddr() || !$living->getPort() ){
-				$flag = false;
-				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems LIVING value is empty. It'll no longer work properly!");
+			// 他のサバのIPやportを取得
+			foreach(self::$places as $placeNo => $p){
+				if($placeNo == self::$placeNo) continue;
+				$p->loadAddrInfo();
 			}
-			if( !$resource->getAddr() || !$resource->getPort() ){
-				$flag = false;
-				MainLogger::getLogger()->notice("§eConnection: addr data has been loaded, but it seems RESOURCE value is empty. It'll no longer work properly!");
-			}
-
-			if($flag) MainLogger::getLogger()->notice("§aConnection: addr data has been loaded");
-		}else{
-			MainLogger::getLogger()->notice("§eConnection: Cannnot load addr data. You should set your 'connection addr' immedeately!");
 		}
 	}
 
@@ -193,31 +182,42 @@ class Connection {
 		}
 	}
 
-	public static function writeAddr($placeNo, $txt){
-		$ar = explode(":", $txt);
-		$addr = $ar[0];
-		$port = isset($ar[1]) ? $ar[1] : 0;
-		if($port && (int) $port > 0){
-			$place = self::getPlaceByNo($placeNo);
-			$place->setAddr($port);
-			$place->setPort($addr);
+	/**
+	*	urlにアクセスして、得られたjsonをarrayにして返す
+	*	@param String URL (http://からはじまる)
+	*	@return Array
+	*/
+	private static function curlUnit($url){
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		// curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+		// curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+		$response = curl_exec($curl);
+		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		curl_close($curl);
 
-			$living = self::getPlaceByNo(1);
-			$resource = self::getPlaceByNo(2);
-			$data2 = [
-				$living->getAddr(),
-				$living->getPort(),
-				$resource->getAddr(),
-				$resource->getPort()
-			];
-			$result = DataIO::save('ConnectionAddr', $data2);
-			if($result){
-				MainLogger::getLogger()->notice("§aConnection: addr data has been saved");
-				return true;
+		if($httpcode){
+			if($httpcode < 300){
+				return json_decode($response, true);
+			}else{
+				return false; //404
 			}
-			return false;
 		}else{
 			return false;
 		}
+	}
+
+	/**
+	*	この鯖のIPを取得する。開ける場所によって異なる。
+	*/
+	public static function getIpOfThis(){
+		$data = self::curlUnit("http://eard.32ki.net/lib/api/ip.php");
+		if(!$data){
+			MainLogger::getLogger()->notice("§cConnection: IPデータ取得失敗");
+			return false;
+		}
+
+		return $data["ip"];
 	}
 }
