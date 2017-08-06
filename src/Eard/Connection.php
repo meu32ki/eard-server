@@ -44,12 +44,21 @@ class Connection {
 			return -1;
 		}
 
+		// 接続先情報
+		$addr = $place->getAddr();
+		$port = $place->getPort();
+		if(!$addr or !$port){
+			$msg = Chat::SystemToPlayer("転送先の情報が不明です。管理者に報告してください。");		
+			$player->sendMessage($msg);
+			// echo "{$addr}:{$port}";
+			return -1;
+		}
 
 		// 転送モードに移行、これをいれると、quitの時のメッセージが変わる
 		$PlayerData->setNowTransfering(true);
 
 		// 実際飛ばす処理
-		$player->transfer($place->getAddr(), $place->getPort()); // あらゆる処理の最後に持ってくるべき
+		$player->transfer($addr, $port); // あらゆる処理の最後に持ってくるべき
 	}
 
 
@@ -167,7 +176,6 @@ class Connection {
 
 		// 他のサバのIPやportを取得
 		foreach(self::$places as $placeNo => $p){
-			if($placeNo == self::$placeNo) continue;
 			$p->loadAddrInfo();
 		}
 	}
