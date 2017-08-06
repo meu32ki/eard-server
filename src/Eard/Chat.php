@@ -71,6 +71,7 @@ class Chat {
 		// モードに従ったチャット
 		$e->setCancelled(true);
 		switch($chatmode){
+			// 周囲、みどりいろ
 			case self::CHATMODE_VOICE:
 				if($targets = self::searchTarget($player)){ // $targets = Player[]
 					// 周囲に誰かいる
@@ -87,10 +88,12 @@ class Chat {
 					$player->sendMessage($msg);
 				}
 				break;
+			// 全体、みずいろ
 			case self::CHATMODE_ALL:
 				$msg = self::Format($player->getDisplayName(), "§b全体", $message);
 				Server::getInstance()->broadcastMessage($msg);
 				break;
+			// 個人、オレンジ色
 			case self::CHATMODE_PLAYER:
 				if(!isset($target)) $target = $playerData->getChatTarget();
 				if($target && $target->isOnline()){
@@ -114,6 +117,7 @@ class Chat {
 					}
 				}
 				break;
+			// 複数人、オレンジ色
 			case self::CHATMODE_PLAYERS:
 				$senderName = $player->getDisplayName();
 				$displayTargetNames = "";
@@ -134,6 +138,7 @@ class Chat {
 				$consoleMsg = $msg;
 				$player->sendMessage($msg);
 				break;
+			// しすてむ、ピンク色
 			case self::CHATMODE_ENTER:
 				$msg = self::Format($player->getDisplayName(), "§dシステム", $message);
 				$consoleMsg = $msg;
