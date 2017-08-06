@@ -3,7 +3,7 @@ namespace Eard;
 
 
 # Basic
-//use pocketmine\Player;
+use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 # Event
@@ -269,7 +269,7 @@ class Event implements Listener{
 			$victim = $e->getEntity();//喰らった人
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
-			if($victim instanceof Player){
+			if($victim instanceof Player && $damager instanceof Player){
 				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 				MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
 				$e->setCancelled(true);
