@@ -160,12 +160,12 @@ class Connection {
 
 			// この鯖をオンラインと記録
 			$place->makeOnline();
+		}
 
-			// 他のサバのIPやportを取得
-			foreach(self::$places as $placeNo => $p){
-				if($placeNo == self::$placeNo) continue;
-				$p->loadAddrInfo();
-			}
+		// 他のサバのIPやportを取得
+		foreach(self::$places as $placeNo => $p){
+			if($placeNo == self::$placeNo) continue;
+			$p->loadAddrInfo();
 		}
 	}
 
