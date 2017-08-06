@@ -1,11 +1,12 @@
 <?php
 namespace Eard;
 
-
+# Basic
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
+# Eard
 use Eard\Account\Menu;
 use Eard\Account\Mail;
 use Eard\Account\itemBox;
