@@ -83,7 +83,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 		$no = $this->menu[$player->getName()][0];
 		switch($no){
 			case 3:
-			case 33:
+			case 38:
 				$ar = explode(":", $txt);
 				$cnt = count($ar);
 				if($cnt === 2){
@@ -111,7 +111,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 				if($no == 3){
 					$this->sendPageData(16, $player);
 				}elseif($no == 33){
-					$this->sendPageData(46, $player);
+					$this->sendPageData(49, $player);
 				}
 			break;
 		}
@@ -141,7 +141,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 			$ar = [
 				["{$thisname}", false],
 				["アイテムを買う", 2],
-				["アイテムを売る", 32],
+				["アイテムを売る", 37],
 			];
 			$name = strtolower($player->getName());
 			if($name === "meu32ki" || $name === "32ki"){
@@ -206,23 +206,49 @@ class EarmazonShop implements BlockObject, ChatInput {
 			$view->setId($id, $meta);
 			$ar = $this->makeList($player);
 			break;
-		case 20: case 21: case 22: case 23: case 24:
+		case 20: case 21: case 22: case 23: case 24: // 1ページに5つ、アイテムがのってるから
 			// 購入 商品
 			$key = $no - 20;
 			$unitno = $view->getKeys()[$key];
 			if($unitno){
 				$unit = Earmazon::getBuyUnit($unitno);
 				if($unit){
-					$id = $unit[0]; $meta = $unit[1];
-					$itemname = ItemName::getNameOf($id, $meta);
-					$ar = [
-						["{$thisname} 購入>決定", false],
-						["{$itemname}", false],
-						["64つ 購入", 30],
-						["10つ 購入", 29],
-						["1つ 購入", 28],
-						["戻る", 27]
-					];
+					$id = $unit[0]; $meta = $unit[1]; $leftamount = $unit[2]; $unitprice = $unit[3];
+
+					// 最大でいくつ買うことができる状態にあるかを出す
+					$playerData = Account::get($player);
+					$meuAmount = $playerData->getMeu()->getAmount();
+					$canbuy = floor($meuAmount / $unitprice); // 今持ってる金で最大幾つかえるか
+					$buyableamount = min(64, $leftamount, $canbuy); // 買える最大の数(ユニットの残数、プレイや0のお金でいくつかえるか、など)
+
+					// そもそも、買える？
+					if($buyableamount){
+						$itemname = ItemName::getNameOf($id, $meta);
+
+						// リスト作る
+						$ar = [
+							["{$thisname} 購入>決定", false],
+							["{$itemname} をいくつ買いますか？", false],
+						];
+
+						// 最大購入可能数に応じて
+						$pricear = [1,2,3,4,8,16,32,48,64];
+						$cnt = 1;
+						foreach($pricear as $key => $am){
+							if($am <= $buyableamount){ // 買える個数より少なければリストに追加(まとめ買いは最大64個)
+								$ar[] = ["{$am}個", 28 + $key, $cnt % 3 === 0 ? "\n" : " "];
+								++$cnt;
+							}
+						}
+					}else{
+						$ar = [
+							["{$thisname} 購入>エラー", false],
+							["お金が足りないようです。", false],
+							["(所持金: {$meuAmount}μ)", false],
+							["戻る",27]
+						];
+					}
+
 					$view->setUnitNo($unitno);
 				}else{
 					$ar = [
@@ -242,8 +268,9 @@ class EarmazonShop implements BlockObject, ChatInput {
 			// 27の場合はなにもしない
 			$ar = $this->makeList($player);
 			break;
-		case 28: case 29: case 30:
-			$pricear = [1,10,64];
+		case 28: case 29: case 30: case 31:
+		case 32: case 33: case 34: case 35: case 36:
+			$pricear = [1,2,3,4,8,16,32,48,64];
 			$amount = $pricear[$no - 28];
 			$playerData = Account::get($player);
 
@@ -266,20 +293,20 @@ class EarmazonShop implements BlockObject, ChatInput {
 			break;
 
 
-		case 32:
+		case 37:
 			$view->setMode(2);
 			$view->setCategory(0);
 			$view->setId(0, 0);
 			$ar = [
 				["{$thisname} 売却", false],
-				["IDとダメージ値から検索",33],
-				["カテゴリーから検索",34],
-				["全アイテムを検索",27],
+				["IDとダメージ値から検索",38],
+				["カテゴリーから検索",39],
+				["全アイテムを検索",57],
 				// ["手持ちから売れるものを検索", ]
 				["戻る", 1]
 			];
 			break;
-		case 33:
+		case 38:
 			// 売却 検索 ID
 			$playerData = Account::get($player);
 			$playerData->setChatMode(Chat::CHATMODE_ENTER);
@@ -289,34 +316,34 @@ class EarmazonShop implements BlockObject, ChatInput {
 				["159:9 や 21 のように",false],
 				["数字と、メタ値がある場合は",false],
 				[":を使い入力してください。",false],
-				["戻る",32]
+				["戻る",37]
 			]; // Chat経由で16へ
 			break;
-		case 34:
+		case 39:
 			// 売却 検索 カテゴリ
 			$ar = [
 				["{$thisname} 売却>検索", false],
-				["一般ブロック",35, " "],
-				["装飾用ブロック",36, " "],
-				["鉱石系",37],
-				["設置ブロック", 38, " "],
-				["草花",39, " "],
-				["RS系統",40],
-				["素材", 41, " "],
-				["ツール", 42, " "],
-				["食べ物", 43, " "],
-				["戻る",32]
+				["一般ブロック", 40, " "],
+				["装飾用ブロック", 41, " "],
+				["鉱石系", 42],
+				["設置ブロック", 43, " "],
+				["草花",44, " "],
+				["RS系統",45],
+				["素材", 46, " "],
+				["ツール", 47, " "],
+				["食べ物", 48, " "],
+				["戻る",37]
 			];
 			break;
-		case 35: case 36: case 37: case 38: case 39: case 40: case 41: case 42: case 43:
+		case 40: case 41: case 42: case 43: case 44: case 45: case 46: case 47: case 48:
 			// 売却 検索 カテゴリ
-			$category = $no - 34;
+			$category = $no - 39;
 
 			$view->setId(0, 0);
 			$view->setCategory($category);
 			$ar = $this->makeList($player);
 			break;
-		case 46:
+		case 49:
 			// 売却 検索 ID
 			$id = $view->id;
 			$meta = $view->meta;
@@ -332,16 +359,45 @@ class EarmazonShop implements BlockObject, ChatInput {
 			if($unitno){
 				$unit = Earmazon::getSellUnit($unitno);
 				if($unit){
-					$id = $unit[0]; $meta = $unit[1];
+					$id = $unit[0]; $meta = $unit[1]; $leftamount = $unit[2]; $unitprice = $unit[3];
 					$itemname = ItemName::getNameOf($id, $meta);
 					$ar = [
 						["{$thisname} 売却>決定", false],
-						["{$itemname}", false],
-						["64つ 売却", 60],
-						["10つ 売却", 59],
-						["1つ 売却", 58],
-						["戻る", 57]
+						["{$itemname} をいくつ売りますか？", false],
+						["戻る", 27, " "]
 					];
+
+					// 最大でいくつ売ることができる状態にあるか
+					/*
+					// todo: インベントリからあいてむこすうしゅとくしてぶんまわしするやつ
+					$playerData = Account::get($player);
+					$meuAmount = $playerData->getMeu()->getAmount();
+					$canbuy = floor($meuAmount / $unitprice); // 今持ってる金で最大幾つかえるか
+					if(64 <= $canbuy && 64 <= $leftamount){
+						$buyableamount = 64;
+					}else{
+						$buyableamount = ($leftamount < $canbuy) ? $leftamount : $canbuy;
+					}
+					*/
+					// スタックされている中で一番多いindexをさがし
+					$items = $player->getInventory()->getContents();
+					$sellableamount = 0;
+					foreach($items as $index => $item){
+						if($item->getId() == $id && $item->getDamage() == $meta){
+							$sellableamount = $sellableamount < $item->getCount() ? $item->getCount() : $sellableamount;
+						}
+					}
+
+					// リスト作る
+					$pricear = [1,2,3,4,8,16,32,48,64];
+					$cnt = 2;
+					foreach($pricear as $key => $am){
+						if($am <= $sellableamount){ // 買える個数より少なければリストに追加(まとめ買いは最大64個)
+							$ar[] = ["{$am}個", 58 + $key, $cnt % 5 === 0 ? "\n" : " "];
+							++$cnt;
+						}
+					}
+
 					$view->setUnitNo($unitno);
 				}else{
 					$ar = [
@@ -361,8 +417,9 @@ class EarmazonShop implements BlockObject, ChatInput {
 			// 27の場合はなにもしない
 			$ar = $this->makeList($player);
 			break;
-		case 58: case 59: case 60:
-			$pricear = [1,10,64];
+		case 58: case 59: case 60: case 61: 
+		case 62: case 63: case 64: case 65: case 66:
+			$pricear = [1,2,3,4,8,16,32,48,64];
 			$amount = $pricear[$no - 58];
 			$playerData = Account::get($player);
 

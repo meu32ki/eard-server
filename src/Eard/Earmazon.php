@@ -117,9 +117,9 @@ class Earmazon {
 	*/
 	public static function removeFromStorage($id, $meta, $amount){
 		$sql = "UPDATE earmazon_itemstorage SET amount = amount - {$amount} WHERE id = {$id} and meta = {$meta};";
-		echo $sql."\n";
+		// echo $sql."\n";
 		$result = DB::get()->query($sql);
-		echo $result;
+		// echo $result;
 		return $result."\n";
 	}
 
@@ -264,8 +264,8 @@ class Earmazon {
 					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}', now() ); ";
 		$result = $db->query($sql);
 
-		echo $sql.": {$result}\n";
-		echo $db->error;
+		// echo $sql.": {$result}\n";
+		// echo $db->error;
 		return $result;
 	}
 
@@ -279,7 +279,8 @@ class Earmazon {
 	*/
 	public static function playerBuy($unitno, $amount, $playerData){
 		$unitData = self::getBuyUnit($unitno);
-		
+		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;		
+
 		// リストにあったものがまだ売れ残っているか
 		if(!$unitData){
 			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "ユニットの情報が見当たりませんでした"));
@@ -291,28 +292,27 @@ class Earmazon {
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 		$storageamount = self::getStorageAmount($id, $meta);
-		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;
 
 		// ストレージに在庫がない 販売リストの点数が切れた ら売れないよね
 		if($storageamount == -1){
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。そんなアイテムありません。"));			
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7そんなアイテムありません。"));			
 		}
 
 		if(!$storageamount or !$unitamount){
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。Earmazonのストレージに在庫がありません。販売再開には、誰かがそのアイテムを売る必要があります。"));
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7Earmazonのストレージに在庫がありません。販売再開には、誰かがそのアイテムを売る必要があります。"));
 			return false;
 		}
 
 		// 64個以上のまとめうりは無理よ(おもにインベントリ関係がめんどくさいから)
 		if(64 < $amount){
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。1スタック以上のまとめ買いはできません。このエラーが出たら報告してください。"));
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§71スタック以上のまとめ買いはできません。"));
 			return false;
 		}
 
 		// 在庫のほうが少なかったら売れないよね
 		// 販売リストのチェックも兼ねている
 		if($unitamount < $amount or $storageamount < $amount){
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。あなたは、在庫にあるよりも多くの数量を指定しています。"));
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7あなたは、在庫にあるよりも多くの数量を指定しています。"));
 			return false;
 		}
 
@@ -327,7 +327,7 @@ class Earmazon {
 			$inv = $playerData->getItemBox();
 			$item = Item::get($id, $meta, $amount);
 			if(!$inv->canAddItem($item)){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。手持ちのアイテムがいっぱいです。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7手持ちのアイテムがいっぱいです。"));
 				// 手持ちのアイテムいっぱいだったらかえないよね
 				return false;
 			}
@@ -337,20 +337,20 @@ class Earmazon {
 			// payが足りているかの確認 プレイヤーからもらう処理
 			$pay = $price * $amount;
 			if(!Government::receiveMeu($playerData, $pay)){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "エラー。お金が足りません。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7お金が足りません。"));
 				return false;
 			}
 
 			// 販売りすとの点数からひいてく
 			if(!self::removeFromBuyUnit($unitno, $amount)){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "出るべきでないエラー。販売リストから減らす処理に失敗しました。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7販売リストから残数を減らす処理に失敗しました。"));
 				Government::giveMeu($playerData, $pay); // 送金処理を戻す
 				return false;
 			}
 
 			// ストレージから減らす
 			if(!self::removeFromStorage($id, $meta, $amount)){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "出るべきでないエラー。ストレージから減らす処理に失敗しました。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を減らす処理に失敗しました。"));
 				self::addIntoBuyUnit($unitno, $amount); // 販売リストの点数戻す
 				Government::giveMeu($playerData, $pay); // 送金処理を戻す
 				return false;
@@ -519,8 +519,8 @@ class Earmazon {
 					"VALUES ('{$category}', '{$flag}', '{$id}', '{$meta}', '{$amount}','{$amount}', '{$price}', now() ); ";
 		$result = $db->query($sql);
 
-		echo $sql."\n";
-		echo $db->error;
+		// echo $sql."\n";
+		// echo $db->error;
 
 		return $result;
 	}
@@ -535,9 +535,11 @@ class Earmazon {
 	*/
 	public static function playerSell($unitno, $amount, $playerData){
 		$unitData = self::getSellUnit($unitno);
-		
-		// リストにあったものがまだ買取可能か
+		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;		
+
+		// リストにあったものがまだ売れ残っているか
 		if(!$unitData){
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "ユニットの情報が見当たりませんでした"));
 			return false;
 		}
 
@@ -546,24 +548,33 @@ class Earmazon {
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 
+		echo "{$id} {$meta} {$unitamount} {$price}";
+
 		if($itemBox = $playerData->getItemBox()){
 			// PMMPから
 
 			// playerオブジェクトが入っていなければ終了
 			$player = $playerData->getPlayer();
-			if(!$player instanceof Player or !$player->isOnline()){
+			if(!($player instanceof Player) or !$player->isOnline()){
 				return false;
+			}
+
+			// idがしぬ
+			if(!$id){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7売りに出すアイテムidが0です。"));
 			}
 
 			// 64個以上のまとめうりは無理よ(おもにインベントリ関係がめんどくさいから)
 			if(64 < $amount){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7売る数量として、無効な値が選択されています。"));
 				return false;
 			}
 
 			// 在庫のほうが少なかったら売れないよね
 			// 販売リストのチェックも兼ねている
 			if($unitamount < $amount){
-				return false;
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "買取可能な個数を超えていたため、{$amount}個のうち{$unitamount}個を売りに出しました。"));
+				$amount = $unitamount;
 			}
 
 			$inv = $player->getInventory();
@@ -571,31 +582,47 @@ class Earmazon {
 			// 売るアイテムが、売る個数ぶんはいっているか？
 			// removeの確認
 			$item = Item::get($id, $meta, $amount); // 売りに出すアイテム プレイヤーからcontainsをかける
+
+			var_dump( $item );
+
 			if(!$inv->contains($item)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7売りに出すアイテムが手持ちに含まれていません。"));
 				return false; 
 			}
 
 			# 買取の処理
 
 			// 政府に金があるかチェック プレイヤーに金渡す
+			$pay = $price * $amount;
 			if(!Government::giveMeu($playerData, $pay)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7政府には、あなたのアイテムを買い取るだけの予算が残っていません。"));
 				return false;
 			}
 
 			// 販売りすとの点数からひいてく
-			if(!self::removeFromBuyUnit($unitno, $amount)){
+			if(!self::removeFromSellUnit($unitno, $amount)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7買取リストから残数を減らす処理に失敗しました。"));
 				Government::receiveMeu($playerData, $pay);
 				return false;
 			}
 
 			// ストレージに入れる
 			if(!self::addIntoStorage($id, $meta, $amount)){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を増やす処理に失敗しました。"));
 				self::addIntoBuyUnit($unitno, $amount);
 				Government::receiveMeu($playerData, $pay);
 				return false;				
 			}
 
-			$inv->remove($item, true); //trueはすぐに反映させるかどうか
+			try{
+				$inv->removeItem($item); //trueはすぐに反映させるかどうか
+				return true;
+			}catch(\InvalidArgumentException $e){
+				self::addIntoBuyUnit($unitno, $amount);
+				Government::receiveMeu($playerData, $pay);
+				self::removeFromStorage($id, $meta, $amount);
+				return false;
+			}
 		}else{
 			// Webから
 			return false; // todo ちゃんと処理追加しろ
