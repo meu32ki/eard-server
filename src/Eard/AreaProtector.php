@@ -292,7 +292,7 @@ class AreaProtector{
 				return false;
 			}
 
-			if(!self::giveSection($player, $sectionNoX, $sectionNoZ) ){
+			if(!self::giveSection($playerData, $sectionNoX, $sectionNoZ) ){
 				$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
 				return false;
 			}
