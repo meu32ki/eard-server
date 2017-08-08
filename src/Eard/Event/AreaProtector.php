@@ -339,6 +339,9 @@ class AreaProtector{
 				return false;
 			}
 
+			$address = self::getSectionCode($sectionNoX, $sectionNoZ);
+			$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が {$address} を {$price} で購入しました。");
+			MainLogger::getLogger()->info($msg);
 			return true;
 		}else{
 			//ログイン
