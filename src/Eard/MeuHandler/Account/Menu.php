@@ -210,20 +210,24 @@ class Menu implements ChatInput {
 				$sectionNoX = AreaProtector::calculateSectionNo($x);
 				$sectionNoZ = AreaProtector::calculateSectionNo($z);
 				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
-				$result = AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
-				if($result){
-					$ar = [
-						["§2[[ 完了 ]]",false],
-						["§7住所 §f{$address} §7を",false],
-						["購入しました。",false],
-						["§f{$uma} トップへ戻る",false],
-					];
+				if($isFirst){
+					$result = AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
+					if($result){
+						$ar = [
+							["§2[[ 完了 ]]",false],
+							["§7住所 §f{$address} §7を",false],
+							["購入しました。",false],
+							["§f{$uma} トップへ戻る",false],
+						];
+					}else{
+						$ar = [
+							["§2[[ 失敗 ]]",false],
+							["§7購入できませんでした。",false],
+							["§f{$uma} トップへ戻る",false],
+						];
+					}
 				}else{
-					$ar = [
-						["§2[[ 失敗 ]]",false],
-						["§7購入できませんでした。",false],
-						["§f{$uma} トップへ戻る",false],
-					];
+					$ar = [ ["§f{$uma} トップへ戻る",false] ];
 				}
 			break;
 /*
