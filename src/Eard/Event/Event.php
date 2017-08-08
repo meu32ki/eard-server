@@ -195,8 +195,10 @@ class Event implements Listener{
 						}
 					}else{
 						// 普通にタップ
-						$r = blockObjectManager::tap($block, $player);
-						$e->setCancelled( $r );
+						if(AreaProtector::canActivateInLivingProtected($blockId)){
+							$r = blockObjectManager::tap($block, $player);
+							$e->setCancelled( $r );
+						}
 					}
 
 				/*	資源区域
@@ -221,10 +223,11 @@ class Event implements Listener{
 		/*	生活区域
 		*/
 		if(Connection::getPlace()->isLivingArea()){
-			if(!AreaProtector::Edit($player, $x, $y, $z)){
-				$e->setCancelled(true);
+			if(AreaProtector::Edit($player, $x, $y, $z)){
+				$r = blockObjectManager::place($block, $player);
+				$e->setCancelled( $r );
 			}else{
-				blockObjectManager::place($block, $player);
+				$e->setCancelled(true);
 			}
 
 		/*	資源区域
@@ -247,11 +250,11 @@ class Event implements Listener{
 		/*	資源区域
 		*/
 		if(Connection::getPlace()->isLivingArea()){
-			if(!AreaProtector::Edit($player, $x, $y, $z)){
-				$e->setCancelled(true);
-			}else{
+			if(AreaProtector::Edit($player, $x, $y, $z)){
 				$r = blockObjectManager::break($block, $player);
 				$e->setCancelled( $r );
+			}else{
+				$e->setCancelled(true);
 			}
 
 		/*	資源区域

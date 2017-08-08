@@ -27,7 +27,7 @@ class AreaProtector{
 	public static $allowBreakAnywhere = true;
 
 	/**
-	*	タップして起動できるか
+	*	資源区域において、タップして起動できるか
 	*	@param int BlockId
 	*	@return bool
 	*/
@@ -45,8 +45,29 @@ class AreaProtector{
 		}
 	}
 
+
 	/**
-	*	設置できるか
+	*	生活区域の保護エリアにおいて、タップして起動できるか
+	*	@param int BlockId
+	*	@return bool
+	*/
+	public static function canActivateInLivingProtected($id){
+		switch($id){
+			case Item::CHEST:
+				return false;
+			break;
+			case Item::BED_BLOCK:
+			case Item::FURNACE:
+			case Item::WORKBENCH:
+			default:
+				return true;
+			break;
+		}
+	}
+
+
+	/**
+	*	資源において、設置できるか
 	*	@param int ItemId
 	*	@return bool
 	*/
