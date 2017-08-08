@@ -318,10 +318,16 @@ class AreaProtector{
 	*	@return bool
 	*/
 	public static function registerSection($player, $sectionNoX, $sectionNoZ){
-		//if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)) return false;
+		
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
 			//購入できるか確認
+
+			// すでに持ってるか
+			if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)){
+				$player->sendMessage(Chat::Format("政府", "その土地はもう持っている人がいます。"));
+				return false;
+			}
 
 			//かねがあるか
 			$price = self::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
@@ -334,11 +340,13 @@ class AreaProtector{
 				return false;
 			}
 
+			// まだ販売できるか
 			if(!self::giveSection($playerData, $sectionNoX, $sectionNoZ) ){
 				$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
 				return false;
 			}
 
+			// 購入処理
 			$address = self::getSectionCode($sectionNoX, $sectionNoZ);
 			$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が {$address} を {$price} で購入しました。");
 			MainLogger::getLogger()->info($msg);
