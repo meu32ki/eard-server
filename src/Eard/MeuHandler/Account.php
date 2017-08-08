@@ -240,13 +240,6 @@ class Account{
 *	DBにほぞんするひつようのあるでーたたち。
 */
 
-	/**
-	*	DBの「番号」 ひとりに1つずつ独立した番号が与えられている。
-	*	setUniqueNoは作る必要はない。(self::loadDataで扱われているので。)
-	*/
-	public function getUniqueNo(){
-		return $this->data[0]; //0が返ってくる場合は何もできないように
-	}
 
 	/**
 	*	所持ミューをMeuにして詰めて返す。Meuの扱い方についてはclass::Meuにて。
@@ -254,6 +247,46 @@ class Account{
 	*/
 	public function getMeu(){
 		return $this->meu;
+	}
+
+	/**
+	*	何かをするのに必要なパーミッションと言っていいだろう。
+	*	@return bool
+	*/
+	public function addLicense(License $license){
+		$this->licenses[$licenseNo] = $license;
+		return true;
+	}
+
+	/**
+	*	そのライセンスを持っていれば返す
+	*	@param int | 各ライセンスに割り当てられた番号
+	*	@return bool | 有効期限の範囲内ならtrue
+	*/
+	public function getLicense($licenseNo){
+		return isset($this->licenses[$licenseNo]) ? $this->licenses[$licenseNo] : null;
+	}
+
+	/**
+	*	そのライセンスが有効期限内であるか。
+	*	$rankに値を入れたばあいには、そのランクを満たしているかもチェックする
+	*	@return bool
+	*/
+	public function hasValidLicense($licenseNo, $rank = false){
+		if(!$rank){
+			$rank = License::RANK_BEGINNER;
+		}
+		$license = $this->getLicense();
+		return $license === null ? false : $license->isValid($rank);
+	}
+
+
+	/**
+	*	DBの「番号」 ひとりに1つずつ独立した番号が与えられている。
+	*	setUniqueNoは作る必要はない。(self::loadDataで扱われているので。)
+	*/
+	public function getUniqueNo(){
+		return $this->data[0]; //0が返ってくる場合は何もできないように
 	}
 
 
@@ -356,34 +389,6 @@ class Account{
 	}
 
 
-	/**
-	*	何かをするのに必要なパーミッションと言っていいだろう。
-	*	@param int | 各ライセンスに割り当てられた番号
-	*	@param timestamp | そのライセンスの有効期限
-	*	@return bool | 
-	*/
-	public function addLicense($licenseNo, $validtime = 0){
-		$validtime = $validtime === 0 ? time() + 600 : $validtime;
-		$this->data[5][$licenseNo] = [$validtime, 1]; // [有効期限, ライセンスのレベル]
-		return true;
-	}
-	/**
-	*	そのライセンスを持っているか返す
-	*	@param int | 各ライセンスに割り当てられた番号
-	*	@return bool | 有効期限の範囲内ならtrue
-	*/
-	public function hasLicense($licenseNo){
-		$r = isset($this->data[5][$licenseNo]) ? $this->data[5][$licenseNo][0] < time() : false;
-		return $r;
-	}
-	/**
-	*	@param int | 各ライセンスに割り当てられた番号
-	*/
-	public function rankupLicense($licenseNo){
-
-	}
-
-
 
 	/*
 		authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
@@ -443,14 +448,14 @@ class Account{
 
 	private $data = [];
 	private static $newdata = [
-		0, // no 二回目の入室以降から使える
-		0, // 所持する金
-		[0,0,0,0], // [初回ログイン,最終ログイン,ログイン累計時間,日数]
-		[], // じゅうしょ 例 [12, 13]　みたいな
-		[], // 所持するせくしょんず
-		[], // らいせんす
-		[], // 土地の共有設定
-		[ [0,0,0] ] //ItemBoxのアイテムの中身
+		0, // 0 no 二回目の入室以降から使える
+		0, // 1 所持する金
+		[0,0,0,0], // 2 [初回ログイン,最終ログイン,ログイン累計時間,日数]
+		[], // 3 じゅうしょ 例 [12, 13]　みたいな
+		[], // 4 所持するせくしょんず
+		[], // 5 らいせんす
+		[], // 6 土地の共有設定
+		[ [0,0,0] ] // 7 ItemBoxのアイテムの中身
 	];
 
 
@@ -522,6 +527,11 @@ class Account{
 					// Meuはwebからとか関係なしに展開する
 					$this->meu = Meu::get($this->data[1], $this->getUniqueNo());
 
+					// ライセンス
+					foreach($this->data[5] as $licenseNo => $d){
+						$this->licenses[$licenseNo] = License::get($licenseNo, $d[0], $d[1]);
+					}
+
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 					return true;
@@ -573,6 +583,13 @@ class Account{
 		// itemBoxがつかわれていたようであればセーブ
 		if( $itemBox = $this->getItemBox()){// itemBoxは必ず展開されているわけではないから
 			$this->setItemArray($itemBox->getItemArray());
+		}
+
+		// ライセンス
+		if($this->licenses){
+			foreach($this->licenses as $LicenseNo => $license){
+				$this->data[5][$licenseNo] = [$license->getValidTime(), $license->getRank()];
+			}
 		}
 
 		// セーブ
