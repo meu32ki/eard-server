@@ -174,16 +174,6 @@ class Event implements Listener{
 			break;
 			default: // それいがい
 
-/*
-				// Menu::馬鎧タップ
-				$item = $e->getItem();
-				$itemId = $item->getId();
-				switch($itemId){
-					case Menu::$menuItem:
-						$playerData->getMenu()->useMenu($e);
-						break;
-				}
-*/
 				/*	生活区域
 				*/
 				if(Connection::getPlace()->isLivingArea()){
