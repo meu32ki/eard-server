@@ -454,7 +454,7 @@ class Menu implements ChatInput {
 			$inv->addItem(Item::get(self::$selectItem, self::getmeta($key)));
 			$key ++;
 		}*/
-		echo "SEND ITEMS\n";
+		// echo "SEND ITEMS\n";
 		$key = 1; //　メニューアイテムのぶん
 		$count = $count + 1; //　メニューアイテムのぶん
 		$windowid = ContainerSetContentPacket::SPECIAL_INVENTORY;// プレイヤーの手持ちインベントリ、windowidは0

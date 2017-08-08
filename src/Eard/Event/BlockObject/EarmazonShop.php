@@ -10,10 +10,10 @@ use pocketmine\math\Vector3;
 use pocketmine\level\particle\FloatingTextParticle;
 
 # Eard
+use Eard\DBCommunication\Earmazon;
+use Eard\MeuHandler\Account;
+use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
-use Eard\Chat;
-use Eard\Earmazon;
-use Eard\Account;
 
 
 /****

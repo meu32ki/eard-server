@@ -9,7 +9,8 @@ use pocketmine\utils\MainLogger;
 # Eard
 use Eard\Utils\DataIO;
 use Eard\MeuHandler\Account;
-use Eard\Event\Chat;
+use Eard\Utils\Chat;
+
 
 class Connection {
 

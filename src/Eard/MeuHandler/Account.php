@@ -7,11 +7,13 @@ use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 # Eard
+use Eard\DBCommunication\DB;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
-use Eard\DBCommunication\DB;
 use Eard\Utils\DataIO;
+use Eard\Utils\Chat;
+
 
 /***
 *
@@ -179,10 +181,10 @@ class Account{
 		if($this->getChatTarget()) $this->removeChatTarget();
 		if($this->getPlayer()){
 			switch($chatmode){
-				case Chat::CHATMODE_VOICE: $name = "§a周囲"; break;
-				case Chat::CHATMODE_ALL: $name = "§b全体"; break;
-				case Chat::CHATMODE_PLAYER: $name = "§6指定プレイヤー"; break;
-				case Chat::CHATMODE_ENTER: $name = "§eシステム"; break;
+				case ChatManager::CHATMODE_VOICE: $name = "§a周囲"; break;
+				case ChatManager::CHATMODE_ALL: $name = "§b全体"; break;
+				case ChatManager::CHATMODE_PLAYER: $name = "§6指定プレイヤー"; break;
+				case ChatManager::CHATMODE_ENTER: $name = "§eシステム"; break;
 			}
 			$this->getPlayer()->sendMessage(Chat::Format("§8システム", "§eチャット発言先が §f「 {$name} §f」 §eに切り替わりました。"));
 		}

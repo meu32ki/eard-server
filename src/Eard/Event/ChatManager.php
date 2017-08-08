@@ -8,11 +8,12 @@ use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 # Eard
-use Eard\MeuHandler\Account;
 use Eard\DBCommunication\Connection;
+use Eard\MeuHandler\Account;
+use Eard\Utils\Chat;
 
 
-class Chat {
+class ChatManager {
 
 	/**
 	 * Playerから指定半径内にいるプレイヤーを探す。複数いる場合は複数返す。
@@ -79,7 +80,7 @@ class Chat {
 			case self::CHATMODE_VOICE:
 				if($targets = self::searchTarget($player)){ // $targets = Player[]
 					// 周囲に誰かいる
-					$msg = self::Format($player->getDisplayName(), "§a周囲", $message);
+					$msg = Chat::Format($player->getDisplayName(), "§a周囲", $message);
 					$consoleMsg = $msg;
 					foreach($targets as $e){
 						$e->sendMessage($msg);
@@ -87,14 +88,14 @@ class Chat {
 					$player->sendMessage($msg);	//じぶんもふくめてsearchTargetしていないため
 				}else{
 					// 周囲に誰一人いない
-					$msg = self::Format($player->getDisplayName(), "§a周囲", "§8周囲に誰もいません: ".$message);
+					$msg = Chat::Format($player->getDisplayName(), "§a周囲", "§8周囲に誰もいません: ".$message);
 					$consoleMsg = $msg;
 					$player->sendMessage($msg);
 				}
 				break;
 			// 全体、みずいろ
 			case self::CHATMODE_ALL:
-				$msg = self::Format($player->getDisplayName(), "§b全体", $message);
+				$msg = Chat::Format($player->getDisplayName(), "§b全体", $message);
 				Server::getInstance()->broadcastMessage($msg);
 				break;
 			// 個人、オレンジ色
@@ -102,14 +103,14 @@ class Chat {
 				if(!isset($target)) $target = $playerData->getChatTarget();
 				if($target && $target->isOnline()){
 					//　指定したターゲットがいまだイオンラインであったら
-					$msg = self::Format($player->getDisplayName(), "§6個人(".$target->getDisplayName().")", $message);
+					$msg = Chat::Format($player->getDisplayName(), "§6個人(".$target->getDisplayName().")", $message);
 					$consoleMsg = $msg;
 					$target->sendMessage($msg);
 					$player->sendMessage($msg);
 				}else{
 					// 指定playerがすでにログアウトしていたら
 					$name = $target ? $target->getDisplayName() : $targetName;
-					$msg = self::Format($player->getDisplayName(), "§6個人({$name})", "§8相手はEardにいません: ".$message);
+					$msg = Chat::Format($player->getDisplayName(), "§6個人({$name})", "§8相手はEardにいません: ".$message);
 					$consoleMsg = $msg;
 					$player->sendMessage($msg);
 					/*
@@ -128,7 +129,7 @@ class Chat {
 				foreach($targetNames as $name){
 					$target = Server::getInstance()->getPlayer($name);
 					if($target && $target->isOnline()){
-						$msg = self::Format($senderName, "§6複数", $message);
+						$msg = Chat::Format($senderName, "§6複数", $message);
 						$target->sendMessage($msg);
 						$displayTargetNames .= $target->getDisplayName;
 					}
@@ -138,13 +139,13 @@ class Chat {
 					$message = "§8相手はEardにいません: {$message}";
 					$displayTargetNames = $targetName;
 				}
-				$msg = self::Format($senderName, "§6複数({$displayTargetNames})", $message);
+				$msg = Chat::Format($senderName, "§6複数({$displayTargetNames})", $message);
 				$consoleMsg = $msg;
 				$player->sendMessage($msg);
 				break;
 			// しすてむ、ピンク色
 			case self::CHATMODE_ENTER:
-				$msg = self::Format($player->getDisplayName(), "§dシステム", $message);
+				$msg = Chat::Format($player->getDisplayName(), "§dシステム", $message);
 				$consoleMsg = $msg;
 				$player->sendMessage($msg);
 				$obj = $playerData->getChatObject()->Chat($player, $message);
@@ -152,66 +153,6 @@ class Chat {
 		}
 		if($consoleMsg) MainLogger::getLogger()->info($consoleMsg);
 		return true;
-	}
-
-	/**
-	*	@param string | 発信者の名前
-	*	@param string | 対象者 or message
-	*	@param string | message
-	*	@return string | 最終的に送るメッセージ 
-	*/
-	public static function Format($arg1, $arg2 = "", $arg3 = ""){
-		$out = "{$arg1} §7>";
-		if(!$arg3){
-			$out .= " {$arg2}";
-		}else{
-			$out .= " {$arg2} §7> {$arg3}";
-		}
-		return $out;
-	}
-
-	/**
-	*	@param string | message
-	*	@return string | 最終的に送るメッセージ 
-	*/
-	public static function SystemToPlayer($arg1){
-		$out = "§8システム §7> §6個人 §7> {$arg1}";
-		return $out;
-	}
-
-	public static function System($arg1, $arg2 = ""){
-		$arg2 = $arg2 ? " §7> {$arg2}" : "";
-		$out = "§8システム §7> {$arg1}{$arg2}";
-		return $out;
-	}
-
-	/**
-	*	@param string | プレイヤー名
-	*	@return string | 最終的にできた参加時メッセージ
-	*/
-	public static function getJoinMessage($name){
-		$placeName = Connection::getPlace()->getName();
-		return self::System("§bお知らせ", "§f{$name} §7がEardの {$placeName} にやって来た");
-	}
-
-	/**
-	*	@param string | プレイヤー名
-	*	@return string | 最終的にできた退出時メッセージ
-	*/
-	public static function getQuitMessage($name){
-		return self::System("§bお知らせ", "§f{$name} §7が地球へ戻っていった");
-	}
-
-	/**
-	*	別のサバ(ワールド)へ飛ぶ場合のメッセージを取得する
-	*/
-	public static function getTransferMessage($name){
-		if(Connection::getPlace()->isLivingArea()){
-			$placeName = Connection::getPlaceByNo(2)->getName();
-		}elseif(Connection::getPlace()->isResourceArea()){
-			$placeName = Connection::getPlaceByNo(1)->getName();
-		}
-		return self::System("§bお知らせ", "{$name} はEardの {$placeName} へと向かった");
 	}
 
 	const CHATMODE_VOICE = 1;//30マスいない

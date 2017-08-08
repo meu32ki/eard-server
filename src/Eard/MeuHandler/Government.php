@@ -6,6 +6,7 @@ use pocketmine\utils\MainLogger;
 
 # Eard
 use Eard\Utils\DataIO;
+use Eard\Utils\Chat;
 
 
 /****

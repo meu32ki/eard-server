@@ -35,9 +35,11 @@ use pocketmine\network\protocol\PlayerActionPacket;
 use Eard\Main;
 use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
+use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
+use Eard\Utils\Chat;
 
 # Enemy
 use Eard\Enemys\EnemyRegister;
@@ -266,7 +268,7 @@ class Event implements Listener{
 
 
 	public function Chat(PlayerChatEvent $e){
-		Chat::chat($e->getPlayer(), $e);
+		ChatManager::chat($e->getPlayer(), $e);
 	}
 
 

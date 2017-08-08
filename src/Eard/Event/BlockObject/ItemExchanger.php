@@ -7,9 +7,9 @@ use pocketmine\Player;
 use pocketmine\item\Item;
 
 # Eard
-use Eard\Account;
-use Eard\Chat;
+use Eard\MeuHandler\Account;
 use Eard\Utils\ItemName;
+use Eard\Utils\Chat;
 
 
 class ItemExchanger implements BlockObject, ChatInput {

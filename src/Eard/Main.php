@@ -25,6 +25,7 @@ use Eard\Event\AreaProtector;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Utils\ItemName;
 use Eard\Utils\DataIO;
+use Eard\Utils\Chat;
 
 # Enemys
 use Eard\Enemys\EnemyRegister;
