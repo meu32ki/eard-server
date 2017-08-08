@@ -7,6 +7,7 @@ use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;
 
 # Eard
+use Eard\MeuHandler\Government;
 use Eard\Utils\ItemName;
 
 
@@ -253,7 +254,7 @@ class Earmazon {
 	*/
 	public static function addBuyUnit($id, $meta, $amount, $price, $tokka = false){
 
-		$category = Itemname::getCategoryOf($id, $meta);
+		$category = ItemName::getCategoryOf($id, $meta);
 		if(!$category){
 			return false; //カテゴリーが0 = 販売禁止 のアイテムは売れない
 		}
