@@ -21,11 +21,11 @@ commands:
   aliases: [test2, test3, test4, t]
  ap:
   description: "Muni: AreaProtector"
-  usage: "/ap [asec|vsec|give]"
+  usage: "/ap [a|v|give]"
   permission: muni
  gv:
   description: "Muni: Government"
-  usage: "/gv [ameu|vmeu|give]"
+  usage: "/gv [a|v|give]"
   permission: muni
  co:
   description: "Muni: Connection"

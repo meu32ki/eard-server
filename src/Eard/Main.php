@@ -92,9 +92,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "ap": // Area Protector 土地関連
 				if(isset($a[0])){
 					switch($a[0]){
-						case "asec": // 販売セクションの発行数設定
+						case "a": // 販売セクションの発行数設定
 							if(isset($a[1]) && 0 < (int) $a[1]){
-								$result　= AreaProtector::setAffordableSection($a[1]);
+								$result = AreaProtector::setAffordableSection($a[1]);
 								$out = $result ? Chat::SystemToPlayer("販売セクション数を{$a[1]}に設定しました") : Chat::SystemToPlayer("設定できませんでした");
 								$s->sendMessage($out);
 								return true;
@@ -102,7 +102,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								return false;
 							}
 						    break;
-                        case "vsec": // 販売されてるセクションの発行数確認
+                        case "v": // 販売されてるセクションの発行数確認
                             $leftSection = AreaProtector::$leftSection;
                             $affordableSection = AreaProtector::$affordableSection;
                             $out = Chat::SystemToPlayer("販売可能土地数: {$leftSection} / {$affordableSection}");
@@ -128,7 +128,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
                         		}
                         	}else{
-                        		$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
+                        		$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ap give <player>"));
                         	}
                         	return true;
                         break;
@@ -142,7 +142,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "gv": // Government 政府のお金関連
 				if(isset($a[0])){
 					switch($a[0]){
-						case "ameu": // 発行量設定
+						case "a": // 発行量設定
 							if(isset($a[1]) && 0 < (int) $a[1]){
 								$result = Government::setCentralBankFirst($a[1]);
 								$out = $result ? Chat::SystemToPlayer("政府の通貨発行量を{$a[1]}に設定しました。") : Chat::SystemToPlayer("設定できませんでした");
@@ -152,7 +152,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								return false;
 							}
 						break;
-						case "vmeu": // 発行数の確認
+						case "v": // 発行数の確認
 							$out = Government::confirmBalance();
 							$s->sendMessage($out);
 							return true;
@@ -171,7 +171,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
 								}
 							}else{
-								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足"));
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 / gv give <player> <amount>"));
 							}
 							return true;
 						break;
