@@ -1,9 +1,11 @@
 <?php
-namespace Eard;
-
+namespace Eard\MeuHandler;
 
 # Basic
 use pocketmine\utils\MainLogger;
+
+# Eard
+use Eard\Utils\DataIO;
 
 
 /****
@@ -99,9 +101,6 @@ class Government{
 
 
 	public static function load(){
-		$path = __DIR__."/data/";
-		$filepath = "{$path}Government.sra";
-
 		//初回用
 		self::$CentralBankFirst = 1000 * 10000;
 		self::$CentralBankMeu = Meu::get(1000 * 10000, 100000); //100000は政府のUniqueNo
@@ -119,13 +118,18 @@ class Government{
 
 
 	public static function save(){
-		$data = [
+		$bankMeu = self::$CentralBankMeu;
+
+		// ↓ 起動に失敗したとき、save()がMain::onDisableで実行されるが、その時変な値でsaveされないように。
+		if($bankMeu){
+			$data = [
 				self::$CentralBankFirst,
-				self::$CentralBankMeu->getAmount()
+				$bankMeu->getAmount()
 			];
-		$result = DataIO::save('Government', $data);
-		if($result){
-			MainLogger::getLogger()->notice("§aGovernment: data has been saved");
+			$result = DataIO::save('Government', $data);
+			if($result){
+				MainLogger::getLogger()->notice("§aGovernment: data has been saved");
+			}
 		}
 	}
 

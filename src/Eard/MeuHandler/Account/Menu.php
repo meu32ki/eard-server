@@ -1,5 +1,5 @@
 <?php
-namespace Eard\Account;
+namespace Eard\MeuHandler\Account;
 
 
 # Basic
@@ -10,18 +10,21 @@ use pocketmine\utils\MainLogger;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
 
+use pocketmine\network\protocol\ContainerSetContentPacket;
+use pocketmine\network\protocol\ContainerSetSlotPacket;
+use pocketmine\network\protocol\MobEquipmentPacket;
+
 # Event
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 
 # Muni
-use Eard\AreaProtector;
-use Eard\Account;
-use Eard\Chat;
-use Eard\BlockObject\ChatInput;
 use Eard\Main;
-use Eard\Connection;
-
+use Eard\DBCommunication\Connection;
+use Eard\Event\AreaProtector;
+use Eard\Event\Chat;
+use Eard\Event\BlockObject\ChatInput;
+use Eard\MeuHandler\Account;
 
 /***
 *
@@ -130,32 +133,21 @@ class Menu implements ChatInput {
 		$player = $playerData->getPlayer();
 		$inv = $player->getInventory();
 		$blank = $this->getBlank();
-		$uma = json_decode('"\u265E"');
 		switch($no){
-			//["たいとる", 数字/ false] 数字はページの内容
 /*
 *	最初の画面 | 0
 */
 			case 0:
-				if( Connection::getPlace()->isResourceArea() ){
-					$ar = [
-						["§7[[ メニュー ]]",false],
-						["ステータス照会",2],
-						["チャット",20],
-						["エリア転送",30],
-						["§f{$uma} メニューを閉じる",false],
-					];	
-				}else{
-					$ar = [
-						["§7[[ メニュー ]]",false],
-						["ステータス照会",2],
-						["GPS (座標情報)",3],
-						["チャット",20],
-						["メール",10],
-						["エリア転送",30],
-						["§f{$uma} メニューを閉じる",false],
-					];	
-				}
+				$ar = [
+					//["たいとる", 数字/ false] 数字はページの内容
+					["§7[[ メニュー ]]",false],
+					["ステータス照会",2],
+					["GPS (座標情報)",3],
+					["チャット",20],
+					["メール",10],
+					["資源区域に移動",30],
+					["§f■ メニューを閉じる",false],
+				];
 			break;
 /*
 *	ステータス | 2
@@ -171,7 +163,7 @@ class Menu implements ChatInput {
 					["§7§l所持金§r {$meu}",false],
 					["§7§l自宅§r {$address}",false],
 					["§7§lプレイ§r {$time} {$day}日目",false],
-					["§f{$uma} 戻る",false],
+					["§f■ 戻る",false],
 				];
 			break;
 /*
@@ -196,7 +188,7 @@ class Menu implements ChatInput {
                     $ar[] = ["§7§l　価格§r §f{$price}",false];
 					$ar[] = ["この土地を買う",4];
 				}
-				$ar[] = ["§f{$uma} 戻る",false];
+				$ar[] = ["§f■ 戻る",false];
 			break;
 			case 4:
 				$x = round($player->x); $z = round($player->z);
@@ -207,7 +199,7 @@ class Menu implements ChatInput {
 					["購入します。よろしいですか？",false],
 					["いいえ",3],
 					["はい",5],
-					["§f{$uma} トップへ戻る",false],
+					["§f■ トップへ戻る",false],
 				];			
 			break;
 			case 5:
@@ -221,13 +213,13 @@ class Menu implements ChatInput {
 						["§2[[ 完了 ]]",false],
 						["§7住所 §f{$address} §7を",false],
 						["購入しました。",false],
-						["§f{$uma} トップへ戻る",false],
+						["§f■ トップへ戻る",false],
 					];
 				}else{
 					$ar = [
 						["§2[[ 失敗 ]]",false],
 						["§7購入できませんでした。",false],
-						["§f{$uma} トップへ戻る",false],
+						["§f■ トップへ戻る",false],
 					];
 				}
 			break;
@@ -273,7 +265,7 @@ class Menu implements ChatInput {
 
 			if($page > 0)   $ar[] = ["§a前のページへ", 9]; //最初のページでなければ 
 			if($cnt === 17) $ar[] = ["§a次のページへ", 11]; //要素が0でなければ
-			$ar[] = ["§f{$uma} トップへ戻る",false];
+			$ar[] = ["§f■ トップへ戻る",false];
 
 			break;
 
@@ -290,7 +282,7 @@ class Menu implements ChatInput {
 					["周囲",21],
 					["全体",22],
 					["指定プレイヤー(tell)",23],
-					["§f{$uma} トップへ戻る",false],
+					["§f■ トップへ戻る",false],
 				];
 			break;
 			case 21:
@@ -301,7 +293,7 @@ class Menu implements ChatInput {
 					["§2[[ チャットモード ]]",false],
 					["チャットを「周囲」に発言",false],
 					["に設定しました。",false],
-					["§f{$uma} 戻る",false],
+					["§f■ 戻る",false],
 				];
 			break;
 			case 22:
@@ -312,7 +304,7 @@ class Menu implements ChatInput {
 					["§2[[ チャットモード ]]",false],
 					["チャットを「全体」に発言",false],
 					["に設定しました。",false],
-					["§f{$uma} 戻る",false],
+					["§f■ 戻る",false],
 				];
 			break;
 			case 23:
@@ -324,7 +316,7 @@ class Menu implements ChatInput {
 					["§7[[ チャットモード ]]",false],
 					["プレイヤー名を入力してください",false],
 					["(チャット画面で打って送信)",false],
-					["§f{$uma} やめる",false],
+					["§f■ やめる",false],
 				];
 			break;
 			case 24:
@@ -333,48 +325,14 @@ class Menu implements ChatInput {
 					["§4[[ チャットモード ]]",false],
 					["チャットを{$targetName}さんに",false],
 					["直接送信します",false],
-					["§f{$uma} 戻る",false],
+					["§f■ 戻る",false],
 				];
 			break;
-			case 30:
-				$ar = [
-					["§7[[ 転送 ]]",false],
-					["どこへ行きますか？", false],
-					["選択次第、即", false],
-					["転送開始します。", false],
-				];
 
-				// くそコード
-				$thisplace = Connection::getPlace();
-				if( Connection::getPlaceByNo(1) !== $thisplace){
-					$p = Connection::getPlaceByNo(1);
-					$ar[] = ["{$p->getName()} へ行く", 31];
-				}
-				if( Connection::getPlaceByNo(2) !== $thisplace){
-					$p = Connection::getPlaceByNo(2);
-					$ar[] = ["{$p->getName()} へ行く", 32];
-				}
-				$ar[] = ["§f{$uma} 戻る",false];
+			case 30:
+				Connection::goToResourceArea($playerData);
 			break;
-			case 31: case 32: 
-				if($isFirst){
-					$placeNo = $no - 30;
-					$result = Connection::Transfer($playerData, Connection::getPlaceByNo($placeNo));
-					if($result === -1){
-						$ar = [
-							["§4[[ 転送 ]]",false],
-							["エラー", false],			
-							["§f{$uma} 戻る",false],
-						];
-					}
-				}
-				// 1かいめで転送できてないということはエラーなので
-				$ar = [
-					["§4[[ 転送 ]]",false],
-					["エラー", false],			
-					["§f{$uma} 戻る",false],
-				];
-			break;
+
 
 
 //閉じてるよ画面

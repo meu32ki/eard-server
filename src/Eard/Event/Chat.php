@@ -1,11 +1,15 @@
 <?php
-namespace Eard;
+namespace Eard\Event;
 
 
 # Basic
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
+
+# Eard
+use Eard\MeuHandler\Account;
+use Eard\DBCommunication\Connection;
 
 
 class Chat {

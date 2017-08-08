@@ -1,5 +1,5 @@
 <?php
-namespace Eard;
+namespace Eard\MeuHandler;
 
 # Basic
 use pocketmine\Player;
@@ -7,10 +7,11 @@ use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 # Eard
-use Eard\Account\Menu;
-use Eard\Account\Mail;
-use Eard\Account\itemBox;
-
+use Eard\MeuHandler\Account\Menu;
+use Eard\MeuHandler\Account\Mail;
+use Eard\MeuHandler\Account\itemBox;
+use Eard\DBCommunication\DB;
+use Eard\Utils\DataIO;
 
 /***
 *
@@ -360,8 +361,8 @@ class Account{
 	*	@return bool | 
 	*/
 	public function addLicense($licenseNo, $validtime = 0){
-		$validtime = $validtime === 0 ? time() : $validtime;
-		$this->data[5][$licenseNo] = [$validtime, 1];
+		$validtime = $validtime === 0 ? time() + 600 : $validtime;
+		$this->data[5][$licenseNo] = [$validtime, 1]; // [有効期限, ライセンスのレベル]
 		return true;
 	}
 	/**

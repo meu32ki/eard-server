@@ -1,13 +1,18 @@
 <?php
-namespace Eard;
+namespace Eard\Event;
+
 
 # Basic
 use pocketmine\Player;
-
 use pocketmine\Server;
+use pocketmine\item\Item;
+use pocketmine\utils\MainLogger;
 use pocketmine\network\protocol\UpdateBlockPacket;
 
-use pocketmine\utils\MainLogger;
+
+# Eard
+use Eard\Utils\DataIO;
+use Eard\MeuHandler\Account;
 
 
 /***
@@ -16,8 +21,45 @@ use pocketmine\utils\MainLogger;
 */
 class AreaProtector{
 
+
 	//true = プロテクトに関係なく壊せるように
 	public static $allowBreakAnywhere = true;
+
+	/**
+	*	タップして起動できるか
+	*	@param int BlockId
+	*	@return bool
+	*/
+	public static function canActivateInResource($id){
+		switch($id){
+			case Item::FURNACE:
+			case Item::CHEST:
+			case Item::BED_BLOCK:
+			case Item::WORKBENCH:
+				return false;
+			break;
+			default:
+				return true;
+			break;
+		}
+	}
+
+	/**
+	*	設置できるか
+	*	@param int ItemId
+	*	@return bool
+	*/
+	public static function canPlaceInResource($id){
+		switch($id){
+			case Item::FURNACE:
+			case Item::WORKBENCH:
+				return false;
+			break;
+			default:
+				return true;
+			break;
+		}
+	}
 
 
 	// return int | sectionno;

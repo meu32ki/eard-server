@@ -1,6 +1,6 @@
 <?php
 
-Namespace Eard;
+namespace Eard\DBCommunication;
 
 use pocketmine\Player;
 use pocketmine\item\Item;

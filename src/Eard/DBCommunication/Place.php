@@ -1,6 +1,6 @@
 <?php
+namespace Eard\DBCommunication;
 
-namespace Eard;
 
 # Basic
 use pocketmine\utils\MainLogger;
@@ -56,25 +56,6 @@ class Place {
 	}
 	public function isDevServer(){
 		return $this->place === 8 or $this->place === 9;
-	}
-
-
-	/**
-	*	@param int 
-	*	@return bool
-	*/
-	public function isRestrected($id){
-		switch($id){
-			case Item::FURNACE:
-			case Item::CHEST:
-			case Item::BED_BLOCK:
-			case Item::WORKBENCH:
-				return true;
-			break;
-			default:
-				return false;
-			break;
-		}
 	}
 
 /*	サーバー(place)自体のステータス

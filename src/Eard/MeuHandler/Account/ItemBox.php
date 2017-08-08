@@ -1,11 +1,12 @@
 <?php
-namespace Eard\Account;
+namespace Eard\MeuHandler\Account;
+
 
 # Basic
 use pocketmine\Player;
 
 # Eard
-use Eard\ChestIO;
+use Eard\Utils\ChestIO;
 
 
 class ItemBox extends ChestIO {

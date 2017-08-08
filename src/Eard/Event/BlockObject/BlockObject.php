@@ -1,5 +1,5 @@
 <?php
-namespace Eard\BlockObject;
+namespace Eard\Event\BlockObject;
 
 
 use pocketmine\Player;

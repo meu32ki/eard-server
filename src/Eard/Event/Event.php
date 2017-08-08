@@ -1,10 +1,12 @@
 <?php
-namespace Eard;
+namespace Eard\Event;
 
 
 # Basic
 use pocketmine\Player;
 use pocketmine\utils\MainLogger;
+use pocketmine\item\Item;
+use pocketmine\block\Block;
 
 # Event
 use pocketmine\event\Listener;
@@ -29,19 +31,16 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\PlayerActionPacket;
 
-# Item
-use pocketmine\item\Item;
-
-# Block
-use pocketmine\block\Block;
-
 # Eard
-use Eard\AreaProtector;
-use Eard\Settings;
-use Eard\BlockObject\BlockObjectManager;
-use Eard\Account\Menu;
-use Eard\Enemys\EnemyRegister;
+use Eard\Main;
+use Eard\DBCommunication\Connection;
+use Eard\Event\AreaProtector;
+use Eard\Event\BlockObject\BlockObjectManager;
+use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Account\Menu;
+
 # Enemy
+use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Humanoid;
 
 
@@ -233,16 +232,6 @@ class Event implements Listener{
 		Chat::chat($e->getPlayer(), $e);
 	}
 
-
-
-	public function Death(PlayerDeathEvent $e){
-		$player = $e->getEntity();
-		$playerData = Account::get($player);
-		
-		// メニューを見ていたら、消す
-		if($playerData->getMenu()->isActive()){
-			$playerData->getMenu()->close();
-		}
 
 
 		// 死んだときのメッセージ

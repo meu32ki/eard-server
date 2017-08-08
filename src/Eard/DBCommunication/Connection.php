@@ -1,14 +1,19 @@
 <?php
+namespace Eard\DBCommunication;
 
-namespace Eard;
 
 # Basic
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
+# Eard
+use Eard\Utils\DataIO;
+use Eard\MeuHandler\Account;
+use Eard\Event\Chat;
 
 class Connection {
-	
+
+
 	//placeをオブジェクトごとに分ける作業 2017/7/19
 	private static $placeNo = 0; //このサバは、どちらに当たるのかを指定
 	private static $places = [];

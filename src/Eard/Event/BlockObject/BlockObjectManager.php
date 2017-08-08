@@ -1,5 +1,5 @@
 <?php
-namespace Eard\BlockObject;
+namespace Eard\Event\BlockObject;
 
 
 use pocketmine\Player;
@@ -7,7 +7,7 @@ use pocketmine\block\Block;
 use pocketmine\utils\MainLogger;
 
 # Eard
-use Eard\DataIO;
+use Eard\Utils\DataIO;
 
 /****
 *

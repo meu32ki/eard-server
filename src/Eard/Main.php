@@ -16,14 +16,19 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 
 # Muni
-use Eard\DB;
-use Eard\Event;
-use Eard\AreaProtector;
-use Eard\BlockObject\BlockObjectManager;
-use Eard\Enemys\EnemyRegister;
+use Eard\DBCommunication\DB;
+use Eard\DBCommunication\Connection;
+use Eard\MeuHandler\Government;
+use Eard\MeuHandler\Account;
+use Eard\Event\Event;
+use Eard\Event\AreaProtector;
+use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Utils\ItemName;
-use Eard\Enemys\Spawn;
+use Eard\Utils\DataIO;
 
+# Enemys
+use Eard\Enemys\EnemyRegister;
+use Eard\Enemys\Spawn;
 
 /***
 *
@@ -53,7 +58,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Connection::load();
 		// Connection::setup();
 
-		# Muni関連
+		# Eard関連
 		AreaProtector::load();
 		Account::load();
 		BlockObjectManager::load();
@@ -66,7 +71,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 	public function onDisable(){
 
-		#Muni関連
+		# Eard関連
 		Government::save();
 		BlockObjectManager::saveAllObjects();
 		BlockObjectManager::save();	

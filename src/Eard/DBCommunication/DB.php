@@ -1,13 +1,14 @@
 <?php
+namespace Eard\DBCommunication;
 
-namespace Eard;
 
+# Basic
 use pocketmine\utils\MainLogger;
 
+# Eard
+use Eard\Utils\DataIO;
 
 class DB{
-
-	public static $mysqli = null;
 
 
 	public static function get(){
@@ -85,4 +86,5 @@ class DB{
 	}
 
 	public static $addr, $user, $pass, $name;
+	public static $mysqli = null;
 }

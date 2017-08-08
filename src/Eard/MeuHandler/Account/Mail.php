@@ -1,9 +1,13 @@
 <?php
+namespace Eard\MeuHandler\Account;
 
-namespace Eard\Account;
 
+# Basic
 use pocketmine\Player;
 
+# Eard
+use Eard\DBCommunication\DB;
+use Eard\MeuHandler\Account;
 
 /****
 *
@@ -129,7 +133,7 @@ class Mail {
                 mail.MailId 
             limit 
                 ? , ?"; // To UniqueId 0 is Broadcast
-        else if ($this->type === Mail::TYPE_COMPANY)
+        else if ($this->type === self::TYPE_COMPANY)
             $sql = 
             "SELECT 
                 mail.MailId, mail.FromUniqueId, data.name, mail.Subject, mail.Body 

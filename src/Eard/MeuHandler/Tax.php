@@ -1,4 +1,5 @@
 <?php
+namespace Eard\MeuHandler;
 
 
 /***
@@ -7,7 +8,7 @@
 */
 class Tax {
 
-$list = 
+public static $list =
 1 => [
     "固定資産税"
     "土地を持っていると発生する税金"
