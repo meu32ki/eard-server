@@ -72,11 +72,6 @@ class Event implements Listener{
 		foreach($perms as $name => $value){
 			$player->addAttachment($main, $name, $value);
 		}
-/*
-		if(!$player->getInventory()->contains($item = Menu::getMenuItem())){
-			$player->getInventory()->addItem($item);
-		}
-*/
 	}
 
 
@@ -91,13 +86,17 @@ class Event implements Listener{
 	public function Q(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
 		if($player->spawned){ //whitelistでひっかかっていなかったら
+
+			// Menuが開いていたら閉じる処理
 			$playerData = Account::get($player);
 			if($playerData->getMenu()->isActive()){
 				$playerData->getMenu()->close();
 			}
 
-			Connection::getPlace()->recordLogout($player->getName()); //　オンラインテーブルから記録消す
+			//　オンラインテーブルから記録消す
+			Connection::getPlace()->recordLogout($player->getName());
 
+			// 退出時メッセージ
 			$msg = $playerData->isNowTransfering() ? Chat::getTransferMessage($player->getDisplayName()) : Chat::getQuitMessage($player->getDisplayName());
 			$e->setQuitMessage($msg);
 
@@ -108,82 +107,106 @@ class Event implements Listener{
 
 
 
-	public function I(PlayerInteractEvent $e){
-		$item = $e->getItem();
-		$id = $item->getId();
+	public function PacketReceive(DataPacketReceiveEvent $e){
+		$packet = $e->getPacket();
 		$player = $e->getPlayer();
-		$playerData = Account::get($player);
-
-		// 手持ちのアイテムのidによって判別
-		switch($id){
-			case Menu::$menuItem: // 「携帯」
-				$playerData->getMenu()->useMenu($e);
-				$e->setCancelled(true);
-				return; // チェストをタップするとおかしくなるので
+		$name = $player->getName();
+		switch($packet::NETWORK_ID){
+			case ProtocolInfo::USE_ITEM_PACKET:
+				// Menu::染料タップ
+				$itemId = $packet->item->getId();
+				if($itemId === Menu::$selectItem || $itemId === Menu::$menuItem){
+					$playerData = Account::get($player);
+					if($itemId === Menu::$selectItem){
+						$playerData->getMenu()->useSelect($packet->item->getDamage());
+					}else{
+						$playerData->getMenu()->useMenu();
+					}
+				}
 			break;
-			case Item::BOOK: // dev用
-				Account::get($player)->dumpData(); //セーブデータの中身出力
+			case ProtocolInfo::PLAYER_ACTION_PACKET:
+				//壊し始めたとき
+				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
+					$x = $packet->x; $y = $packet->y; $z = $packet->z;
+					if(!AreaProtector::$allowBreakAnywhere){
+						AreaProtector::Edit($player, $x, $y, $z);
+						//キャンセルとかはさせられないので、表示を出すだけ。
+					}else{
+						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+					}
+				}
+				$x = $packet->x; $y = $packet->y; $z = $packet->z;
 			break;
 		}
+	}
 
 
-		// タップしたブロックにより判別
-		$block = $e->getBlock();
-		switch($block->getId()){
-			case 130: // エンダーチェスト
-				$playerData = Account::get($player);
-				$inv = $playerData->getItemBox();
-				$player->addWindow($inv);
-				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
-			break;
-			default: // それいがい
-				// 資源では、ベッドとかクラフト系とかが使えない。おけるが、使えない。
-				$place = Connection::getPlace();
-				if($place->isResourceArea() && $place->isRestrected($block->getId())){
-					$placename = Connection::getPlace()->getName();
-					$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
+	public function PacketSend(DataPacketSendEvent $e){
+		$pk = $e->getPacket();
+		$player = $e->getPlayer();
+		switch($pk::NETWORK_ID){
+			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
+				/*
+					Note: Menuは、偽のインベントリで動いている。
+					時々偽のインベントリチェックがはいるため、メニュー使用時はそれを無効にする。
+				*/
+				if(Account::get($player)->getMenu()->isActive()){
 					$e->setCancelled(true);
-					return; // この後の処理にはすすませない、なぜなら blockObjectManagerでは、setCancelled: falseをしてしまう可能性があるから
-				}
-
-				if($e->getAction() == 3 or $e->getAction() == 0){
-					//長押し
-					$x = $block->x; $y = $block->y; $z = $block->z;
-					if($x && $y && $z){
-						/*
-						if(AreaProtector::$allowBreakAnywhere or AreaProtector::Edit($player, $x, $y, $z) ){
-							//キャンセルとかはさせられないので、表示を出すだけ。
-							$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
-						}*/
-						//　↑　これだすと、長押しのアイテムが使えなくなる
-						//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
-						blockObjectManager::startBreak($x, $y, $z, $player);
-					}
-				}else{
-					$x = $block->x; $y = $block->y; $z = $block->z;
-					//echo "PI: {$x}, {$y}, {$z}, {$e->getAction()}\n";
-					//ふつうにたっぷ]
-					$r = blockObjectManager::tap($block, $player);
-					//echo $r ? "true\n" : "false\n";
-					$e->setCancelled( $r );
 				}
 			break;
 		}
 	}
 
 
-
-	public function IE(PlayerItemHeldEvent $e){
+	public function I(PlayerInteractEvent $e){
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
-		$id = $e->getItem()->getId();
-		switch($id){
-			case Menu::$selectItem:
-				$playerData->getMenu()->useSelect($e->getItem()->getDamage());
-				break;
-			case Menu::$menuItem:
-				$playerData->getMenu()->useMenu($e);
-				break;
+		$block = $e->getBlock();
+		$blockId = $block->getId();
+
+		switch($blockId){
+			case 130: // エンダーチェスト
+				$inv = $playerData->getItemBox();
+				$player->addWindow($inv);
+				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+			break;
+			default: // それいがい
+
+/*
+				// Menu::馬鎧タップ
+				$item = $e->getItem();
+				$itemId = $item->getId();
+				switch($itemId){
+					case Menu::$menuItem:
+						$playerData->getMenu()->useMenu($e);
+						break;
+				}
+*/
+				/*	生活区域
+				*/
+				if(Connection::getPlace()->isLivingArea()){
+					$x = $block->x; $y = $block->y; $z = $block->z;
+					if($e->getAction() == 3 or $e->getAction() == 0){
+						//長押し
+						if($x && $y && $z){ // 空中でなければ
+							blockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
+						}
+					}else{
+						// 普通にタップ
+						$r = blockObjectManager::tap($block, $player);
+						$e->setCancelled( $r );
+					}
+
+				/*	資源区域
+				*/
+				}else{
+					if(AreaProtector::canActivateInResource($blockId)){
+						$placename = Connection::getPlace()->getName();
+						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
+						$e->setCancelled(true);
+					}
+				}
+			break;
 		}
 	}
 
@@ -192,12 +215,22 @@ class Event implements Listener{
 		$block = $e->getBlock();
 		$player = $e->getPlayer();
 		$x = $block->x; $y = $block->y; $z = $block->z;
+
+		/*	生活区域
+		*/
 		if(Connection::getPlace()->isLivingArea()){
-			if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+			if(!AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{
-				$e->setCancelled( blockObjectManager::place($block, $player) );
+				blockObjectManager::place($block, $player);
 			}
+
+		/*	資源区域
+		*/
+		}else{
+			$item = $e->getItem();
+			$itemId = $item->getId();
+			$e->setCancelled( AreaProtector::canPlaceInResource($itemId) );
 		}
 	}
 
@@ -208,16 +241,21 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$level = $player->getLevel();
 		$x = $block->x; $y = $block->y; $z = $block->z;
+
+		/*	資源区域
+		*/
 		if(Connection::getPlace()->isLivingArea()){
-			if(!AreaProtector::$allowBreakAnywhere and !AreaProtector::Edit($player, $x, $y, $z)){
+			if(!AreaProtector::Edit($player, $x, $y, $z)){
 				$e->setCancelled(true);
 			}else{
-				//echo "BB: ";
 				$r = blockObjectManager::break($block, $player);
-				//echo $r ? "true\n" : "false\n";
 				$e->setCancelled( $r );
 			}
+
+		/*	資源区域
+		*/
 		}else{
+			// 女王バチがスポーン
 			$id = $block->getId();
 			$data = $block->getDamage();
 			if($id === Block::EMERALD_BLOCK && $data === 1){
@@ -227,12 +265,20 @@ class Event implements Listener{
 	}
 
 
-
 	public function Chat(PlayerChatEvent $e){
 		Chat::chat($e->getPlayer(), $e);
 	}
 
 
+
+	public function Death(PlayerDeathEvent $e){
+		$player = $e->getEntity();
+		$playerData = Account::get($player);
+		
+		// メニューを見ていたら、消す
+		if($playerData->getMenu()->isActive()){
+			$playerData->getMenu()->close();
+		}
 
 		// 死んだときのメッセージ
 		$cause = $player->getLastDamageCause();
@@ -343,33 +389,8 @@ class Event implements Listener{
 	}
 
 
-	public function D(DataPacketReceiveEvent $e){
-		$packet = $e->getPacket();
-		$player = $e->getPlayer();
-		$name = $player->getName();
-		switch($packet::NETWORK_ID){
-			case ProtocolInfo::PLAYER_ACTION_PACKET:
-				//壊し始めたとき
-/*				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
-					$x = $packet->x; $y = $packet->y; $z = $packet->z;
-					if(!AreaProtector::$allowBreakAnywhere){
-						AreaProtector::Edit($player, $x, $y, $z);
-						//キャンセルとかはさせられないので、表示を出すだけ。
-					}else{
-						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
-					}
-				}
-*/
-				$x = $packet->x; $y = $packet->y; $z = $packet->z;
-				//echo "AKPK: {$x}, {$y}, {$z}, {$packet->action}\n";
-			break;
-			case ProtocolInfo::REMOVE_BLOCK_PACKET:
-				//echo "RMPK: {$x}, {$y}, {$z}\n";				
-			break;
-		}
-	}
-
 /*
+	// for debug
 	public function PacketSend(DataPacketSendEvent $e){
 		$pk = $e->getPacket();
 		$player = $e->getPlayer();
@@ -395,12 +416,21 @@ class Event implements Listener{
 				echo "ContainerSetContent\n";
 				echo $pk->windowid." ";
 				echo $pk->targetEid." ";
-				print_r($pk->slots); echo " ";
-				//print_r($pk->hotbar); echo " ";
+
+				if($pk->windowid === 0){
+					echo "slots:\n";
+					print_r($pk->slots); echo " ";
+					echo "hotbar:\n";
+					print_r($pk->hotbar); echo " ";					
+				}
 				echo "\n";
+
 			break;
 			case ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 				echo "ContainerSetData\n";
+			break;
+			case ProtocolInfo::MOB_EQUIPMENT_PACKET:
+				echo "MobEquip\n";
 			break;
 		}
 	}
@@ -408,6 +438,7 @@ class Event implements Listener{
 
 
 /*
+	// for debug
 	public function D(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();
 		$player = $e->getPlayer();
