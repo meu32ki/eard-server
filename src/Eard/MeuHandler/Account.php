@@ -280,6 +280,12 @@ class Account{
 		return $license === null ? false : $license->isValid($rank);
 	}
 
+	/**
+	*	@return License[]
+	*/
+	public function getAllLicenses(){
+		return $this->licenses;
+	}
 
 	/**
 	*	DBの「番号」 ひとりに1つずつ独立した番号が与えられている。

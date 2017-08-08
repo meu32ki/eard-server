@@ -23,7 +23,9 @@ class License {
 	const RANK_GENERAL = 2;
 	const RANK_SKILLED = 3;
 	const RANK_PROFESSIONAL = 4;
-	
+	const RANK_MASTER = 4;
+
+
 	public static function init(){
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
 		self::$list[self::BUILDER] = new Builder;
@@ -57,7 +59,7 @@ class License {
 
 
 	/**
-	*	@param Timestamp 	そのライセンスの有効期限
+	*	@param Timestamp | -1	そのライセンスの有効期限 -1であれば無期限
 	*/
 	public function setValidTime($time){
 		$this->time = $time;
@@ -65,19 +67,27 @@ class License {
 	}
 
 	/**
-	*	@return timestamp 	そのライセンスの有効期限
+	*	@return Timestamp | -1	そのライセンスの有効期限 -1であれば無期限
 	*/
 	public function getValidTime(){
 		return $this->time;
 	}
 
 	/**
-	*	ライセンスの有効時間であるかどうか じかんだけしらべる
+	*	ライセンスの有効であるかどうか じかんだけしらべる
 	*	@return bool
 	*/
 	public function isValidTime(){
-		return $this->time < time();
+		return $this->time === -1 ? true : time() < $this->time;
 	}
+
+	/**
+	*	@return String
+	*/
+	public function getValidTimeText(){
+		return $this->time === -1 ? "無期限" : date("n月j日 G時i分")."まで";
+	}
+
 
 
 	/**
@@ -103,10 +113,20 @@ class License {
 		return $this->rank <= $rank;
 	}
 
+	/**
+	*	そのランクの名前を返す
+	*	@return String
+	*/
+	public function getRankText(){
+		$rank = $this->rank;
+		return isset($this->ranktxt[$rank]) ? $this->ranktxt[$rank] : "[UNDEFINED]";
+	}
+
 
 	/**
-	*	すべてが有効であるか
+	*	ライセンスが有効であるか
 	*	@param Int self::RANKからはじまる値
+	*	@return bool
 	*/
 	public function isValid($rank){
 		$isTimeValid = $this->isValidTime();
@@ -114,10 +134,34 @@ class License {
 		return $isTimeValid && $isRankEnough;
 	}
 
+	/**
+	*	ライセンスの名前を返す
+	*	@return String
+	*/
+	public function getName(){
+		return $this->name;
+	}
+
+	/**
+	*	ライセンスの名前をランク入りで返す
+	*	@return String
+	*/
+	public function getFullName(){
+		return $this->getName()."(".$this->getRankText().")";
+	}
+
 
 	private static $list = [];
 	private $no = 0;
 	private $time = 0;
 	private $rank = self::RANK_BEGINNER;
+	private $name = "";
+	private $ranktxt = [
+		1 => "初心者",
+		2 => "中級者",
+		3 => "上級者",
+		4 => "プロ",
+		5 => "マスター",
+	];
 
 }

@@ -191,6 +191,9 @@ class Menu implements ChatInput {
                     $ar[] = ["§7§l　価格§r §f{$price}",false];
 					$ar[] = ["この土地を買う",4];
 				}
+				if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
+					$ar[] = ["この土地を政府が買う",4];
+				}
 				$ar[] = ["§f{$uma} 戻る",false];
 			break;
 			case 4:
