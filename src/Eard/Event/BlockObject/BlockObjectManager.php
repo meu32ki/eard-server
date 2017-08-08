@@ -218,7 +218,7 @@ class BlockObjectManager {
 	*	@return array $objData
 	*/
 	public static function loadObjectData($indexNo){
-		$path = __DIR__."/../data/obj/";
+		$path = DataIO::getPath()."data/obj/";
 		$filepath = "{$path}{$indexNo}.sra";
 		$json = @file_get_contents($filepath);
 		if($json){
@@ -243,7 +243,7 @@ class BlockObjectManager {
 	*	@return bool
 	*/
 	public static function saveObjectData($indexNo, $obj){
-		$path = __DIR__."/../data/obj/";
+		$path = DataIO::getPath()."data/obj/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}

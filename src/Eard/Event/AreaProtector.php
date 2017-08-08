@@ -491,7 +491,7 @@ class AreaProtector{
 	*	@return array or false
 	*/
 	private static function readSectionFile($sectionNoX, $sectionNoZ){
-		$path = __DIR__."/data/sections/";
+		$path = DataIO::getPath()."sections/";
 		$filepath = "{$path}{$sectionNoX}_{$sectionNoZ}.sra";
 		$json = @file_get_contents($filepath);
 		if($json){
@@ -509,7 +509,7 @@ class AreaProtector{
 	*	@return bool | 保存ができればtrue
 	*/
 	private static function saveSectionFile($sectionNoX, $sectionNoZ, $data){
-		$path = __DIR__."/data/sections/";
+		$path = DataIO::getPath()."sections/";
 		if(!file_exists($path)){
 			@mkdir($path);
 		}
