@@ -22,10 +22,11 @@ use pocketmine\event\player\PlayerItemHeldEvent;
 use Eard\Main;
 use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
-use Eard\Event\Chat;
+use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\ChatInput;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
+use Eard\Utils\Chat;
 
 /***
 *
@@ -67,9 +68,9 @@ class Menu implements ChatInput {
 				$this->sendMenu(100);
 				$this->close();		
 			}else{
-				if($this->page === 23 && $this->playerData->getChatMode() === Chat::CHATMODE_ENTER){
+				if($this->page === 23 && $this->playerData->getChatMode() === ChatManager::CHATMODE_ENTER){
 					//9の画面を閉じたとき、まだシステムだったら、システムあてではなくする
-					$this->playerData->setChatMode(Chat::CHATMODE_VOICE);			
+					$this->playerData->setChatMode(ChatManager::CHATMODE_VOICE);			
 				}
 				$this->sendMenu(0);
 			}
@@ -81,8 +82,9 @@ class Menu implements ChatInput {
 		if($this->isActive()){
 			//「進む」動作に当たる。
 			$no = self::getNo($damageId); //0帰ってくる可能性もあるが、0でもぞっこう
-			//var_dump($this->pageData);			
-			$pageNo = $this->pageData[$no];
+			//var_dump($this->pageData);
+
+			$pageNo = isset($this->pageData[$no]) ? $this->pageData[$no] : 0; // 連打対策
 			if(0 <= $pageNo){
 				$this->sendMenu($pageNo);
 			}
@@ -96,7 +98,7 @@ class Menu implements ChatInput {
 				if($target){
 					if($target !== $player){
 						$playerData = $this->playerData;
-						$playerData->setChatMode(Chat::CHATMODE_PLAYER);
+						$playerData->setChatMode(ChatManager::CHATMODE_PLAYER);
 						$playerData->setChatTarget($target);
 					}else{
 						$msg = Chat::Format("§8システム", "§c自分自身を指定することはできないめう。");
@@ -298,7 +300,7 @@ class Menu implements ChatInput {
 			break;
 			case 21:
 				if($isFirst){
-					$playerData->setChatMode(Chat::CHATMODE_VOICE);
+					$playerData->setChatMode(ChatManager::CHATMODE_VOICE);
 				}
 				$ar = [
 					["§2[[ チャットモード ]]",false],
@@ -309,7 +311,7 @@ class Menu implements ChatInput {
 			break;
 			case 22:
 				if($isFirst){
-					$playerData->setChatMode(Chat::CHATMODE_ALL);
+					$playerData->setChatMode(ChatManager::CHATMODE_ALL);
 				}
 				$ar = [
 					["§2[[ チャットモード ]]",false],
@@ -320,7 +322,7 @@ class Menu implements ChatInput {
 			break;
 			case 23:
 				if($isFirst){
-					$playerData->setChatMode(Chat::CHATMODE_ENTER);
+					$playerData->setChatMode(ChatManager::CHATMODE_ENTER);
 					$playerData->setChatObject($this);
 				}
 				$ar = [

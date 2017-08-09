@@ -8,6 +8,7 @@ use pocketmine\utils\MainLogger;
 
 # Eard
 use Eard\DBCommunication\DB;
+use Eard\Event\ChatManager;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;

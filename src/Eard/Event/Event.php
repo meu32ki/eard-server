@@ -81,6 +81,8 @@ class Event implements Listener{
 	public function J(PlayerJoinEvent $e){
 		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
 		Connection::getPlace()->recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
+
+
 	}
 
 
@@ -172,6 +174,11 @@ class Event implements Listener{
 				$player->addWindow($inv);
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
+			case 218: // シュルカーボックス
+				$inv = $player->getInventory();
+				$inv->addItem(Item::get(416));
+				$player->sendMessage(Chat::SystemToPlayer("「携帯」を送りました。ベータテスト中限定だよ～。"));
+			break;
 			default: // それいがい
 
 				/*	生活区域
@@ -225,7 +232,9 @@ class Event implements Listener{
 		}else{
 			$item = $e->getItem();
 			$itemId = $item->getId();
-			$e->setCancelled( AreaProtector::canPlaceInResource($itemId) );
+			if( !AreaProtector::canPlaceInResource($itemId) ){
+				$e->setCancelled(true);
+			}
 		}
 	}
 
@@ -298,7 +307,7 @@ class Event implements Listener{
 					}elseif($en instanceof Living){
 						$message = "{$name} は串刺しにされた";
 					}else{
-						$msg = "何かしらわからないけど爆発したくさい";
+						$message = "何かしらわからないけど爆発したくさい";
 					}
 				}
 				break;
@@ -337,6 +346,8 @@ class Event implements Listener{
 					if($cause->getDamager()->getId() === Block::CACTUS){
 						$message = "{$name} はサボテンに刺されて死んだ";
 					}
+				}else{
+					$message = "{$name} はサボテンに刺されて死んだ";
 				}
 				break;
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
@@ -355,9 +366,10 @@ class Event implements Listener{
 				$message = "{$name} はなんか死んだ";
 				break;
 			case EntityDamageEvent::CAUSE_CUSTOM:
+				$message = "{$name} はなんか死んだ";
 				break;
 			}
-			$msg = Chat::System("§c{$message}");
+			$msg = $message ? Chat::System("§c{$message}") : Chat::System("§c???");
 		}
 		$e->setDeathMessage($msg);
 	}
@@ -372,7 +384,7 @@ class Event implements Listener{
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
 				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
-				MainLogger::getLogger()->info(Chat::System($victim->getName(), "§c警告: 殴れません"));
+				MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
 				$e->setCancelled(true);
 			}
 
