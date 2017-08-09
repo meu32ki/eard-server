@@ -11,6 +11,7 @@ use pocketmine\level\particle\FloatingTextParticle;
 
 # Eard
 use Eard\DBCommunication\Earmazon;
+use Eard\Event\ChatManager;
 use Eard\MeuHandler\Account;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
@@ -99,7 +100,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 				// がんばれー
 
 				$playerData = Account::get($player);	
-				$playerData->setChatMode(Chat::CHATMODE_VOICE);
+				$playerData->setChatMode(ChatManager::CHATMODE_VOICE);
 				if($no == 3){
 					$this->sendPageData(16, $player);
 				}elseif($no == 33){
@@ -155,7 +156,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 		case 3:
 			// 購入 検索 ID
 			$playerData = Account::get($player);
-			$playerData->setChatMode(Chat::CHATMODE_ENTER);
+			$playerData->setChatMode(ChatManager::CHATMODE_ENTER);
 			$playerData->setChatObject($this);
 			$ar = [
 				["{$thisname} 購入>検索", false],
@@ -301,7 +302,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 		case 38:
 			// 売却 検索 ID
 			$playerData = Account::get($player);
-			$playerData->setChatMode(Chat::CHATMODE_ENTER);
+			$playerData->setChatMode(ChatManager::CHATMODE_ENTER);
 			$playerData->setChatObject($this);
 			$ar = [
 				["{$thisname} 売却>検索", false],

@@ -81,6 +81,8 @@ class Event implements Listener{
 	public function J(PlayerJoinEvent $e){
 		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
 		Connection::getPlace()->recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
+
+
 	}
 
 
@@ -305,7 +307,7 @@ class Event implements Listener{
 					}elseif($en instanceof Living){
 						$message = "{$name} は串刺しにされた";
 					}else{
-						$msg = "何かしらわからないけど爆発したくさい";
+						$message = "何かしらわからないけど爆発したくさい";
 					}
 				}
 				break;
@@ -344,6 +346,8 @@ class Event implements Listener{
 					if($cause->getDamager()->getId() === Block::CACTUS){
 						$message = "{$name} はサボテンに刺されて死んだ";
 					}
+				}else{
+					$message = "{$name} はサボテンに刺されて死んだ";
 				}
 				break;
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
@@ -362,9 +366,10 @@ class Event implements Listener{
 				$message = "{$name} はなんか死んだ";
 				break;
 			case EntityDamageEvent::CAUSE_CUSTOM:
+				$message = "{$name} はなんか死んだ";
 				break;
 			}
-			$msg = Chat::System("§c{$message}");
+			$msg = $message ? Chat::System("§c{$message}") : Chat::System("§c???");
 		}
 		$e->setDeathMessage($msg);
 	}
