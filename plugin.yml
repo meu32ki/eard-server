@@ -8,46 +8,50 @@ api:
 load: STARTUP
 author: 32ki
 description: Seikatu Server
-website: http://muni.32ki.net/
+website: http://eard.32ki.net/
 commands:
  s:
   description: ""
   usage: "/s"
-  permission: muni
+  permission: eard
  test:
   description: ""
   usage: "/test"
-  permission: muni
+  permission: eard
   aliases: [test2, test3, test4, t]
  ap:
-  description: "Muni: AreaProtector"
+  description: "eard: AreaProtector"
   usage: "/ap [a|v|give]"
-  permission: muni
+  permission: eard
  gv:
-  description: "Muni: Government"
+  description: "eard: Government"
   usage: "/gv [a|v|give]"
-  permission: muni
+  permission: eard
  co:
-  description: "Muni: Connection"
+  description: "eard: Connection"
   usage: "/co <number>"
-  permission: muni
+  permission: eard
  db:
-  description: "Muni: DB"
+  description: "eard: DB"
   usage: "/co [addr|user|pass|name]"
-  permission: muni
+  permission: eard
+ li:
+  description: "eard: License"
+  usage: "/li [give|confirm]"
+  permission: eard
  enemy:
   description: "エネミーを呼び出します"
   usage: "/enemy <type>"
-  permission: muni
+  permission: eard
  saveskin:
   description: "スキンをエンコードして保存します"
   usage: "/saveskin <name>"
-  permission: muni
+  permission: eard
 permissions:
- muni:
+ eard:
   default: op
   description: ""
   children:
-   muni.command:
+   eard.command:
     default: true
     description: ""

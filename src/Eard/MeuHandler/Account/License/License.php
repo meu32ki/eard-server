@@ -1,12 +1,15 @@
 <?php
 namespace Eard\MeuHandler\Account\License;
 
+
 /***
 *
 *	ライセンスについて
 */
 class License {
 
+
+	//20180709 仕様が決まったのでゴリゴリ書いていこう
 	//20170521 仕様が決まっていないためとりあえず放置
 
 	const NEET = 0; const NOJOBS = 0;
@@ -29,16 +32,24 @@ class License {
 	public static function init(){
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
 		self::$list[self::BUILDER] = new Builder;
+		/*
 		self::$list[self::MINER] = new Miner;
 		self::$list[self::TRADER] = new Trader;
 		self::$list[self::SERVICER] = new Servicer;
 		self::$list[self::ENTREPRENEUR] = new Entrepreneur;
 		self::$list[self::FARAMER] = new Farmer;
 		self::$list[self::DANGEROUS_ITEM_HANDLER] = new DangerousItemHandler;
+		*/
 	}
 
+	/**
+	*	@param int 				各ライセンスに割り当てられた番号
+	*	@param Timestamp | -1 	有効期限を示すTimestamp。未来。
+	*	@param Int 				self::RANK から始まる値
+	*	@return License | null
+	*/
 	public static function get($licenseNo, $time = null, $rank = null){
-		$license = isset(self::$list[$licenseNo]) ? self::$list[$licenseNo] : null;
+		$license = isset(self::$list[$licenseNo]) ? clone self::$list[$licenseNo] : null;
 		if($license){
 			if($time){
 				$license->setValidTime($time);
@@ -155,8 +166,8 @@ class License {
 	private $no = 0;
 	private $time = 0;
 	private $rank = self::RANK_BEGINNER;
-	private $name = "";
-	private $ranktxt = [
+	protected $name = "";
+	protected $ranktxt = [
 		1 => "初心者",
 		2 => "中級者",
 		3 => "上級者",

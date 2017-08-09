@@ -11,6 +11,7 @@ use Eard\DBCommunication\DB;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
+use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 
@@ -248,14 +249,45 @@ class Account{
 	public function getMeu(){
 		return $this->meu;
 	}
+	private $meu;
 
 	/**
 	*	何かをするのに必要なパーミッションと言っていいだろう。
-	*	@return bool
+	*	@return Int 	-1...すでに持ってる 0...あげれない 1...あげれた
 	*/
-	public function addLicense(License $license){
-		$this->licenses[$licenseNo] = $license;
-		return true;
+	public function addLicense($license){
+		if($license instanceof License){
+			$licenseNo = $license->getLicenseNo();
+			if($oldone = $this->getLicense($licenseNo)){
+				// すでに持ってたら
+				$oldrank = $oldone->getRank();
+				$newrank = $license->getRank();
+				if($oldrank < $newrank){
+					// 新しくもらったほうがランク高いなら、追加
+					$this->licenses[$licenseNo] = $license;
+					return 1;
+				}elseif($oldrank == $newrank){
+					// 同じなら、まだ追加できる可能性がある
+					$oldtime = $oldone->getValidTime();
+					$newtime = $license->getValidTime();
+					if(0 < $oldtime && $oldtime < $newtime){ // 古いライセンスの有効期限が無期限でなければ、延長
+						$this->licenses[$licenseNo] = $license;
+						return 1;
+					}else{
+						// 無期限か、新しいほうが有効期限が短ければ
+						return -1;
+					}
+				}else{
+					// 新しくもらったほうがランク低いならばいばい
+					return -1;
+				}
+			}else{
+				// 持ってなかったら
+				$this->licenses[$licenseNo] = $license;
+				return 1;
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -286,6 +318,8 @@ class Account{
 	public function getAllLicenses(){
 		return $this->licenses;
 	}
+	private $licenses = [];
+
 
 	/**
 	*	DBの「番号」 ひとりに1つずつ独立した番号が与えられている。
@@ -534,8 +568,10 @@ class Account{
 					$this->meu = Meu::get($this->data[1], $this->getUniqueNo());
 
 					// ライセンス
-					foreach($this->data[5] as $licenseNo => $d){
-						$this->licenses[$licenseNo] = License::get($licenseNo, $d[0], $d[1]);
+					if($this->data[5]){
+						foreach($this->data[5] as $licenseNo => $d){
+							$this->licenses[$licenseNo] = License::get($licenseNo, $d[0], $d[1]);
+						}
 					}
 
 
@@ -593,7 +629,12 @@ class Account{
 
 		// ライセンス
 		if($this->licenses){
-			foreach($this->licenses as $LicenseNo => $license){
+			var_dump($this->licenses);
+			foreach($this->licenses as $licenseNo => $license){
+				if(!$licenseNo || !$license){
+					unset($this->data[5][$licenseNo]); // ライセンス追加ミスった時のためのほけんで
+					continue;
+				}
 				$this->data[5][$licenseNo] = [$license->getValidTime(), $license->getRank()];
 			}
 		}

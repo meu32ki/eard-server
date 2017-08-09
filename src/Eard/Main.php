@@ -20,6 +20,7 @@ use Eard\DBCommunication\DB;
 use Eard\DBCommunication\Connection;
 use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Account\License\License;
 use Eard\Event\Event;
 use Eard\Event\AreaProtector;
 use Eard\Event\BlockObject\BlockObjectManager;
@@ -57,7 +58,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 	public function reconnect(){
 		Connection::load();
-		// Connection::setup();
 
 		# Eard関連
 		AreaProtector::load();
@@ -67,6 +67,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		new EnemyRegister();
 		ItemName::init();
 		// Earmazon::setup();
+		License::init();
 		self::$instance = $this;
 	}
 
@@ -88,6 +89,61 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
 				Earmazon::check();
+				return true;
+			break;
+			case "li": // らいせんすかんけい
+				if(isset($a[0])){
+					switch($a[0]){
+						case "give":
+							if(isset($a[1]) && isset($a[2])){
+								$name = $a[1];
+								$no = $a[2];
+								if(isset($a[3])){
+									$time = $a[3] == -1 ? -1 : time() + (int) $a[3]; // 無期限でなければ、それを秒数だと認識し
+								}else{
+									$time = time() + 600; // デフォルトでは10分
+								}
+								$rank = isset($a[4]) ? (int) $a[4] : 1;
+								$player = Server::getInstance()->getPlayer($name);
+								if($player instanceof Player){
+									$playerData = Account::get($player);
+									$license = license::get($no, $time, $rank);
+									if(!$license){
+										$s->sendMessage(Chat::SystemToPlayer("そんなライセンスあらへんで"));
+										return true;
+									}
+
+									$result = $playerData->addLicense($license);
+									$out = 0 < $result ? "あげました" : "あげれませんでした";
+									$s->sendMessage(Chat::SystemToPlayer($out));
+
+									if($result){
+										$player->sendMessage(Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！有効期限:{$license->getValidTimeText()}"));
+									}
+								}else{
+									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
+								}
+							}else{
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /li give <player> <licenceNo> [time] [rank]"));
+							}							
+						break;
+						case "confirm":
+							$playerData = Account::get($s);
+							$licenses = $playerData->getAllLicenses();
+							$out = "";
+							foreach($licenses as $license){
+								$out .= "{$license->getFullName()} {$license->getValidTimeText()}\n";
+							}
+							$out = !$out ? "あなたは何もライセンスを持っていません" : "\n{$out}";
+							$s->sendMessage(Chat::SystemToPlayer($out));
+						break;
+						default:
+							$s->sendMessage(Chat::SystemToPlayer("パラメータがおかしい /li [give|confirm]"));
+						break;
+					}
+				}else{
+					$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /li [give|confirm]"));
+				}
 				return true;
 			break;
 			case "ap": // Area Protector 土地関連
@@ -172,7 +228,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
 								}
 							}else{
-								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 / gv give <player> <amount>"));
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /gv give <player> <amount>"));
 							}
 							return true;
 						break;
