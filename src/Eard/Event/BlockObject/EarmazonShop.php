@@ -48,18 +48,10 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 	public function StartBreak(Player $player){
 		$this->MenuLongTap($player);
-		$name = strtolower($player->getName());
-		if($name === "meu32ki"){
-			return false; //ｊこわせる
-		}
 		return true;
 	}
 
 	public function Break(Player $player){
-		$name = strtolower($player->getName());
-		if($name === "meu32ki"){
-			return false; //ｊこわせる
-		}
 		return true;
 	}
 
