@@ -12,6 +12,7 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 
 # Eard
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\DataIO;
 

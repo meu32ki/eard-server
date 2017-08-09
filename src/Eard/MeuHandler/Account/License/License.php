@@ -119,11 +119,11 @@ class License {
 	}
 
 	/**
-	*	@param int 	$rank
+	*	@param int 	$rank この値よりも大きいかどうか
 	*	@return bool
 	*/
 	public function isRankEnough($rank){
-		return $this->rank <= $rank;
+		return $rank <= $this->rank;
 	}
 
 	/**
