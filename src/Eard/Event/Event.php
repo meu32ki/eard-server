@@ -172,6 +172,11 @@ class Event implements Listener{
 				$player->addWindow($inv);
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
+			case 218: // シュルカーボックス
+				$inv = $player->getInventory();
+				$inv->addItem(Item::get(416));
+				$player->sendMessage(Chat::SystemToPlayer("「携帯」を送りました。ベータテスト中限定だよ～。"));
+			break;
 			default: // それいがい
 
 				/*	生活区域
