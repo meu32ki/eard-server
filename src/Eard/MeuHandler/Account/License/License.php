@@ -98,7 +98,7 @@ class License {
 	*	@return String
 	*/
 	public function getValidTimeText(){
-		return $this->time === -1 ? "無期限" : date("n月j日 G時i分")."まで";
+		return $this->time === -1 ? "無期限" : date("n月j日G時i分")."まで";
 	}
 
 
