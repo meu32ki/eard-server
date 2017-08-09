@@ -230,7 +230,9 @@ class Event implements Listener{
 		}else{
 			$item = $e->getItem();
 			$itemId = $item->getId();
-			$e->setCancelled( AreaProtector::canPlaceInResource($itemId) );
+			if( !AreaProtector::canPlaceInResource($itemId) ){
+				$e->setCancelled(true);
+			}
 		}
 	}
 
