@@ -631,8 +631,8 @@ class Account{
 		if($this->licenses){
 			var_dump($this->licenses);
 			foreach($this->licenses as $licenseNo => $license){
-				if(!$licenseNo || !$license){
-					unset($this->data[5][$licenseNo]); // ライセンス追加ミスった時のためのほけんで
+				if(!$licenseNo || !$license){ // ライセンス追加ミスった時のためのほけんで
+					unset($this->data[5][$licenseNo]);
 					continue;
 				}
 				$this->data[5][$licenseNo] = [$license->getValidTime(), $license->getRank()];

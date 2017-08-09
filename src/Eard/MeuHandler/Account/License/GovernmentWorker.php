@@ -14,7 +14,7 @@ class GovernmentWorker extends License {
 	}
 
 	protected $ranktxt = [
-		1 => "インフラ整備士",
+		1 => "土木技術者",
 		2 => "見習い",
 		3 => "一人前",
 		4 => "高官",

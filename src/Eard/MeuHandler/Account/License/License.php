@@ -13,14 +13,15 @@ class License {
 	//20170521 仕様が決まっていないためとりあえず放置
 
 	const NEET = 0; const NOJOBS = 0;
-	const GOVERNMENT_WORKER = 1;
-	const BUILDER = 2;
-	const MINER = 3;
-	const TRADER = 4;
-	const SERVICER = 5;
-	const ENTREPRENEUR = 6;
+	const RESIDENCE = 1;
+	const GOVERNMENT_WORKER = 2;
+	const BUILDER = 3;
+	const MINER = 4;
+	const TRADER = 5;
+	const SERVICER = 6;
+	const ENTREPRENEUR = 8;
 	const FARAMER = 8;
-	const DANGEROUS_ITEM_HANDLER = 8;
+	const DANGEROUS_ITEM_HANDLER = 9;
 
 	const RANK_BEGINNER = 1;
 	const RANK_GENERAL = 2;
@@ -30,6 +31,7 @@ class License {
 
 
 	public static function init(){
+		self::$list[self::RESIDENCE] = new Residence;
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
 		self::$list[self::BUILDER] = new Builder;
 		/*
