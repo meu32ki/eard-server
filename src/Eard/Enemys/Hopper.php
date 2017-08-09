@@ -52,7 +52,7 @@ class Hopper extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 40;
+		return 10;
 	}
 
 	//召喚時のポータルのサイズを取得

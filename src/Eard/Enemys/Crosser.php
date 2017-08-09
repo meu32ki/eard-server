@@ -138,7 +138,7 @@ class Crosser extends Humanoid implements Enemy{
 			Biome::MESA_PLATEAU => true,
 			//雨あり
 			Biome::OCEAN => true,
-			Biome::PLAINS => true,
+			//Biome::PLAINS => true,
 			Biome::MOUNTAINS => true,
 			Biome::FOREST => true,
 			//Biome::TAIGA => true,
