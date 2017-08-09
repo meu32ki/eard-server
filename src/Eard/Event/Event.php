@@ -194,7 +194,7 @@ class Event implements Listener{
 				/*	資源区域
 				*/
 				}else{
-					if(AreaProtector::canActivateInResource($blockId)){
+					if(!AreaProtector::canActivateInResource($blockId)){
 						$placename = Connection::getPlace()->getName();
 						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
 						$e->setCancelled(true);

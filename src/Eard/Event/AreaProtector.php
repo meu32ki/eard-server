@@ -48,7 +48,7 @@ class AreaProtector{
 
 
 	/**
-	*	生活区域の保護エリアにおいて、タップして起動できるか
+	*	生活区域の保護エリアにおいて、タップして起動できるか 起動できる場合はtrue
 	*	@param int BlockId
 	*	@return bool
 	*/
@@ -68,7 +68,7 @@ class AreaProtector{
 
 
 	/**
-	*	資源において、設置できるか
+	*	資源において、設置できるか 設置できる場合はtrue
 	*	@param int ItemId
 	*	@return bool
 	*/
