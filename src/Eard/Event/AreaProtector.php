@@ -253,30 +253,41 @@ class AreaProtector{
 			return false;
 		}else{
 			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
-			$no = Account::get($player)->getUniqueNo();
+			$playerData = Account::get($player);
 			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
-			//echo "ownerNo: {$ownerNo} no :{$no}\n";
-			if($ownerNo && $no){
-				//1以上点所有者がいる
-				if($no === $ownerNo){
-					//所有者本人
-
+			if($ownerNo === 100000){
+				// 政府の土地
+				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
+					return true;
 				}else{
-					//所有者本人でない。権限が、所有者から与えられているか。
-					$ownerName = self::getNameFromOwnerNo($ownerNo);
-					if($owner = Account::getByName($ownerName, true)){
-						if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
-							$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
-							return false;
+					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊は許可されていません。"));							
+					return false;					
+				}
+			}else{
+				// 一般の土地
+				$no = $playerData->getUniqueNo();
+				if($ownerNo && $no){
+					//1以上…所有者がいる
+					if($no === $ownerNo){
+						//所有者本人
+
+					}else{
+						//所有者本人でない。権限が、所有者から与えられているか。
+						$ownerName = self::getNameFromOwnerNo($ownerNo);
+						if($owner = Account::getByName($ownerName, true)){
+							if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
+								$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+								return false;
+							}
 						}
 					}
+					self::$sections[$sectionNoX][$sectionNoZ][1] = time();
+					return true;
+				}else{
+					//0 …所有者なし
+					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
+					return false;
 				}
-				self::$sections[$sectionNoX][$sectionNoZ][1] = time();
-				return true;
-			}else{
-				//0 …所有者なし
-				$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
-				return false;
 			}
 		}
 
@@ -330,6 +341,21 @@ class AreaProtector{
 				return [0];
 			}
 		}
+	}
+
+	/**
+	*	@param Int UniqueNo
+	*	@param Int playerのY値
+	*	@return Array SectionData
+	*/
+	public static function getNewSectionData($uniqueNo, $baseY){
+		$sectionData = [
+			$uniqueNo,
+			0,//時間に置きかわる
+			( $baseY - 1 ),//べーすとなる座標
+			0 //プレイヤーの売却価格に置き換わる
+		];
+		return $sectionData;
 	}
 
 	/**
@@ -400,12 +426,7 @@ class AreaProtector{
 		}else{
 			if( ($player = $playerData->getPlayer()) instanceof Player){
 		        //新規セクションデーター
-				$sectionData = [
-					$uniqueNo,
-					0,//時間に置きかわる
-					( $player->getY() - 1 ),//べーすとなる座標
-					0 //プレイヤーの売却価格に置き換わる
-				];
+				$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 				//残りの数を減らす 販売数
@@ -424,6 +445,28 @@ class AreaProtector{
 				return false;
 			}
 		}
+	}
+
+	/**
+	*	政府が自身で土地をおさえる場合には、「販売可能な数」からはひかない。
+	*	@param Player 買ったコマンドを使った人
+	*/
+	public static function registerSectionAsGovernment($player, $sectionNoX, $sectionNoZ){
+		$uniqueNo = 100000;
+
+        //新規セクションデーター
+		$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
+		self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
+
+		// オフラインリストに一応名前保存
+		Account::$namelist[$uniqueNo] = "政府";
+
+		self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
+
+		$address = self::getSectionCode($sectionNoX, $sectionNoZ);
+		$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が政府として {$address} を押さえました。");
+		MainLogger::getLogger()->info($msg);
+		return true;
 	}
 
 	/**

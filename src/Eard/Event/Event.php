@@ -237,7 +237,7 @@ class Event implements Listener{
 		$level = $player->getLevel();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 
-		/*	資源区域
+		/*	生活区域
 		*/
 		if(Connection::getPlace()->isLivingArea()){
 			if(AreaProtector::Edit($player, $x, $y, $z)){

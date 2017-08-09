@@ -308,7 +308,7 @@ class Account{
 		if(!$rank){
 			$rank = License::RANK_BEGINNER;
 		}
-		$license = $this->getLicense();
+		$license = $this->getLicense($licenseNo);
 		return $license === null ? false : $license->isValid($rank);
 	}
 
@@ -629,7 +629,7 @@ class Account{
 
 		// ライセンス
 		if($this->licenses){
-			var_dump($this->licenses);
+			// var_dump($this->licenses);
 			foreach($this->licenses as $licenseNo => $license){
 				if(!$licenseNo || !$license){ // ライセンス追加ミスった時のためのほけんで
 					unset($this->data[5][$licenseNo]);

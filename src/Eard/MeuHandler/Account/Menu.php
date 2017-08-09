@@ -25,6 +25,7 @@ use Eard\Event\AreaProtector;
 use Eard\Event\Chat;
 use Eard\Event\BlockObject\ChatInput;
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Account\License\License;
 
 /***
 *
@@ -192,7 +193,7 @@ class Menu implements ChatInput {
 					$ar[] = ["この土地を買う",4];
 				}
 				if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
-					$ar[] = ["この土地を政府が買う",4];
+					$ar[] = ["この土地を政府が買う",40];
 				}
 				$ar[] = ["§f{$uma} 戻る",false];
 			break;
@@ -206,7 +207,7 @@ class Menu implements ChatInput {
 					["いいえ",3],
 					["はい",5],
 					["§f{$uma} トップへ戻る",false],
-				];			
+				];
 			break;
 			case 5:
 				$x = round($player->x); $z = round($player->z);
@@ -378,6 +379,43 @@ class Menu implements ChatInput {
 				];
 			break;
 
+			case 40:
+				$x = round($player->x); $z = round($player->z);
+				$address = AreaProtector::getSectionCode(AreaProtector::calculateSectionNo($x), AreaProtector::calculateSectionNo($z));
+				$ar = [
+					["§4[[ 確認 ]]",false],
+					["§7住所 §f{$address} §7を",false],
+					["政府が押さえます。よろしいですか？",false],
+					["いいえ",3],
+					["はい",41],
+					["§f{$uma} トップへ戻る",false],
+				];
+			break;
+			case 41:
+				$x = round($player->x); $z = round($player->z);
+				$sectionNoX = AreaProtector::calculateSectionNo($x);
+				$sectionNoZ = AreaProtector::calculateSectionNo($z);
+				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
+				if($isFirst){
+					$result = AreaProtector::registerSectionAsGovernment($player, $sectionNoX, $sectionNoZ);
+					if($result){
+						$ar = [
+							["§2[[ 完了 ]]",false],
+							["§7住所 §f{$address} §7を",false],
+							["購入しました。",false],
+							["§f{$uma} トップへ戻る",false],
+						];
+					}else{
+						$ar = [
+							["§2[[ 失敗 ]]",false],
+							["§7購入できませんでした。",false],
+							["§f{$uma} トップへ戻る",false],
+						];
+					}
+				}else{
+					$ar = [ ["§f{$uma} トップへ戻る",false] ];
+				}
+			break;
 
 //閉じてるよ画面
 			case 100:
