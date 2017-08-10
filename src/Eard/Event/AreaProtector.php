@@ -99,7 +99,6 @@ class AreaProtector{
 		$level = $player->getLevel();
 		$sectionNoZ = self::calculateSectionNo($z = $player->z);
 		$sectionNoX = self::calculateSectionNo($x = $player->x);
-		//$y = $level->getHighestBlockAt($x, $z);
 		$y = $player->y;
 		$section = self::$section + 1;
 
@@ -109,8 +108,6 @@ class AreaProtector{
 		$posZMin = ($sectionNoZ) * $section;
 		//echo "{$posXMax} {$posXMin} {$posZMax} {$posZMin}";
 
-		$server = Server::getInstance();
-		$target = [$player];
 		if($oldData = $playerData->getSentBlock()){
 			//print_r($oldData);
 			if($oldData[0][0] != $posXMax or $oldData[0][0] != $y or $oldData[0][0] != $posZMax){
@@ -122,7 +119,7 @@ class AreaProtector{
 					$pk->y = (int) $d[1];
 					$pk->blockId = $level->getBlockIdAt($d[0], $d[1], $d[2]);
 					$pk->blockData = $level->getBlockDataAt($d[0], $d[1], $d[2]);
-					$server->broadcastPacket($target, $pk);
+					$player->directDataPacket($pk);
 				}
 				$shouldSend = true;
 			}else{
@@ -133,7 +130,9 @@ class AreaProtector{
 		}
 
 		if($shouldSend){
-			$id = 159; $meta = 4;
+
+			// 送るブロック用意
+			$id = 41; $meta = 0;
 			$blocks = [];
 			$key = 0;
 			while($key < 2){
@@ -165,11 +164,28 @@ class AreaProtector{
 				$pk->blockId = $d[3];
 				$pk->blockData = $d[4];
 				$pk->flags = UpdateBlockPacket::FLAG_NONE;//読み込まれていないチャンクに送り付ける時は注意が必要
-				$server->broadcastPacket($target, $pk);
+				$player->directDataPacket($pk);
 			}
-			//echo "SENT ".time()."\n";
+			// echo "SENT ".time()."\n";
 
 			$playerData->setSentBlock($blocks);
+		}
+	}
+
+	public static function viewSectionCancel($playerData){
+		$player = $playerData->getPlayer();
+		$level = $player->getLevel();
+		if($oldData = $playerData->getSentBlock()){
+			foreach($oldData as $d){
+				$pk = new UpdateBlockPacket();
+				$pk->x = (int) $d[0];
+				$pk->z = (int) $d[2];
+				$pk->y = (int) $d[1];
+				$pk->blockId = $level->getBlockIdAt($d[0], $d[1], $d[2]);
+				$pk->blockData = $level->getBlockDataAt($d[0], $d[1], $d[2]);
+				$player->directDataPacket($pk);
+			}
+			$playerData->setSentBlock([]);
 		}
 	}
 

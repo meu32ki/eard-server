@@ -144,6 +144,9 @@ class Menu implements ChatInput {
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}else{
+					// 戻ってきたとき用
+					AreaProtector::viewSectionCancel($playerData);
+
 					$ar = [
 						["§7[[ メニュー ]]",false],
 						["ステータス照会",2],
