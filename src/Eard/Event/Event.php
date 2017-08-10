@@ -213,7 +213,7 @@ class Event implements Listener{
 				}else{
 					if(!AreaProtector::canActivateInResource($blockId)){
 						$placename = Connection::getPlace()->getName();
-						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
+						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
 						$e->setCancelled(true);
 					}
 				}
