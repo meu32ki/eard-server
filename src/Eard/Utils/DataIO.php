@@ -11,7 +11,7 @@ class DataIO{
 
 
 	public static function init(){
-		self::$path = __DIR__."/../data/";
+		self::$path = __DIR__."/../../../../../EardData/";
 		if(!file_exists(self::$path)){
 			@mkdir(self::$path);
 		}
