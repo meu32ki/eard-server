@@ -179,17 +179,19 @@ class Account{
 	*	@return bool
 	*/
 	public function setChatMode($chatmode){
-		$this->chatmode = $chatmode;
 		if($this->getChatObject()) $this->removeChatObject();
 		if($this->getChatTarget()) $this->removeChatTarget();
 		if($this->getPlayer()){
-			switch($chatmode){
-				case ChatManager::CHATMODE_VOICE: $name = "§a周囲"; break;
-				case ChatManager::CHATMODE_ALL: $name = "§b全体"; break;
-				case ChatManager::CHATMODE_PLAYER: $name = "§6指定プレイヤー"; break;
-				case ChatManager::CHATMODE_ENTER: $name = "§eシステム"; break;
+			if($chatmode != $this->chatmode){
+				switch($chatmode){
+					case ChatManager::CHATMODE_VOICE: $name = "§a周囲"; break;
+					case ChatManager::CHATMODE_ALL: $name = "§b全体"; break;
+					case ChatManager::CHATMODE_PLAYER: $name = "§6指定プレイヤー"; break;
+					case ChatManager::CHATMODE_ENTER: $name = "§eシステム"; break;
+				}
+				$this->getPlayer()->sendMessage(Chat::Format("§8システム", "§eチャット発言先が §f「 {$name} §f」 §eに切り替わりました。"));
+				$this->chatmode = (int) $chatmode;
 			}
-			$this->getPlayer()->sendMessage(Chat::Format("§8システム", "§eチャット発言先が §f「 {$name} §f」 §eに切り替わりました。"));
 		}
 		return true;
 	}
