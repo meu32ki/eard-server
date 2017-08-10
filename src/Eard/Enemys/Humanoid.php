@@ -2,6 +2,7 @@
 
 namespace Eard\Enemys;
 
+use pocketmine\Server;
 use pocketmine\Player;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -29,6 +30,9 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 
+use Eard\Utils\Chat;
+use Eard\Utils\ItemName;
+
 /**各エネミーに継承させるためのクラス
  */
 
@@ -48,6 +52,7 @@ class Humanoid extends Human{
 		Biome::MESA_PLATEAU_F => true,
 		Biome::MESA_PLATEAU => true,
 	];
+	public $score = [];
 	/**
 	 * 貫通できるブロックかを返す
 	 *
@@ -84,10 +89,23 @@ class Humanoid extends Human{
 		$this->spawnTime = microtime(true);
 	}
 
-	public function getDrops(){
+	public function getDrops($score = 0){
+		if($score === 0){
+			return [];
+		}
 		$drops = [];
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getDamager() instanceof Player){
 			$all_drops = static::getAllDrops();
+			$s = $this->score;
+			rsort($s);
+			$mvp = (isset($s[0])) ? $s[0] : 0;
+			$mvp_2 = (isset($s[1])) ? $s[1] : 0;
+			if($mvp === $score){
+				$all_drops[] = static::getMVPTable();
+				$all_drops[] = static::getMVPTable();
+			}elseif($mvp_2 === $score){
+				$all_drops[] = static::getMVPTable();
+			}
 			foreach($all_drops as $key => $value){
 				//list($id, $data, $amount, $percent) = $value;
 				list($percent, $count, $items) = $value;
@@ -169,10 +187,41 @@ class Humanoid extends Human{
 			$source->setCancelled(true);
 		}
 		parent::attack($damage, $source);
+		if(!$source->isCancelled() && $source instanceof EntityDamageByEntityEvent){
+			$attacker = $source->getDamager();
+			if($attacker instanceof Player){
+				$name = $attacker->getName();
+				if(!isset($this->score[$name])){
+					$this->score[$name] = 0;
+				}
+				$this->score[$name] += $damage;
+			}
+		}
 	}
 
 	public function kill(){
 		$this->level->addParticle(new SpellParticle($this, 20, 220, 20));
+		foreach ($this->score as $name => $score) {
+			$player = Server::getInstance()->getPlayer($name);
+			if($player === null){
+				continue;
+			}
+			$inv = $player->getInventory();
+			$player->sendMessage(Chat::SystemToPlayer($this->getEnemyName()."の討伐に成功しました"));
+			$str = "";
+			$first = true;
+			foreach($this->getDrops($score) as $item){
+				$inv->addItem($item);
+				if(!$first){
+					$str .= "、";
+				}else{
+					$first = false;
+				}
+				$str .= ItemName::getNameOf($item->getId(), $item->getDamage())."×".$item->getCount();
+			}
+			$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
+			$player->sendMessage(Chat::SystemToPlayer($str));
+		}
 		parent::kill();
 	}
 }

@@ -170,6 +170,16 @@ class Jooubati extends Humanoid implements Enemy{
 		];
 	}
 
+	public static function getMVPTable(){
+		return [100, 1,
+			[
+				[Item::EMERALD , 0, 1],
+				[Item::IRON_INGOT, 0, 1],
+				[Item::IRON_INGOT, 0, 1]
+			]
+		];
+	}
+
 	public static function summon($level, $x, $y, $z){
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [

@@ -101,6 +101,14 @@ class Deffenian extends Humanoid implements Enemy{
 		];
 	}
 
+	public static function getMVPTable(){
+		return [100, 1,
+			[
+				[Item::IRON_INGOT, 0, 1]
+			]
+		];
+	}
+
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
 		return 1.5;

@@ -111,6 +111,18 @@ class Crosser extends Humanoid implements Enemy{
 		];
 	}
 
+	public static function getMVPTable(){
+		return [100, 1,
+			[
+				[Item::IRON_INGOT, 0, 1],
+				[Item::IRON_INGOT, 0, 1],
+				[Item::IRON_NUGGET, 0, 3],
+				[Item::IRON_NUGGET, 0, 3],
+				[Item::GOLD_NUGGET , 0, 2],
+			]
+		];
+	}
+
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
 		return 1;

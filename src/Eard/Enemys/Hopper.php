@@ -52,7 +52,7 @@ class Hopper extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 10;
+		return 15;
 	}
 
 	//召喚時のポータルのサイズを取得
@@ -154,6 +154,17 @@ class Hopper extends Humanoid implements Enemy{
 				],
 			],
 		];
+	}
+
+	public static function getMVPTable(){
+		return [100, 1, 
+			[
+				[Item::APPLE, 0, 2],
+				[Item::POTATO, 0, 2],
+				[Item::CARROT, 0, 2]
+			]
+		];
+
 	}
 
 	public static function summon($level, $x, $y, $z){

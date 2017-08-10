@@ -40,4 +40,7 @@ interface Enemy{
 
 	//スポーンする頻度を返す(大きいほどスポーンしにくい)
 	public static function getSpawnRate() : int;
+
+	//MVPテーブルを取得
+	public static function getMVPTable();
 }
