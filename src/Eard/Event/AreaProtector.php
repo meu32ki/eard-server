@@ -327,14 +327,6 @@ class AreaProtector{
 	public static function getBaseY($sectionNoX, $sectionNoZ){
 		return self::getSectionData($sectionNoX, $sectionNoZ)[2];
 	}
-	//return int
-	public static function getDigLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[3]) ? self::getSectionData($sectionNoX, $sectionNoZ)[3] : self::$digDefault;
-	}
-	//return int
-	public static function getPileLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::$pileDefault;
-	}
 	//return int or -1
 	public static function getPriceOf($sectionNoX, $sectionNoZ){
 		/*
@@ -342,8 +334,17 @@ class AreaProtector{
 			0...... 誰かが所持している、だが、非売品状態。
 			1以上... その価格で売れる
 		*/
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[5]) ? self::getSectionData($sectionNoX, $sectionNoZ)[5] : -1;
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[3]) ? self::getSectionData($sectionNoX, $sectionNoZ)[3] : -1;
 	}
+	//return int
+	public static function getDigLimit($sectionNoX, $sectionNoZ){
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::getBaseY($sectionNoX, $sectionNoZ) + self::$digDefault;
+	}
+	//return int
+	public static function getPileLimit($sectionNoX, $sectionNoZ){
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[5]) ? self::getSectionData($sectionNoX, $sectionNoZ)[5] : self::getBaseY($sectionNoX, $sectionNoZ) - self::$pileDefault;
+	}
+
 
 	//return array (section data)
 	public static function getSectionData($sectionNoX, $sectionNoZ){
@@ -613,7 +614,7 @@ class AreaProtector{
 	public static $sections = []; // データ領域
 
 	public static $digDefault = 48;
-	public static $pileDefault = 80;
+	public static $pileDefault = 64;
 
 
 	public static $affordableSection = 0;
