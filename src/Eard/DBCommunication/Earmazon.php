@@ -365,7 +365,7 @@ class Earmazon {
 
 			if($player) {
 				$itemname = ItemName::getNameOf($id, $meta);
-				$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。購入した {$itemname} x{$amount} はItemBoxに送られました。"));
+				$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。購入した {$itemname}({$price}μ/個) x{$amount} はItemBoxに送られました。"));
 			}
 			$inv->addItem($item); // 追加しとけば鯖出るときに勝手にセーブされるから安心
 			return true;
@@ -636,7 +636,7 @@ class Earmazon {
 			try{
 				$inv->removeItem($item); //trueはすぐに反映させるかどうか
 				if($player){
-					$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。{$itemname} x{$amount} を買取しました。"));
+					$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。{$itemname}({$price}μ/個) x{$amount} を買取しました。"));
 				}
 				return true;
 			}catch(\InvalidArgumentException $e){
