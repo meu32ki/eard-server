@@ -170,8 +170,10 @@ class Event implements Listener{
 
 		switch($blockId){
 			case 130: // エンダーチェスト
-				$inv = $playerData->getItemBox();
-				$player->addWindow($inv);
+				if(Connection::getPlace()->isLivingArea()){
+					$inv = $playerData->getItemBox();
+					$player->addWindow($inv);
+				}
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
 			case 218: // シュルカーボックス

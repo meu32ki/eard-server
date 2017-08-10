@@ -141,6 +141,7 @@ class Menu implements ChatInput {
 						["ステータス照会",2],
 						["チャット",20],
 						["エリア転送",30],
+						["アイテムボックス",1],
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}else{
@@ -157,6 +158,17 @@ class Menu implements ChatInput {
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}
+			break;
+/*	アイテムボックス　| 1
+*/
+			case 1:
+				if($isFirst){
+					$inv = $playerData->getItemBox();
+					$player->addWindow($inv);
+				}
+				$ar = [
+					["§f{$uma} 戻る",false],
+				];
 			break;
 /*
 *	ステータス | 2
@@ -546,9 +558,8 @@ class Menu implements ChatInput {
 	private $page = -1;
 	private $pageData = [];
 	private $playerData = null;
-
-
 }
+
 
 class Ticker extends PluginTask{
 
