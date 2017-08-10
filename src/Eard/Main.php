@@ -27,6 +27,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Utils\ItemName;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
+use Eard\DBCommunication\Earmazon;
 
 # Enemys
 use Eard\Enemys\EnemyRegister;
