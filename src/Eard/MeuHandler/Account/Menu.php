@@ -61,7 +61,7 @@ class Menu implements ChatInput {
 		if(!$this->isActive()){
 			$this->sendMenu(0);
 			$this->task = new Ticker(Main::getInstance(), $this);
-			Main::getInstance()->getServer()->getScheduler()->scheduleRepeatingTask($this->task, 5*20);
+			Main::getInstance()->getServer()->getScheduler()->scheduleRepeatingTask($this->task, 4*20);
 		}else{
 			//「閉じる」「戻る」操作に当たる。
 			if($this->page === 0){
