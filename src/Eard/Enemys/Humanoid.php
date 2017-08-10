@@ -201,26 +201,28 @@ class Humanoid extends Human{
 
 	public function kill(){
 		$this->level->addParticle(new SpellParticle($this, 20, 220, 20));
-		foreach ($this->score as $name => $score) {
-			$player = Server::getInstance()->getPlayer($name);
-			if($player === null){
-				continue;
-			}
-			$inv = $player->getInventory();
-			$player->sendMessage(Chat::SystemToPlayer($this->getEnemyName()."の討伐に成功しました"));
-			$str = "";
-			$first = true;
-			foreach($this->getDrops($score) as $item){
-				$inv->addItem($item);
-				if(!$first){
-					$str .= "、";
-				}else{
-					$first = false;
+		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getDamager() instanceof Player){
+			foreach ($this->score as $name => $score) {
+				$player = Server::getInstance()->getPlayer($name);
+				if($player === null){
+					continue;
 				}
-				$str .= ItemName::getNameOf($item->getId(), $item->getDamage())."×".$item->getCount();
+				$inv = $player->getInventory();
+				$player->sendMessage(Chat::SystemToPlayer($this->getEnemyName()."の討伐に成功しました"));
+				$str = "";
+				$first = true;
+				foreach($this->getDrops($score) as $item){
+					$inv->addItem($item);
+					if(!$first){
+						$str .= "、";
+					}else{
+						$first = false;
+					}
+					$str .= ItemName::getNameOf($item->getId(), $item->getDamage())."×".$item->getCount();
+				}
+				$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
+				$player->sendMessage(Chat::SystemToPlayer($str));
 			}
-			$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
-			$player->sendMessage(Chat::SystemToPlayer($str));
 		}
 		parent::kill();
 	}
