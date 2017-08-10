@@ -13,6 +13,7 @@ use pocketmine\level\particle\FloatingTextParticle;
 use Eard\DBCommunication\Earmazon;
 use Eard\Event\ChatManager;
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 
@@ -137,16 +138,19 @@ class EarmazonShop implements BlockObject, ChatInput {
 				["アイテムを売る", 37],
 			];
 			$name = strtolower($player->getName());
-			if($name === "meu32ki" || $name === "32ki"){
+			$playerData = Account::get($player);
+			if( $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL) ){
 				$ar[] = ["管理画面へ", 100];
 			}
 			break;
 		case 2:
+			$playerData = Account::get($player);
+			$playerData->setChatMode(ChatManager::CHATMODE_VOICE);
 			$view->setMode(1);
 			$view->setCategory(0);
 			$view->setId(0, 0);
 			$ar = [
-				["{$thisname} 購入", false],
+				["{$thisname} 購入>トップ", false],
 				["IDとダメージ値から検索",3],
 				["カテゴリーから検索",4],
 				["全アイテムを検索",27],
@@ -220,7 +224,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 						// リスト作る
 						$ar = [
-							["{$thisname} 購入>決定", false],
+							["{$thisname} 購入>確認", false],
 							["{$itemname} をいくつ買いますか？", false],
 						];
 
@@ -271,9 +275,10 @@ class EarmazonShop implements BlockObject, ChatInput {
 			$result = Earmazon::playerBuy($view->no, $amount, $playerData);
 			if($result){
 				$ar = [
-					["{$thisname} 購入", false],
-					["購入完了", false],
-					["戻る", 1]
+					["{$thisname} 購入>完了", false],
+					["お買い上げありがとうございます。", false],
+					["またのご利用をお待ちしております。", false],
+					["購入トップへ戻る", 2]
 				];	
 				unset($this->input[$player->getName()]);
 			}else{
@@ -287,15 +292,16 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 
 		case 37:
+			$view->setData([]); // まとめ売りのリセット
 			$view->setMode(2);
 			$view->setCategory(0);
 			$view->setId(0, 0);
 			$ar = [
-				["{$thisname} 売却", false],
+				["{$thisname} 売却>トップ", false],
 				["IDとダメージ値から検索",38],
 				["カテゴリーから検索",39],
 				["全アイテムを検索",57],
-				// ["手持ちから売れるものを検索", ]
+				["手持ちの売れるものを全部売る", 80],
 				["戻る", 1]
 			];
 			break;
@@ -355,7 +361,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 					$id = $unit[0]; $meta = $unit[1]; $leftamount = $unit[2]; $unitprice = $unit[3];
 					$itemname = ItemName::getNameOf($id, $meta);
 					$ar = [
-						["{$thisname} 売却>決定", false],
+						["{$thisname} 売却>確認", false],
 						["{$itemname} をいくつ売りますか？", false],
 						["戻る", 27, " "]
 					];
@@ -420,27 +426,116 @@ class EarmazonShop implements BlockObject, ChatInput {
 			$result = Earmazon::playerSell($view->no, $amount, $playerData);
 			if($result){
 				$ar = [
-					["{$thisname} 売却", false],
-					["売却完了", false],
-					["戻る", 1]
+					["{$thisname} 売却>完了", false],
+					["査定は終了です。", false],
+					["またのご利用をお待ちしております。", false],
+					["戻る", 37]
 				];	
 				unset($this->input[$player->getName()]);
 			}else{
 				$ar = [
-					["{$thisname} 売却", false],
+					["{$thisname} 売却>エラー", false],
 					["何かのエラー", false],
 					["戻る", 57]
 				];
 			}
 			break;
 
+		case 80:
+		/*
+			$sellItems = [
+				$invのindexNo => [$id, $meta, $amount, $price]
+			];
+		*/
+			$inv = $player->getInventory();
+			$sellItems = []; // 売るアイテム
+			$itemtxts = []; // アイテム確認用
+			$pay = 0; // 価格確認用
+			foreach($inv->getContents() as $slotIndex => $item){ // インベントリ中をぶん回し
+				$itemid = $item->getId(); $itemmeta = $item->getDamage();
+				$unitData = Earmazon::searchSellUnitById($itemid, $itemmeta); // そのアイテムが、売れるか
+				if($unitData){ // 売れるようであれば
+					$highest = 0; // 
+					$unit = [];
+					// uNitDataは複数あるのでそれをチェック 一番高い値段で売ろうと試みる
+					foreach($unitData as $u){ // leftamountのチェックはしてない
+						$unitprice = $u[3];
+						if($highest < $unitprice){
+							$highest = $unitprice;
+							$unit = $u;
+						}
+					}
+					if($unit){
+						$itemname = ItemName::getNameOf($itemid, $itemmeta);
+						$itemamount = $item->getCount();
+						$sellItems[$slotIndex] = $unit;
+						$pay = $pay + $unitprice * $itemamount;
+						$itemtxts[] = "{$itemname}x{$itemamount}";
+					}
+				}
+			}
+
+			$itemtxt = "";
+			$cnt = 1;
+			foreach($itemtxts as $t){
+				$selector = $cnt % 2 == 0 ? "\n" : " "; 
+				$itemtxt .= "{$t}{$selector}";
+				++$cnt;
+			}
+			$ar = [
+				["{$thisname} まとめて売却>確認", false],
+				["{$itemtxt}を売って{$pay}μを得る予定です。\n売りに出しますか？", false],
+				["いいえ", 37, " "],
+				["はい", 81]
+			];
+			$view->setData($sellItems);
+		break;
+		case 81:
+			// Earmazonに専用めそっどを追加しろ
+			$playerData = Account::get($player);
+			$sellItems = $view->getData();
+			foreach($sellItems as $invIndex => $unit){
+				$amount = $player->getInventory()->getItem($invIndex)->getCount();
+				$unitno = $unit[4];
+				Earmazon::playerSell($unitno, $amount, $playerData);
+			}
+			$ar = [
+				["{$thisname} まとめて売却>完了", false],
+				["査定は終了です。", false],
+				["またのご利用をお待ちしております。", false],
+				["売却へ戻る", 37]
+			];
+		break;
+
 
 
 
 		case 100: // 管理画面
 			$ar = [
-
+				["管理画面", false],
+				["販売アイテムを追加", 101]
 			];
+			break;
+		case 101:
+			$data = $view->getData();
+			$itemid = isset($data[0]) ? $data[0] : 0;
+			$itemmeta = isset($data[1]) ? $data[1] : 0;
+			$itemamount = isset($data[2]) ? $data[2] : 1;
+			$itemprice = isset($data[3]) ? $data[3] : 100;
+			$itemname = ItemName::getNameOf($itemid, $itemmeta);
+			$ar = [
+				["管理画面 販売アイテム追加", false],
+				["追加アイテム: {$itemname}\n{$itemid}:{$itemmeta}", 102],
+				["追加数量: {$itemamount}", 105],
+				["販売価格: {$itemprice}", 106],
+			];
+			break;
+		case 102:
+			$ar = [
+				["管理画面 販売アイテム追加>アイテム検索", false],
+				[],
+			];
+			break;
 		default: 
 			$ar = [
 				["{$thisname}", false],

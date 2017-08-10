@@ -55,6 +55,15 @@ class ShopView{
 		$this->no = $unitno;
 	}
 
+
+
+	public function setData($data){
+		$this->data = $data;
+	}
+	public function getData(){
+		return $this->data;
+	}
+
 	public $page = 1;
 	public $id = 0;
 	public $meta = 0;
@@ -62,4 +71,5 @@ class ShopView{
 	public $keys = [];
 	public $mode = 0;
 	public $no;
+	private $data = [];
 }
