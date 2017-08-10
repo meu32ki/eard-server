@@ -469,7 +469,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 						$itemname = ItemName::getNameOf($itemid, $itemmeta);
 						$itemamount = $item->getCount();
 						$sellItems[$slotIndex] = $unit;
-						$pay = $pay + $unitprice * $itemamount;
+						$pay = $pay + $highest * $itemamount;
 						$itemtxts[] = "{$itemname}x{$itemamount}";
 					}
 				}

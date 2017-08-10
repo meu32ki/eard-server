@@ -565,6 +565,13 @@ class Earmazon {
 			// idがしぬ
 			if(!$id){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7売りに出すアイテムidが0です。"));
+				return false;
+			}
+
+			// もう売れないじゃん
+			if(!$unitamount){
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "売りに出す個数が0です。"));
+				return false;
 			}
 
 			// 64個以上のまとめうりは無理よ(おもにインベントリ関係がめんどくさいから)
@@ -573,10 +580,12 @@ class Earmazon {
 				return false;
 			}
 
+			$itemname = ItemName::getNameOf($id, $meta);
+
 			// 在庫のほうが少なかったら売れないよね
 			// 販売リストのチェックも兼ねている
 			if($unitamount < $amount){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "買取可能な個数を超えていたため、{$amount}個のうち{$unitamount}個を売りに出しました。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§e{$itemname} は買取可能な個数を超えているため、{$amount}個のうち{$unitamount}個を売りに出します。"));
 				$amount = $unitamount;
 			}
 
@@ -620,7 +629,6 @@ class Earmazon {
 			try{
 				$inv->removeItem($item); //trueはすぐに反映させるかどうか
 				if($player){
-					$itemname = ItemName::getNameOf($id, $meta);
 					$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。{$itemname} x{$amount} を買取しました。"));
 				}
 				return true;
