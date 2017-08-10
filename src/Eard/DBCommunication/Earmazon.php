@@ -180,7 +180,6 @@ class Earmazon {
 		$result = DB::get()->query($sql);
 		if($result){
 			while( $row = $result->fetch_assoc() ){
-				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
 		}
@@ -201,7 +200,6 @@ class Earmazon {
 		$result = DB::get()->query($sql);
 		if($result){
 			while( $row = $result->fetch_assoc() ){
-				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
 		}
@@ -358,7 +356,10 @@ class Earmazon {
 				return false;
 			}
 
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "購入完了。購入したアイテムはItemBoxに送られました。"));
+			if($player) {
+				$itemname = ItemName::getNameOf($id, $meta);
+				$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。購入した {$itemname} x{$amount} はItemBoxに送られました。"));
+			}
 			$inv->addItem($item); // 追加しとけば鯖出るときに勝手にセーブされるから安心
 			return true;
 		}else{
@@ -550,7 +551,7 @@ class Earmazon {
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 
-		echo "{$id} {$meta} {$unitamount} {$price}";
+		// echo "{$id} {$meta} {$unitamount} {$price}";
 
 		if($itemBox = $playerData->getItemBox()){
 			// PMMPから
@@ -618,6 +619,10 @@ class Earmazon {
 
 			try{
 				$inv->removeItem($item); //trueはすぐに反映させるかどうか
+				if($player){
+					$itemname = ItemName::getNameOf($id, $meta);
+					$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。{$itemname} x{$amount} を買取しました。"));
+				}
 				return true;
 			}catch(\InvalidArgumentException $e){
 				self::addIntoBuyUnit($unitno, $amount);

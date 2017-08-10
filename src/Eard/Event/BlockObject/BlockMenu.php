@@ -102,7 +102,7 @@ trait BlockMenu {
 		$pk->entityRuntimeId = 900000 + $this->getObjIndexNo();
 		$pk->type = ItemEntity::NETWORK_ID;
 		$pk->x = $this->x + 0.5;
-		$pk->y = $this->y - 0.75;
+		$pk->y = $this->y + 1.5;
 		$pk->z = $this->z + 0.5;
 		$pk->speedX = 0;
 		$pk->speedY = 0;

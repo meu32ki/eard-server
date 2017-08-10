@@ -126,6 +126,7 @@ class Account{
 	*	@return bool
 	*/
 	public function setSentBlock($array){
+		// echo "setsent\n";
 		$this->sentBlock = $array;
 		return true;
 	}

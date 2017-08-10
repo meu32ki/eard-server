@@ -61,7 +61,7 @@ class Menu implements ChatInput {
 		if(!$this->isActive()){
 			$this->sendMenu(0);
 			$this->task = new Ticker(Main::getInstance(), $this);
-			Main::getInstance()->getServer()->getScheduler()->scheduleRepeatingTask($this->task, 5*20);
+			Main::getInstance()->getServer()->getScheduler()->scheduleRepeatingTask($this->task, 4*20);
 		}else{
 			//「閉じる」「戻る」操作に当たる。
 			if($this->page === 0){
@@ -141,9 +141,13 @@ class Menu implements ChatInput {
 						["ステータス照会",2],
 						["チャット",20],
 						["エリア転送",30],
+						["アイテムボックス",1],
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}else{
+					// 戻ってきたとき用
+					AreaProtector::viewSectionCancel($playerData);
+
 					$ar = [
 						["§7[[ メニュー ]]",false],
 						["ステータス照会",2],
@@ -154,6 +158,17 @@ class Menu implements ChatInput {
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}
+			break;
+/*	アイテムボックス　| 1
+*/
+			case 1:
+				if($isFirst){
+					$inv = $playerData->getItemBox();
+					$player->addWindow($inv);
+				}
+				$ar = [
+					["§f{$uma} 戻る",false],
+				];
 			break;
 /*
 *	ステータス | 2
@@ -543,9 +558,8 @@ class Menu implements ChatInput {
 	private $page = -1;
 	private $pageData = [];
 	private $playerData = null;
-
-
 }
+
 
 class Ticker extends PluginTask{
 

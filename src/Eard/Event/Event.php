@@ -56,6 +56,14 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$playerData = Account::get($player);
 
+		// dev
+		$dev = false; // devモードの時はtrue
+		$name = strtolower($player->getName());
+		if($dev && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL) ){
+			$e->setCancelled(true);
+			return true;
+		}
+
 		//playerData関連の準備
 		$playerData->setPlayer($player);//	touitusuruna
 		$playerData->loadData();
@@ -170,8 +178,10 @@ class Event implements Listener{
 
 		switch($blockId){
 			case 130: // エンダーチェスト
-				$inv = $playerData->getItemBox();
-				$player->addWindow($inv);
+				if(Connection::getPlace()->isLivingArea()){
+					$inv = $playerData->getItemBox();
+					$player->addWindow($inv);
+				}
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
 			case 218: // シュルカーボックス
@@ -203,7 +213,7 @@ class Event implements Listener{
 				}else{
 					if(!AreaProtector::canActivateInResource($blockId)){
 						$placename = Connection::getPlace()->getName();
-						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています"));
+						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
 						$e->setCancelled(true);
 					}
 				}
