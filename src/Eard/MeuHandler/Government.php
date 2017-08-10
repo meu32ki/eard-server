@@ -52,7 +52,9 @@ class Government{
 				
 				$player = $playerData->getPlayer();
 				if($player){ // pmmpからであれば
-					MainLogger::getLogger()->info(Chat::Format("政府", "Console", "{$player->getName()} に対し {$amount}μ 送金した"));
+					$subject = "§f政府 §7==={$givenMeu->getName()}==> §f{$player->getName()}";
+					MainLogger::getLogger()->info(Chat::Format("§7政府", "§6Console", $subject));
+					$player->sendMessage(Chat::Format("§7送金処理", "§6個人", $subject));
 				}
 				return true;
 			}else{
@@ -80,7 +82,9 @@ class Government{
 
 				$player = $playerData->getPlayer();
 				if($player){ // pmmpからであれば
-					MainLogger::getLogger()->info(Chat::Format("政府", "Console", "{$player->getName()} から {$amount}μ 受け取った"));
+					$subject = "§f{$player->getName()} §7==={$givenMeu->getName()}==> §f政府";
+					MainLogger::getLogger()->info(Chat::Format("§7政府", "§6Console", $subject));
+					$player->sendMessage(Chat::Format("§7送金処理", "§6個人", $subject));
 				}
 				return true;
 			}else{
