@@ -82,7 +82,7 @@ class Government{
 
 				$player = $playerData->getPlayer();
 				if($player){ // pmmpからであれば
-					$subject = "§f{$player->getName()} §7==={$givenMeu->getName()}==> §f政府";
+					$subject = "§f{$player->getName()} §7==={$receivedMeu->getName()}==> §f政府";
 					MainLogger::getLogger()->info(Chat::Format("§7政府", "§6Console", $subject));
 					$player->sendMessage(Chat::Format("§7送金処理", "§6個人", $subject));
 				}
