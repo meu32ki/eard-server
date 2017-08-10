@@ -180,7 +180,6 @@ class Earmazon {
 		$result = DB::get()->query($sql);
 		if($result){
 			while( $row = $result->fetch_assoc() ){
-				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
 		}
@@ -201,7 +200,6 @@ class Earmazon {
 		$result = DB::get()->query($sql);
 		if($result){
 			while( $row = $result->fetch_assoc() ){
-				$no = $row['no'];
 				$unitdata[] = [ $row['id'], $row['meta'], $row['leftamount'], $row['price'], $row['no'] ];
 			}
 		}
@@ -550,7 +548,7 @@ class Earmazon {
 		$unitamount = $unitData[2];
 		$price = $unitData[3];
 
-		echo "{$id} {$meta} {$unitamount} {$price}";
+		// echo "{$id} {$meta} {$unitamount} {$price}";
 
 		if($itemBox = $playerData->getItemBox()){
 			// PMMPから
@@ -618,6 +616,7 @@ class Earmazon {
 
 			try{
 				$inv->removeItem($item); //trueはすぐに反映させるかどうか
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "買取完了。{$pay}μ手に入れました。"));
 				return true;
 			}catch(\InvalidArgumentException $e){
 				self::addIntoBuyUnit($unitno, $amount);
