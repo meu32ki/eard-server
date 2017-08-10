@@ -54,6 +54,14 @@ class Event implements Listener{
 
 	public function L(PlayerLoginEvent $e){
 		$player = $e->getPlayer();
+
+		// dev
+		$dev = false; // devモードの時はtrue
+		$name = strtolower($player->getName());
+		if($dev && $name !== "32ki" and $name !== "meu32ki"){
+			$e->setCancelled(true);
+		}
+
 		$playerData = Account::get($player);
 
 		//playerData関連の準備
