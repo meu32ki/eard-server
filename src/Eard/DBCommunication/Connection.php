@@ -98,10 +98,10 @@ class Connection {
 
 	/**
 	*	今空いている、このさばの、placeを返す。webからは使うな。
-	*	@return Place
+	*	@return Place　| null
 	*/
 	public static function getPlace(){
-		return self::$places[self::$placeNo];
+		return isset(self::$places[self::$placeNo]) ? self::$places[self::$placeNo] : null;
 	}
 
 	/**

@@ -54,7 +54,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			//正常にmysqlにつなげた場合のみ。
 			$this->reconnect();
 		}
-		Spawn::init(Connection::getPlace()->isLivingArea());//生活区域ならtrue、資源区域ならfalse
 	}
 
 	public function reconnect(){
@@ -69,6 +68,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		ItemName::init();
 		// Earmazon::setup();
 		License::init();
+		Spawn::init(Connection::getPlace()->isLivingArea());//生活区域ならtrue、資源区域ならfalse
 		self::$instance = $this;
 	}
 
