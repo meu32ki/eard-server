@@ -17,11 +17,13 @@ class License {
 	const GOVERNMENT_WORKER = 2;
 	const BUILDER = 3;
 	const MINER = 4;
+	/*
 	const TRADER = 5;
 	const SERVICER = 6;
 	const ENTREPRENEUR = 8;
 	const FARAMER = 8;
 	const DANGEROUS_ITEM_HANDLER = 9;
+	*/
 
 	const RANK_BEGINNER = 1;
 	const RANK_GENERAL = 2;
@@ -34,8 +36,8 @@ class License {
 		self::$list[self::RESIDENCE] = new Residence;
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
 		self::$list[self::BUILDER] = new Builder;
-		/*
 		self::$list[self::MINER] = new Miner;
+		/*
 		self::$list[self::TRADER] = new Trader;
 		self::$list[self::SERVICER] = new Servicer;
 		self::$list[self::ENTREPRENEUR] = new Entrepreneur;
