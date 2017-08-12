@@ -35,6 +35,10 @@ commands:
   description: "eard: DB"
   usage: "/co [addr|user|pass|name]"
   permission: eard
+ ea:
+  description: "eard: Earmazon"
+  usage: "/ea [buy|sell|add]"
+  permission: eard
  li:
   description: "eard: License"
   usage: "/li [give|confirm]"

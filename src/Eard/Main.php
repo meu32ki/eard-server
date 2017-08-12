@@ -147,6 +147,36 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 				}
 				return true;
 			break;
+			case "ea":
+				if(isset($a[0])){
+					switch($a[0]){
+						case "sell": // プレイヤーがこの値段で売れる
+							if(5 <= count($a)){
+								$id = $a[1]; $meta = $a[2]; $amount = $a[3]; $price = $a[4]; 
+								$result = Earmazon::addSellUnit($id, $meta, $amount, $price, false);
+								$msg = $result ? "追加した" : "追加できなかった";
+								$s->sendMessage(Chat::SystemToPlayer($msg));
+							}else{
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea sell <id> <meta> <amount> <price>"));								
+							}
+						break;
+						case "buy": // プレイヤーがこの値段で買える
+							if(5 <= count($a)){
+								$id = $a[1]; $meta = $a[2]; $amount = $a[3]; $price = $a[4]; 
+								Earmazon::addSellUnit($id, $meta, $amount, $price, false);
+								$msg = $result ? "追加した" : "追加できなかった";
+								$s->sendMessage(Chat::SystemToPlayer($msg));
+							}else{
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea buy <id> <meta> <amount> <price>"));								
+							}
+						break;
+						case "item":
+
+						break;
+					}
+					return true;
+				}
+			break;
 			case "ap": // Area Protector 土地関連
 				if(isset($a[0])){
 					switch($a[0]){
