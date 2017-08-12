@@ -37,8 +37,8 @@ class EarmazonShop implements BlockObject, ChatInput {
 	public function Place(Player $player){
 		$name = $player->getName();
 
-		$particle = new FloatingTextParticle(new Vector3($this->x + 0.5, $this->y + 2, $this->z + 0.5), "", $this->name);
-		$level = $player->getLevel()->addParticle($particle);
+		// $particle = new FloatingTextParticle(new Vector3($this->x + 0.5, $this->y + 2, $this->z + 0.5), "", $this->name);
+		// $level = $player->getLevel()->addParticle($particle);
 
 		$this->particle = $particle;
 	}
@@ -226,6 +226,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 						$ar = [
 							["{$thisname} 購入>確認", false],
 							["{$itemname} をいくつ買いますか？", false],
+							["戻る", 27, " "]
 						];
 
 						// 最大購入可能数に応じて
@@ -363,7 +364,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 					$ar = [
 						["{$thisname} 売却>確認", false],
 						["{$itemname} をいくつ売りますか？", false],
-						["戻る", 27, " "]
+						["戻る", 57, " "]
 					];
 
 					// 最大でいくつ売ることができる状態にあるか
@@ -413,7 +414,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 			// 売却 次ページへボタン
 			if($no === 55) $view->setPage($view->page + 1); // 売却 次ページへボタン
 			if($no === 56) $view->setPage($view->page - 1); // 売却 前ページへボタン
-			// 27の場合はなにもしない
+			// 57の場合はなにもしない
 			$ar = $this->makeList($player);
 			break;
 		case 58: case 59: case 60: case 61: 
