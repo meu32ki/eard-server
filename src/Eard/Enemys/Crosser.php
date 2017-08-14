@@ -220,7 +220,7 @@ class Crosser extends Humanoid implements Enemy{
 			if($this->target = AI::searchTarget($this)){
 				AI::lookAt($this, $this->target);
 				$this->pitch += 90;
-				AI::rangeAttack($this, 2.25, 4);
+				AI::rangeAttack($this, 2.2, 2);
 				AI::setRate($this, 12);
 			}else{
 				$this->yaw += mt_rand(-60, 60);
