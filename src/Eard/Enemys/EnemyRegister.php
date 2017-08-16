@@ -23,6 +23,8 @@ class EnemyRegister{
 	const TYPE_KABUTO = 7;
 	const TYPE_KUMO = 8;
 	const TYPE_JOOUBATI = 9;
+	const TYPE_ARI = 10;
+	const TYPE_HANEARI = 11;
 
 	private static $instance = null;
 	public static $register = [];
@@ -38,6 +40,8 @@ class EnemyRegister{
 		self::register(Kabuto::class, Kabuto::getEnemyType());
 		self::register(Kumo::class, Kumo::getEnemyType());
 		self::register(Jooubati::class, Jooubati::getEnemyType());
+		self::register(Ari::class, Ari::getEnemyType());
+		self::register(HaneAri::class, HaneAri::getEnemyType());
 		self::$instance = $this;
 	}
 

@@ -22,7 +22,9 @@ class Spawn extends Task{
 			EnemyRegister::TYPE_CROSSER => false,
 			EnemyRegister::TYPE_MANGLER => false,
 			EnemyRegister::TYPE_LAYZER => false,
-			EnemyRegister::TYPE_STINGER => true
+			EnemyRegister::TYPE_STINGER => true,
+			EnemyRegister::TYPE_ARI => true,
+			EnemyRegister::TYPE_HANEARI => true,
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
@@ -67,8 +69,28 @@ class Spawn extends Task{
 			if(!isset($class::getBiomes()[$biome]) || (!$boolean && !($isNight || $biome === Biome::END)) || mt_rand(0, $rate) !== 1){
 				continue;
 			}else if(isset(Humanoid::$noRainBiomes[$biome]) || $weather > 2 || $weather < 1){
-				$y = $level->getHighestBlockAt($x, $z)+2;
-				EnemyRegister::summon($level, $type, $x+0.5, $y, $z+0.5);
+				$y = $level->getHighestBlockAt($x, $z);
+				if(!$class::spawnGround()){
+					$y = 0;
+					for(;;){
+						if($y > 48){
+							$y = -1;
+							break;
+						}
+						$id = $level->getBlockIdAt($x, $y, $z);
+						++$y;
+						$id2 = $level->getBlockIdAt($x, $y, $z);
+						if($id !== 0 && $id2 == 0){
+							$y += 2;
+							break;
+						}
+					}
+				}else{
+					$y += 2;
+				}
+				if($y !== -1){
+					EnemyRegister::summon($level, $type, $x+0.5, $y, $z+0.5);
+				}
 			}
 		}
 	}

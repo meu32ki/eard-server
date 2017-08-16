@@ -43,6 +43,7 @@ class Humanoid extends Human{
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
 	public $returnTime = 240;//出現から自動で消えるまでの時間(秒)
 	public $spawnTime = 0;
+	public static $ground = true;
 	public static $noRainBiomes = [
 		Biome::HELL => true, 
 		Biome::END => true,
@@ -84,8 +85,13 @@ class Humanoid extends Human{
 		}
 	}
 
+	public static function spawnGround(){
+		return static::$ground;
+	}
+
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
+		AI::setSize($this, static::getSize());
 		$this->spawnTime = microtime(true);
 	}
 

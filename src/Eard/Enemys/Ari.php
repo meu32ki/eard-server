@@ -35,21 +35,23 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Crosser extends Humanoid implements Enemy{
+class Ari extends Humanoid implements Enemy{
+	public static $ground = false;
+	public $rainDamage = false;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "クワガタ";
+		return "ミドリアリ";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_CROSSER;
+		return EnemyRegister::TYPE_ARI;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 25;
+		return 10;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -75,35 +77,22 @@ class Crosser extends Humanoid implements Enemy{
 			*/
 			[100, 2,
 				[
-					[Item::RAW_RABBIT, 0, 1],
-					[Item::LEATHER, 0, 1],
+					[Item::LOG, 0, 1],
+					[Item::QUARTZ, 0, 1],
 				],
 			],
-			[65, 2,
+			[40, 2,
 				[
-					[Item::RAW_RABBIT, 0, 1],
-					[Item::LEATHER, 0, 1],
-					[Item::IRON_NUGGET, 0, 1],
 					[Item::IRON_NUGGET, 0, 2],
+					[Item::DYE, 2, 1],//サボテンの染料
 				],
 			],
-			[20, 1,
-				[
-					[Item::IRON_NUGGET, 0, 3],
-					[Item::DYE, 0, 1],//イカスミ
-				],
-			],
-			[8, 1,
-				[
-					[Item::IRON_INGOT, 0, 1],
-				],
-			],
-			[5, 1,
+			[3, 1,
 				[
 					[Item::GOLD_NUGGET , 0, 1],
 				],
 			],
-			[2, 1,
+			[1, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],
@@ -114,18 +103,15 @@ class Crosser extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::IRON_INGOT, 0, 1],
-				[Item::IRON_INGOT, 0, 1],
-				[Item::IRON_NUGGET, 0, 3],
-				[Item::IRON_NUGGET, 0, 3],
-				[Item::GOLD_NUGGET , 0, 2],
+				[Item::IRON_NUGGET, 0, 1],
+				[Item::LOG, 0, 1],
 			]
 		];
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 1;
+		return 0.5;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -141,29 +127,29 @@ class Crosser extends Humanoid implements Enemy{
 	public static function getBiomes() : array{
 		return [
 			//雨なし
-			Biome::HELL => true, 
-			Biome::END => true,
-			Biome::DESERT => true,
-			Biome::DESERT_HILLS => true,
-			Biome::MESA => true,
-			Biome::MESA_PLATEAU_F => true,
-			Biome::MESA_PLATEAU => true,
+			//Biome::HELL => true, 
+			//Biome::END => true,
+			//Biome::DESERT => true,
+			//Biome::DESERT_HILLS => true,
+			//Biome::MESA => true,
+			//Biome::MESA_PLATEAU_F => true,
+			//Biome::MESA_PLATEAU => true,
 			//雨あり
-			Biome::OCEAN => true,
-			//Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
+			//Biome::OCEAN => true,
+			Biome::PLAINS => true,
+			//Biome::MOUNTAINS => true,
+			//Biome::FOREST => true,
 			//Biome::TAIGA => true,
-			Biome::SWAMP => true,
+			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			//Biome::ICE_PLAINS => true,
-			Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			Biome::ICE_PLAINS => true,
+			//Biome::SMALL_MOUNTAINS => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	public static function getSpawnRate() : int{
-		return 20;
+		return 3;
 	}
 
 	public static function summon($level, $x, $y, $z){
@@ -183,7 +169,7 @@ class Crosser extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Crosser')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Ari')),
 				new StringTag("Name", 'MagicTheGathering_MagicTheGatheringNicolBolas')
 			]),
 		]);
@@ -191,7 +177,7 @@ class Crosser extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Crosser($level, $nbt);
+		$entity = new Ari($level, $nbt);
 		$entity->setMaxHealth(self::getHP());
 		$entity->setHealth(self::getHP());
 		AI::setSize($entity, self::getSize());
@@ -220,7 +206,7 @@ class Crosser extends Humanoid implements Enemy{
 			if($this->target = AI::searchTarget($this)){
 				AI::lookAt($this, $this->target);
 				$this->pitch += 90;
-				AI::rangeAttack($this, 2.2, 2);
+				AI::rangeAttack($this, 1.8, 2);
 				AI::setRate($this, 12);
 			}else{
 				$this->yaw += mt_rand(-60, 60);
@@ -236,8 +222,8 @@ class Crosser extends Humanoid implements Enemy{
 
 	public function attackTo(EntityDamageEvent $source){
 		$victim = $source->getEntity();
-		$source->setKnockBack(0.3);
-		if(!$victim->isSneaking()) $source->setKnockBack(1);
+		$source->setKnockBack(0.2);
+		if(!$victim->isSneaking()) $source->setKnockBack(0.4);
 		$pk = new AnimatePacket();
 		$pk->eid = $this->getId();
 		$pk->action = 1;//ArmSwing
