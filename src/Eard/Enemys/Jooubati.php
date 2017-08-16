@@ -129,17 +129,17 @@ class Jooubati extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::EMERALD , 0, 1],
+					[Item::EMERALD , 0, 6],
 				],
 			],
-			[100, 4,
+			[100, 1,
 				[
-					[Item::FLINT, 0, 1],
+					[Item::FLINT, 0, 4],
 				],
 			],
-			[100, 4,
+			[100, 1,
 				[
-					[Item::RAW_BEEF, 0, 1],
+					[Item::RAW_BEEF, 0, 4],
 				],
 			],
 			[85, 8,
@@ -150,11 +150,11 @@ class Jooubati extends Humanoid implements Enemy{
 					[Item::RAW_BEEF, 0, 2],
 				]
 			],
-			[70, 8,
+			[70, 4,
 				[
-					[Item::FLINT, 0, 1],
-					[Item::FEATHER, 0, 1],
-					[Item::REDSTONE_DUST, 0, 1],
+					[Item::FLINT, 0, 2],
+					[Item::FEATHER, 0, 2],
+					[Item::REDSTONE_DUST, 0, 2],
 				],
 			],
 			[9, 4,
@@ -173,9 +173,9 @@ class Jooubati extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::EMERALD , 0, 1],
-				[Item::IRON_INGOT, 0, 1],
-				[Item::IRON_INGOT, 0, 1]
+				[Item::EMERALD , 0, 3],
+				[Item::IRON_INGOT, 0, 5],
+				[Item::IRON_INGOT, 0, 5]
 			]
 		];
 	}

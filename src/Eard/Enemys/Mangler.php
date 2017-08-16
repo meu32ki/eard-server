@@ -135,7 +135,7 @@ class Mangler extends Humanoid implements Enemy{
 					[Item::PRISMARINE_SHARD, 0, 1],
 				],
 			],
-			[85, 2,
+			[75, 2,
 				[
 					[Item::STRING, 0, 1],
 					[Item::STRING, 0, 2],
@@ -143,24 +143,24 @@ class Mangler extends Humanoid implements Enemy{
 					[Item::PRISMARINE_SHARD, 0, 2],
 				]
 			],
-			[70, 2,
+			[60, 2,
 				[
 					[Item::BEETROOT_SEEDS, 0, 1],
 					[Item::RAW_CHICKEN, 0, 1],
 					[Item::PRISMARINE_SHARD, 0, 1],
 				],
 			],
-			[9, 1,
+			[7, 1,
 				[
 					[Item::IRON_INGOT, 0, 1],
 				],
 			],
-			[7, 1,
+			[5, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],
 			],
-			[2, 1,
+			[1, 1,
 				[
 					[Item::DIAMOND , 0, 1],
 				],

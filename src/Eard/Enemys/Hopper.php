@@ -131,13 +131,13 @@ class Hopper extends Humanoid implements Enemy{
 					[Item::DYE, 15, 1],//骨粉
 				],
 			],
-			[80, 2,
+			[60, 2,
 				[
 					[Item::POTATO, 0, 1],
 					[Item::CARROT, 0, 1],
 				],
 			],
-			[60, 1,
+			[40, 1,
 				[
 					[Item::GUNPOWDER, 0, 1],
 					[Item::DYE, 15, 1],//骨粉
@@ -145,10 +145,10 @@ class Hopper extends Humanoid implements Enemy{
 			],
 			[5, 1,
 				[
-					[Item::IRON_INGOT, 0, 1],
+					[Item::IRON_NUGGET, 0, 1],
 				],
 			],
-			[3, 1,
+			[1, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],

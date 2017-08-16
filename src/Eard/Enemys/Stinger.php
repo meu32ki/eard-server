@@ -135,7 +135,7 @@ class Stinger extends Humanoid implements Enemy{
 					[Item::RAW_BEEF, 0, 1],
 				],
 			],
-			[85, 2,
+			[75, 2,
 				[
 					[Item::FLINT, 0, 1],
 					[Item::FLINT, 0, 2],
@@ -143,19 +143,19 @@ class Stinger extends Humanoid implements Enemy{
 					[Item::RAW_BEEF, 0, 2],
 				]
 			],
-			[70, 2,
+			[60, 2,
 				[
 					[Item::FLINT, 0, 1],
 					[Item::FEATHER, 0, 1],
 					[Item::REDSTONE_DUST, 0, 1],
 				],
 			],
-			[9, 1,
+			[8, 1,
 				[
 					[Item::IRON_INGOT, 0, 1],
 				],
 			],
-			[3, 1,
+			[2, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],

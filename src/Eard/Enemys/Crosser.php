@@ -79,7 +79,7 @@ class Crosser extends Humanoid implements Enemy{
 					[Item::LEATHER, 0, 1],
 				],
 			],
-			[75, 2,
+			[65, 2,
 				[
 					[Item::RAW_RABBIT, 0, 1],
 					[Item::LEATHER, 0, 1],
@@ -87,23 +87,23 @@ class Crosser extends Humanoid implements Enemy{
 					[Item::IRON_NUGGET, 0, 2],
 				],
 			],
-			[25, 1,
+			[20, 1,
 				[
 					[Item::IRON_NUGGET, 0, 3],
 					[Item::DYE, 0, 1],//イカスミ
 				],
 			],
-			[15, 1,
+			[8, 1,
 				[
 					[Item::IRON_INGOT, 0, 1],
 				],
 			],
-			[10, 1,
+			[5, 1,
 				[
 					[Item::GOLD_NUGGET , 0, 1],
 				],
 			],
-			[5, 1,
+			[2, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],

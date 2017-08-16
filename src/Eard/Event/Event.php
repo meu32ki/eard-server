@@ -272,7 +272,7 @@ class Event implements Listener{
 			// 女王バチがスポーン
 			$id = $block->getId();
 			$data = $block->getDamage();
-			if($id === Block::EMERALD_BLOCK && $data === 1){
+			if($id === Block::EMERALD_ORE && $data === 1){
 				EnemyRegister::summon($level, EnemyRegister::TYPE_JOOUBATI, $x+0.5, $y-4, $z+0.5);
 			}
 		}
