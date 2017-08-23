@@ -13,7 +13,24 @@ class Recipe {
 	//こいつでプレイヤーごとにクラフトできるやつ返して
 	public static function getRecipe($player){
 
-		return [5 => true, 280 => true];//とりあえず木材と棒だけできるように
+		return [
+			5 => true,//木材
+			50 => true,//松明
+			280 => true,//棒
+			268 => true,//木剣
+			269 => true,//木のシャベル
+			270 => true,//木のツルハシ
+			271 => true,//木の斧
+			290 => true,//木の鍬
+			272 => true,//石の剣
+			273 => true,//石のシャベル
+			274 => true,//石のツルハシ
+			275 => true,//石の斧
+			279 => true,//石のくわ
+			265 => true,//鉄インゴット
+			266 => true,//金インゴット
+
+		];//とりあえず
 	}
 
 	//いじらないで
