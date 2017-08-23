@@ -40,6 +40,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\Utils\Chat;
+use Eard\MeuHandler\Account\License\Recipe;
 
 # Enemy
 use Eard\Enemys\EnemyRegister;
@@ -165,6 +166,11 @@ class Event implements Listener{
 				if(Account::get($player)->getMenu()->isActive()){
 					$e->setCancelled(true);
 				}
+			break;
+			# クラフトレシピ削除
+			case ProtocolInfo::CRAFTING_DATA_PACKET:
+				//$pk->clean();
+				Recipe::packetFilter($pk, $player);
 			break;
 		}
 	}
