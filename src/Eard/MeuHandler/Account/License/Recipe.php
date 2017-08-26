@@ -4,6 +4,8 @@ namespace Eard\MeuHandler\Account\License;
 use pocketmine\network\protocol\CraftingDataPacket;
 use pocketmine\Player;
 
+use Eard\MeuHandler\Account;
+
 /***
 *
 *	ライセンスによってクラフトできるやつを制限
@@ -12,8 +14,8 @@ class Recipe {
 
 	//こいつでプレイヤーごとにクラフトできるやつ返して
 	public static function getRecipe($player){
-
-		return [
+		$playerData = Account::get($player);
+		$recipe = [ //全員クラフト・精錬できるレシピ
 			5 => true,//木材
 			50 => true,//松明
 			280 => true,//棒
@@ -29,8 +31,62 @@ class Recipe {
 			279 => true,//石のくわ
 			265 => true,//鉄インゴット(精錬も含む)
 			266 => true,//金インゴット(精錬も含む)
-
-		];//とりあえず
+		];
+		switch (true) {
+			case $playerData->hasValidLicense(License::NEET):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::RESIDENCE):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::GOVERNMENT_WORKER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::BUILDER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::MINER):
+				array_merge($recipe, [
+					257 => true,//鉄のツルハシ
+					278 => true,//ダイヤのツルハシ
+					285 => true,//金のツルハシ
+				]);
+			break;
+			case $playerData->hasValidLicense(License::TRADER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::SERVICER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::ENTREPRENEUR):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::FARAMER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER):
+				array_merge($recipe, [
+					
+				]);
+			break;
+		}
+		return $recipe;
 	}
 
 	//いじらないで
