@@ -34,56 +34,56 @@ class Recipe {
 		];
 		switch (true) {
 			case $playerData->hasValidLicense(License::NEET):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::RESIDENCE):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::GOVERNMENT_WORKER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::BUILDER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::MINER):
-				array_merge($recipe, [
+				$recipe += [
 					257 => true,//鉄のツルハシ
 					278 => true,//ダイヤのツルハシ
 					285 => true,//金のツルハシ
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::TRADER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::SERVICER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::ENTREPRENEUR):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::FARAMER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER):
-				array_merge($recipe, [
+				$recipe += [
 					
-				]);
+				];
 			break;
 		}
 		return $recipe;
