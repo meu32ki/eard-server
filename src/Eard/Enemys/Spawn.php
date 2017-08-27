@@ -25,6 +25,7 @@ class Spawn extends Task{
 			EnemyRegister::TYPE_STINGER => true,
 			EnemyRegister::TYPE_ARI => true,
 			EnemyRegister::TYPE_HANEARI => true,
+			EnemyRegister::TYPE_KAMADOUMA => true,
 		],
 		self::SEIKATSU => [
 			EnemyRegister::TYPE_HOPPER => false,
