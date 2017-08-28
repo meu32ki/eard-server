@@ -342,8 +342,9 @@ class Earmazon {
 			# 渡す処理
 
 			// payが足りているかの確認 プレイヤーからもらう処理
-			$pay = $price * $amount;
-			if(!Government::receiveMeu($playerData, $pay)){
+			$pay = $price * $amount;	
+			$itemname = ItemName::getNameOf($id, $meta);
+			if(!Government::receiveMeu($playerData, $pay, "Earmazon: アイテム購入 {$itemname} x{$amount}")){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7お金が足りません。"));
 				return false;
 			}
@@ -351,7 +352,7 @@ class Earmazon {
 			// 販売りすとの点数からひいてく
 			if(!self::removeFromBuyUnit($unitno, $amount)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7販売リストから残数を減らす処理に失敗しました。"));
-				Government::giveMeu($playerData, $pay); // 送金処理を戻す
+				Government::giveMeu($playerData, $pay, "Earmazon: エラーのため返金"); // 送金処理を戻す
 				return false;
 			}
 
@@ -359,12 +360,11 @@ class Earmazon {
 			if(!self::removeFromStorage($id, $meta, $amount)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を減らす処理に失敗しました。"));
 				self::addIntoBuyUnit($unitno, $amount); // 販売リストの点数戻す
-				Government::giveMeu($playerData, $pay); // 送金処理を戻す
+				Government::giveMeu($playerData, $pay, "Earmazon: エラーのため返金"); // 送金処理を戻す
 				return false;
 			}
 
 			if($player) {
-				$itemname = ItemName::getNameOf($id, $meta);
 				$player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "完了。購入した {$itemname}({$price}μ/個) x{$amount} はItemBoxに送られました。"));
 			}
 			$inv->addItem($item); // 追加しとけば鯖出るときに勝手にセーブされるから安心
@@ -613,7 +613,7 @@ class Earmazon {
 
 			// 政府に金があるかチェック プレイヤーに金渡す
 			$pay = $price * $amount;
-			if(!Government::giveMeu($playerData, $pay)){
+			if(!Government::giveMeu($playerData, $pay, "Earmazon: アイテム売却 {$itemname} x{$amount}")){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7政府には、あなたのアイテムを買い取るだけの予算が残っていません。"));
 				return false;
 			}
@@ -621,7 +621,7 @@ class Earmazon {
 			// 販売りすとの点数からひいてく
 			if(!self::removeFromSellUnit($unitno, $amount)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7買取リストから残数を減らす処理に失敗しました。"));
-				Government::receiveMeu($playerData, $pay);
+				Government::receiveMeu($playerData, $pay, "Earmazon: エラーのため返金");
 				return false;
 			}
 
@@ -629,7 +629,7 @@ class Earmazon {
 			if(!self::addIntoStorage($id, $meta, $amount)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を増やす処理に失敗しました。"));
 				self::addIntoBuyUnit($unitno, $amount);
-				Government::receiveMeu($playerData, $pay);
+				Government::receiveMeu($playerData, $pay, "Earmazon: エラーのため返金");
 				return false;				
 			}
 
@@ -640,7 +640,7 @@ class Earmazon {
 				}
 				return true;
 			}catch(\InvalidArgumentException $e){
-				self::addIntoBuyUnit($unitno, $amount);
+				self::addIntoBuyUnit($unitno, $amount, "Earmazon: エラーのため返金");
 				Government::receiveMeu($playerData, $pay);
 				self::removeFromStorage($id, $meta, $amount);
 				return false;
