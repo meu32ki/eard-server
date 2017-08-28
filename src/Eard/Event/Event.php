@@ -87,10 +87,15 @@ class Event implements Listener{
 
 
 	public function J(PlayerJoinEvent $e){
-		$e->setJoinMessage(Chat::getJoinMessage($e->getPlayer()->getDisplayName()));
-		Connection::getPlace()->recordLogin($e->getPlayer()->getName()); //　オンラインテーブルに記録
+		$player = $e->getPlayer();
+		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
+		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 
-
+		// 資源に来た時に携帯配布
+		if(Connection::getPlace()->isResourceArea()){
+			$inv = $player->getInventory();
+			$inv->addItem(Item::get(416));
+		}
 	}
 
 
@@ -178,10 +183,10 @@ class Event implements Listener{
 
 		switch($blockId){
 			case 130: // エンダーチェスト
-				if(Connection::getPlace()->isLivingArea()){
+				//if(Connection::getPlace()->isLivingArea()){
 					$inv = $playerData->getItemBox();
 					$player->addWindow($inv);
-				}
+				//}
 				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 			break;
 			case 218: // シュルカーボックス
@@ -190,31 +195,47 @@ class Event implements Listener{
 				$player->sendMessage(Chat::SystemToPlayer("「携帯」を送りました。ベータテスト中限定だよ～。"));
 			break;
 			default: // それいがい
+				$x = $block->x; $y = $block->y; $z = $block->z;
 
-				/*	生活区域
-				*/
-				if(Connection::getPlace()->isLivingArea()){
-					$x = $block->x; $y = $block->y; $z = $block->z;
-					if($e->getAction() == 3 or $e->getAction() == 0){
-						//長押し
-						if($x && $y && $z){ // 空中でなければ
-							blockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
-						}
-					}else{
-						// 普通にタップ
-						if(AreaProtector::canActivateInLivingProtected($blockId)){
+				// 長押し
+				if($e->getAction() == 3 or $e->getAction() == 0){
+					if($x && $y && $z){ // 空中でなければ
+						blockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
+					}
+
+				// 普通にタップ
+				}else{
+
+					/*	生活区域
+					*/
+					if(Connection::getPlace()->isLivingArea()){
+						// editができるか？
+						// できないばあい
+						if(!AreaProtector::Edit($player, $x, $y, $z)){
+							if(!AreaProtector::canActivateInLivingProtected($blockId)){
+								$e->setCancelled(true);
+							}else{
+								$r = blockObjectManager::tap($block, $player);
+								$e->setCancelled( $r );
+							}
+
+						// できるばあい
+						}else{
 							$r = blockObjectManager::tap($block, $player);
 							$e->setCancelled( $r );
 						}
-					}
 
-				/*	資源区域
-				*/
-				}else{
-					if(!AreaProtector::canActivateInResource($blockId)){
-						$placename = Connection::getPlace()->getName();
-						$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
-						$e->setCancelled(true);
+					/*	資源区域
+					*/
+					}else{
+						if(!AreaProtector::canActivateInResource($blockId)){
+							$placename = Connection::getPlace()->getName();
+							$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
+							$e->setCancelled(true);
+						}else{
+							$r = blockObjectManager::tap($block, $player);
+							$e->setCancelled( $r );
+						}
 					}
 				}
 			break;
@@ -244,6 +265,9 @@ class Event implements Listener{
 			$itemId = $item->getId();
 			if( !AreaProtector::canPlaceInResource($itemId) ){
 				$e->setCancelled(true);
+			}else{
+				$r = blockObjectManager::place($block, $player);
+				$e->setCancelled( $r );			
 			}
 		}
 	}
@@ -275,6 +299,10 @@ class Event implements Listener{
 			if($id === Block::EMERALD_BLOCK && $data === 1){
 				EnemyRegister::summon($level, EnemyRegister::TYPE_JOOUBATI, $x+0.5, $y-4, $z+0.5);
 			}
+
+			// blockObject壊す処理
+			$r = blockObjectManager::break($block, $player);
+			$e->setCancelled( $r );
 		}
 	}
 
