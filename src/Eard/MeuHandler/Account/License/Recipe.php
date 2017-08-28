@@ -60,7 +60,7 @@ class Recipe {
 					285 => true,//金のツルハシ
 				];
 			break;
-			case $playerData->hasValidLicense(License::TRADER):
+/*			case $playerData->hasValidLicense(License::TRADER):
 				$recipe += [
 					
 				];
@@ -84,7 +84,7 @@ class Recipe {
 				$recipe += [
 					
 				];
-			break;
+			break;*/
 		}
 		return $recipe;
 	}

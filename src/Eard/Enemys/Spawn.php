@@ -8,6 +8,9 @@ use pocketmine\Server;
 use pocketmine\scheduler\Task;
 use pocketmine\level\generator\biome\Biome;
 
+# Eard
+use Eard\Event\ChatManager;
+
 class Spawn extends Task{
 	public $spawnType = true;
 	const SHIGEN = false;
@@ -34,7 +37,7 @@ class Spawn extends Task{
 
 	public static function init($spawnType){
 		$task = new Spawn($spawnType);
-		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 15);
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask($task, 20);
 	}
 
 	public function __construct($spawnType){
@@ -42,6 +45,7 @@ class Spawn extends Task{
 	}
 
 	public function onRun($tick){
+		ChatManager::timeSignal();
 		$level = Server::getInstance()->getDefaultLevel();
 		$time = $level->getTime();
 		$isNight = ($time%24000 >= 14000);

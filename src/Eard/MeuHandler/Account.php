@@ -719,7 +719,7 @@ class Account{
 		if(self::$accounts){
 			foreach(self::$accounts as $playerData){
 				$player = $playerData->getPlayer();
-				if($player && $Player->isOnline()){
+				if($player && $player->isOnline()){
 					$playerData->updateData();
 				}else{
 					echo "呼び出されただけのデータ";
