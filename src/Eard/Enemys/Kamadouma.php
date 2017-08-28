@@ -20,8 +20,9 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\particle\DestroyBlockParticle;
-use pocketmine\level\particle\SpellParticle;
+use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\sound\AnvilFallSound;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -39,31 +40,28 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Jooubati extends Humanoid implements Enemy{
-
+class Kamadouma extends Humanoid implements Enemy{
+	public static $ground = false;
 	public $rainDamage = false;
-	public $returnTime = 600;
-	protected $gravity = 0;
-	public $attackingTick = 0;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ジョオウバチ";
+		return "カマドウマ";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_JOOUBATI;
+		return EnemyRegister::TYPE_KAMADOUMA;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 300;
+		return 25;
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 2;
+		return 0.8;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -73,7 +71,7 @@ class Jooubati extends Humanoid implements Enemy{
 
 	//召喚時のポータルアニメーションの中心座標を取得
 	public static function getCentralPosition(){
-		return new Vector3(0, 1, 0);
+		return new Vector3(0, 0, 0);
 	}
 
 	public static function getBiomes() : array{
@@ -88,20 +86,20 @@ class Jooubati extends Humanoid implements Enemy{
 			//Biome::MESA_PLATEAU => true,
 			//雨あり
 			//Biome::OCEAN => true,
-			//Biome::PLAINS => true,
+			Biome::PLAINS => true,
 			//Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
+			//Biome::FOREST => true,
 			//Biome::TAIGA => true,
 			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			//Biome::ICE_PLAINS => true,
+			Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	public static function getSpawnRate() : int{
-		return 28;
+		return 20;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -129,40 +127,32 @@ class Jooubati extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::EMERALD , 0, 6],
+					[Item::IRON_NUGGET, 0, 1],
 				],
 			],
 			[100, 1,
 				[
-					[Item::FLINT, 0, 4],
+					[Item::GLOWSTONE_DUST, 0, 1],
 				],
 			],
-			[100, 1,
+			[60, 2,
 				[
-					[Item::RAW_BEEF, 0, 4],
+					[Item::GLOWSTONE_DUST, 0, 1],
+					[Item::IRON_NUGGET, 0, 3],
 				],
 			],
-			[85, 8,
+			[40, 1,
 				[
-					[Item::FLINT, 0, 1],
-					[Item::FLINT, 0, 2],
-					[Item::RAW_BEEF, 0, 1],
-					[Item::RAW_BEEF, 0, 2],
-				]
-			],
-			[70, 4,
-				[
-					[Item::FLINT, 0, 2],
-					[Item::FEATHER, 0, 2],
-					[Item::REDSTONE_DUST, 0, 2],
+					[Item::GLOWSTONE_DUST, 0, 3],
+					[Item::GOLD_NUGGET, 0, 2],
 				],
 			],
-			[9, 4,
+			[5, 1,
 				[
-					[Item::IRON_INGOT, 0, 1],
+					[Item::GOLD_INGOT, 0, 1],
 				],
 			],
-			[3, 1,
+			[2, 1,
 				[
 					[Item::EMERALD , 0, 1],
 				],
@@ -171,13 +161,14 @@ class Jooubati extends Humanoid implements Enemy{
 	}
 
 	public static function getMVPTable(){
-		return [100, 1,
+		return [100, 1, 
 			[
-				[Item::EMERALD , 0, 3],
-				[Item::IRON_INGOT, 0, 5],
-				[Item::IRON_INGOT, 0, 5]
+				[Item::IRON_INGOT, 0, 1],
+				[Item::GLOWSTONE_DUST, 0, 2],
+				[Item::GOLD_NUGGET, 0, 2]
 			]
 		];
+
 	}
 
 	public static function summon($level, $x, $y, $z){
@@ -197,7 +188,7 @@ class Jooubati extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Jooubati')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Kamadouma')),
 				new StringTag("Name", 'JTTW_JTTWShaWujing')
 			]),
 		]);
@@ -205,7 +196,7 @@ class Jooubati extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Jooubati($level, $nbt);
+		$entity = new Kamadouma($level, $nbt);
 		$random_hp = 1+(mt_rand(-10, 10)/100);
 		$entity->setMaxHealth(round(self::getHP()+$random_hp));
 		$entity->setHealth(round(self::getHP()+$random_hp));
@@ -224,98 +215,53 @@ class Jooubati extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
-		$this->walk = true;
-		$this->walkSpeed = 0.2;
-		$this->float = true;
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
-		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
-			$this->timings->startTiming();
-			$this->target = AI::searchTarget($this, 3800);
-			if($this->target && ($disq = $this->distanceSquared($this->target)) <= 400){
-				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
-				switch($this->charge){
-					case 0:
-						AI::setRate($this, 10);
-						AI::lookAt($this, $this->target);
-						$this->walk = true;
-						$this->walkSpeed = -0.025;
-						$this->float = -1;
-						$this->charge = 1;
-					break;
-					case 1:
-						AI::setRate($this, 30);
-						AI::lookAt($this, $this->target);
-						$this->walk = true;
-						$this->walkSpeed = 1.8;
-						if(AI::getFrontVector($this, true)->y > 0){
-							$this->float = 1;
-						}else{
-							$this->float = 0;	
-						}
-						$this->charge = 2;
-					break;
-					case 2:
-						AI::setRate($this, 20);
-						AI::lookAt($this, $this->target);
-						$this->walk = true;
-						$this->walkSpeed = 0.8;
-						$this->float = mt_rand(0, 1);
-						$this->charge = 0;
-					break;
+			if(!$this->target) $this->target = AI::searchTarget($this, 180);
+			if($this->charge && $this->onGround){
+				$this->yaw += mt_rand(-60, 60);
+				if($this->target){
+					AI::lookAt($this, $this->target);
 				}
-			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 3800){
-				AI::setRate($this, 7);
-				AI::lookAt($this, $this->target);
-				$this->walk = true;
-				$this->float = mt_rand(0, 1);
+				AI::setRate($this, 40);
+				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.5);
+				AI::rangeAttack($this, 3.5, 7);
+				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(4)));
+				$this->charge = false;
 			}else{
+				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(20)));
 				AI::setRate($this, 20);
-				$this->target = false;
-				$this->yaw += mt_rand(-40, 40);
-				$this->walk = true;
-				$this->walkSpeed = 0.8;
-				$this->float = mt_rand(0, 1);
-				$this->pitch = 0;
-				$this->charge = 0;		
+				$this->charge = true;
 			}
-		}else if($this->getHealth() > 0){
-			switch($this->charge){
-				case 0:
-					;
-				break;
-				case 1:
-					;
-				break;
-				case 2:
-					AI::rangeAttack($this, 3.5, 7);
-					$this->level->addParticle(new SpellParticle($this, 234, 41, 89));
-				break;
-			}
-		}
-
-		if($this->float !== -1){
-			if($this->float && 100 > $this->y){
-				$this->motionY = ($this->motionY+0.2)/2;
+		}else if($this->getHealth() > 0 && $this->charge && $this->target){
+			if($this->mode){
+				$this->mode = false;
 			}else{
-				$this->motionY = ($this->motionY-0.2)/2;
+				$radius = 6;
+				AI::rangeAttack($this, $radius, 2);
+				$this->level->addSound(new AnvilFallSound($this));
+				$position = $this->getPosition();
+				$block = Block::get(20);
+
+				for ($yaw = 0; $yaw < 360; $yaw += M_PI*$radius*1.5) { 
+					for ($pitch = 0; $pitch < 360; $pitch += M_PI*$radius*1.5) {
+						$rad_y = deg2rad($yaw);
+						$rad_p = deg2rad($pitch-180);
+						$p = clone $position;
+						$p->x += sin($rad_y)*cos($rad_p)*$radius;
+						$p->y += sin($rad_p)*$radius;
+						$p->z += -cos($rad_y)*$radius;
+						$this->level->addParticle(new TerrainParticle($p, $block));
+					}
+				}
 			}
 		}
-
-		if($this->charge == 2){
-			$v = AI::getFrontVector($this, true);
-			$this->move($v->x, $v->y, $v->z);
-		}elseif($this->walk){
-			$can = AI::walkFront($this, $this->walkSpeed);
-			if(!$can){
-				$this->yaw = mt_rand(1, 360);
-			}
-		}		//AI::walkFront($this, 0.08);
+		//AI::walkFront($this, 0.08);
 		parent::onUpdate($tick);
 	}
 
@@ -325,17 +271,6 @@ class Jooubati extends Humanoid implements Enemy{
 			$damager = $source->getDamager();
 			$this->target = $damager;
 		}
-	}
-
-	public function attackTo(EntityDamageEvent $source){
-		$victim = $source->getEntity();
-		if(mt_rand(0, 6) < 3){
-			$ef = Effect::getEffect(19);
-			$ef->setAmplifier(1);
-			$ef->setDuration(300);
-			$victim->addEffect($ef);
-		}
-
 	}
 
 	public function getName(){
