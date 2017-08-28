@@ -488,6 +488,18 @@ class Account{
 		return $this->data[7];
 	}
 
+	/**
+	*	@param Int 取引量。先頭に-がつく場合もある。
+	*	@param String 使った名目
+	*/
+	public function addHistory(Int $meuamount, String $reason){
+		$newdata = [$meuamount, $reason, time()];
+		if(50 < count($this->data[8]) ){
+			$this->data[8] = array_slice($this->data[8], 1, 50);
+		}
+		$this->data[8][] = $newdata;
+	}
+
 	
 
 	private $data = [];
@@ -499,7 +511,8 @@ class Account{
 		[], // 4 所持するせくしょんず
 		[], // 5 らいせんす
 		[], // 6 土地の共有設定
-		[ [0,0,0] ] // 7 ItemBoxのアイテムの中身
+		[ [0,0,0] ], // 7 ItemBoxのアイテムの中身
+		[], // 8 支払い履歴
 	];
 
 
@@ -620,11 +633,15 @@ class Account{
     *	二回目以降。
     *	「レポートを書く」ときは特に何もなしだが「レポートを書いてゲームをやめる」場合はメモリ節約にご協力
     *	@param bool | quitEventのときだけ、引数にtrueいれるべし。
-    *	@return void
+    *	@return bool ほぞんできたかどうか
     */
 	public function updateData($quit = false){
 		//Meuの量を
-		$this->data[1] = $this->meu->getAmount();
+		if(isset($this->meu)){ // なにかしらエラーでとまったときにセーブが止まるとまずいので
+			$this->data[1] = $this->meu->getAmount();
+		}else{
+			return false;
+		}
 
 		// itemBoxがつかわれていたようであればセーブ
 		if( $itemBox = $this->getItemBox()){// itemBoxは必ず展開されているわけではないから
@@ -654,6 +671,7 @@ class Account{
     	if($quit){
     		unset(self::$accounts[$name]);//メモリからバイバイ
     	}
+    	return true;
     }
 	public function dumpData(){
 		print_r($this->data);
@@ -700,7 +718,12 @@ class Account{
 		//全員分のデータセーブ
 		if(self::$accounts){
 			foreach(self::$accounts as $playerData){
-				$playerData->updateData();
+				$player = $playerData->getPlayer();
+				if($player && $Player->isOnline()){
+					$playerData->updateData();
+				}else{
+					echo "呼び出されただけのデータ";
+				}
 			}
 		}
 

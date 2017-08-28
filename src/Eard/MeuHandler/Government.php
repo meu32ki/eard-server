@@ -40,9 +40,10 @@ class Government{
 	*	会社のはまだできてない
 	*	@param Account | 政府があげる対象
 	*	@param int | 政府があげる量
+	*	@param String | 支払いの名目、理由(土地購入、あいてむこうにゅうなど)
 	*	@return bool
 	*/
-	public static function giveMeu(Account $playerData, $amount){
+	public static function giveMeu(Account $playerData, $amount, $reason){
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
 			$bankMeu = self::$CentralBankMeu;
@@ -50,6 +51,10 @@ class Government{
 				$givenMeu = $bankMeu->spilit($amount);
 				$playerData->getMeu()->merge($givenMeu);
 				
+				// 金の使用用途を書く
+				$playerData->addHistory($givenMeu->getAmount(), $reason);
+
+				// PMMPからであれば、通知を表示
 				$player = $playerData->getPlayer();
 				if($player){ // pmmpからであれば
 					$subject = "§f政府 §7==={$givenMeu->getName()}==> §f{$player->getName()}";
@@ -70,9 +75,10 @@ class Government{
 	*	そのぷれいやー/会社から政府に対して送金する。
 	*	@param Account | 政府に対してあげる対象
 	*	@param int | プレイヤーがあげる量
+	*	@param String | 支払いの名目、理由(土地購入、あいてむこうにゅうなど)
 	*	@return bool
 	*/
-	public static function receiveMeu(Account $playerData, $amount){
+	public static function receiveMeu(Account $playerData, $amount, $reason){
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
 			$meu = $playerData->getMeu();
@@ -80,6 +86,10 @@ class Government{
 				$receivedMeu = $meu->spilit($amount);
 				self::$CentralBankMeu->merge($receivedMeu);
 
+				// 金の使用用途を書く
+				$playerData->addHistory($receivedMeu->getAmount(), $reason);
+
+				// PMMPからであれば、通知を表示
 				$player = $playerData->getPlayer();
 				if($player){ // pmmpからであれば
 					$subject = "§f{$player->getName()} §7==={$receivedMeu->getName()}==> §f政府";
