@@ -181,7 +181,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchBuyUnit(){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist;";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist WHERE leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -201,7 +201,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchBuyUnitById($id, $meta){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist WHERE id = {$id} and meta = {$meta};";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist WHERE id = {$id} and meta = {$meta} and leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -221,7 +221,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchBuyUnitByCategory($category){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist WHERE category = {$category}";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itembuylist WHERE category = {$category} and leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -439,7 +439,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchSellUnit(){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist;";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -459,7 +459,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchSellUnitById($id, $meta){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE id = {$id} and meta = {$meta};";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE id = {$id} and meta = {$meta} and leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -479,7 +479,7 @@ class Earmazon {
 	*	@return Array [ [$id, $meta, $amount, $price, $no] ]
 	*/
 	public static function searchSellUnitByCategory($category){
-		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE category = {$category}";
+		$sql = "SELECT no, id, meta, leftamount, price FROM earmazon_itemselllist WHERE category = {$category} and leftamount != 0;";
 
 		$unitdata = [];
 		$result = DB::get()->query($sql);
@@ -577,7 +577,7 @@ class Earmazon {
 
 			// もう売れないじゃん
 			if(!$unitamount){
-				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "売りに出す個数が0です。"));
+				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "申し訳ありませんが、そのアイテムの買取は終了しました。"));
 				return false;
 			}
 
@@ -602,7 +602,7 @@ class Earmazon {
 			// removeの確認
 			$item = Item::get($id, $meta, $amount); // 売りに出すアイテム プレイヤーからcontainsをかける
 
-			var_dump( $item );
+			// var_dump( $item );
 
 			if(!$inv->contains($item)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7売りに出すアイテムが手持ちに含まれていません。"));
