@@ -12,6 +12,7 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 
 # Eard
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\DataIO;
@@ -55,10 +56,10 @@ class AreaProtector{
 	public static function canActivateInLivingProtected($id){
 		switch($id){
 			case Item::CHEST:
+			case Item::FURNACE:
 				return false;
 			break;
 			case Item::BED_BLOCK:
-			case Item::FURNACE:
 			case Item::WORKBENCH:
 			default:
 				return true;
@@ -255,20 +256,26 @@ class AreaProtector{
 	//そこで設置破壊できるか
 	//return bool
 	public static function Edit(Player $player, $x, $y, $z){
-		$sectionNoX = self::calculateSectionNo($x);
-		$sectionNoZ = self::calculateSectionNo($z);
-		if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-			$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
-			return false;
-		}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-			$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
-			return false;
-		}
 		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
 			// -1 … グリッド上
 			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
+
+			// 土地がグリッド内の場合は
+
+			// 座標算出
+			$sectionNoX = self::calculateSectionNo($x);
+			$sectionNoZ = self::calculateSectionNo($z);
+			if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
+				$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
+				return false;
+			}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
+				$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
+				return false;
+			}
+
+
 			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
 			$playerData = Account::get($player);
 			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
@@ -321,11 +328,11 @@ class AreaProtector{
 	}
 	//return int (timestamp) or 0
 	public static function getTimeOfSection($sectionNoX, $sectionNoZ){
-		return self::getSectionData($sectionNoX, $sectionNoZ)[1];
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[1]) ? self::getSectionData($sectionNoX, $sectionNoZ)[1] : -1;
 	}
 	//return int or -1
 	public static function getBaseY($sectionNoX, $sectionNoZ){
-		return self::getSectionData($sectionNoX, $sectionNoZ)[2];
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[2]) ? self::getSectionData($sectionNoX, $sectionNoZ)[2] : -1;
 	}
 	//return int or -1
 	public static function getPriceOf($sectionNoX, $sectionNoZ){
@@ -338,11 +345,11 @@ class AreaProtector{
 	}
 	//return int
 	public static function getDigLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::getBaseY($sectionNoX, $sectionNoZ) + self::$digDefault;
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[4]) ? self::getSectionData($sectionNoX, $sectionNoZ)[4] : self::getBaseY($sectionNoX, $sectionNoZ) - self::$digDefault;
 	}
 	//return int
 	public static function getPileLimit($sectionNoX, $sectionNoZ){
-		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[5]) ? self::getSectionData($sectionNoX, $sectionNoZ)[5] : self::getBaseY($sectionNoX, $sectionNoZ) - self::$pileDefault;
+		return isset(self::getSectionData($sectionNoX, $sectionNoZ)[5]) ? self::getSectionData($sectionNoX, $sectionNoZ)[5] : self::getBaseY($sectionNoX, $sectionNoZ) + self::$pileDefault;
 	}
 
 
@@ -406,15 +413,22 @@ class AreaProtector{
 				return false;
 			}
 
+			// 購入処理
+			if(!Government::receiveMeu($playerData, $price)){
+				Government::giveMeu($playerData, $price); // はらいもどし
+				$player->sendMessage(Chat::Format("政府", "エラーが発生しました"));
+				return false;
+			}
+
 			// まだ販売できるか
 			if(!self::giveSection($playerData, $sectionNoX, $sectionNoZ) ){
+				Government::giveMeu($playerData, $price); // はらいもどし
 				$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
 				return false;
 			}
 
-			// 購入処理
 			$address = self::getSectionCode($sectionNoX, $sectionNoZ);
-			$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が {$address} を {$price} で購入しました。");
+			$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が {$address} を {$price}μ で購入しました。");
 			MainLogger::getLogger()->info($msg);
 			return true;
 		}else{
@@ -522,7 +536,7 @@ class AreaProtector{
 		$pofs = self::getPriceOf($sectionNoX, $sectionNoZ);
 		if($pofs == 0) return 0;
 		//priceが0の場合は、うらない。
-		//いまんとこ、pofsはつかわないので、この変数はどこでもつあっていない。将来的には、土地を譲ることができるようになった場合、使うかもしれない。
+		//いまんとこ、pofsはつかわないので、この変数はほかのどこでも使っていない。将来的には、土地を譲ることができるようになった場合、使うかもしれない。
 
 		$taxBase = 1000; //さいていでもこのきんがくかかるよ
 		$percentage = (self::$affordableSection - self::$leftSection) / self::$affordableSection; // 残っている土地の数によって価格が変わるよ
