@@ -46,7 +46,15 @@ class Menu implements ChatInput {
 	}
 
 	public function isActive(){
-		return $this->page < 0 ? false : true;
+		if($this->page < 0){
+			return false;
+		}else{
+			if($this->page === 1){ // アイテムsendの防御対策
+				return false;
+			}else{
+				return true;
+			}
+		}
 	}
 
 	// めにゅーとじて元のインベントリ送り返す
@@ -101,15 +109,19 @@ class Menu implements ChatInput {
 						$playerData->setChatMode(ChatManager::CHATMODE_PLAYER);
 						$playerData->setChatTarget($target);
 					}else{
-						$msg = Chat::Format("§8システム", "§c自分自身を指定することはできないめう。");
+						$msg = Chat::SystemToPlayer("§c自分自身を指定することはできないめう。");
 						$player->sendMessage($msg);
 					}
 				}else{
-					$msg = Chat::Format("§8システム", "§c{$txt} という名のプレイヤーはいないめう。入力しなおすめう。");
+					$msg = Chat::SystemToPlayer("§c{$txt} という名のプレイヤーはいないめう。入力しなおすめう。");
 					$player->sendMessage($msg);
 				}
 				return true;
 			break;
+			
+			/*case 45:
+				$
+			break;*/
 			default:
 
 			break;
@@ -139,9 +151,10 @@ class Menu implements ChatInput {
 					$ar = [
 						["§7[[ メニュー ]]",false],
 						["ステータス照会",2],
-						["チャット",20],
+						["チャットモード変更",20],
 						["エリア転送",30],
 						["アイテムボックス",1],
+						["μを送る", 45],
 						["§f{$uma} メニューを閉じる",false],
 					];	
 				}else{
@@ -151,9 +164,10 @@ class Menu implements ChatInput {
 					$ar = [
 						["§7[[ メニュー ]]",false],
 						["ステータス照会",2],
+						["チャットモード変更",20],
 						["GPS (座標情報)",3],
-						["チャット",20],
-						["メール",10],
+						// ["メール",10],
+						["μを送る", 45],
 						["エリア転送",30],
 						["§f{$uma} メニューを閉じる",false],
 					];	
@@ -163,8 +177,9 @@ class Menu implements ChatInput {
 */
 			case 1:
 				if($isFirst){
-					$inv = $playerData->getItemBox();
-					$player->addWindow($inv);
+					$itembox = $playerData->getItemBox();
+					$player->getInventory()->sendContents(); // アイテムが今消えているので
+					$player->addWindow($itembox);
 				}
 				$ar = [
 					["§f{$uma} 戻る",false],
@@ -339,6 +354,8 @@ class Menu implements ChatInput {
 				if($isFirst){
 					$playerData->setChatMode(ChatManager::CHATMODE_ENTER);
 					$playerData->setChatObject($this);
+					$msg = Chat::SystemToPlayer("§cプレイヤー名を入力 (英数字)");
+					$player->sendMessage($msg);
 				}
 				$ar = [
 					["§7[[ チャットモード ]]",false],
@@ -396,6 +413,7 @@ class Menu implements ChatInput {
 				];
 			break;
 
+			// 政府が土地を抑える
 			case 40:
 				$x = round($player->x); $z = round($player->z);
 				$address = AreaProtector::getSectionCode(AreaProtector::calculateSectionNo($x), AreaProtector::calculateSectionNo($z));
@@ -432,6 +450,49 @@ class Menu implements ChatInput {
 				}else{
 					$ar = [ ["§f{$uma} トップへ戻る",false] ];
 				}
+			break;
+
+			// プレイヤーに送金
+			case 45:
+				if($isFirst){
+					$playerData->setChatMode(ChatManager::CHATMODE_ENTER);
+					$playerData->setChatObject($this);
+					$msg = Chat::SystemToPlayer("§c金額を入力 (数字)");
+					$player->sendMessage($msg);
+				}
+				$ar = [
+					["§4[[ 送金処理 ]]",false],
+					["§7送りたい金額を入力",false],
+					["§f{$uma} トップへ戻る",false],
+				];				
+			break;
+			case 46:
+				if($isFirst){
+					$msg = Chat::SystemToPlayer("§c対象のプレイヤー名入力 (文字列)");
+					$player->sendMessage($msg);
+				}
+				$ar = [
+					["§4[[ 送金処理 ]]",false],
+					["§7送りたいプレイヤー名を入力",false],
+					["§f{$uma} トップへ戻る",false],
+				];		
+			break;
+			case 47:
+				$data = $this->temp;
+				$playername = $data[0]->getPlayer()->getName();
+				$amount = $data[1];
+				$ar = [
+					["§4[[ 送金処理 ]]",false],
+					["{$playername}に{$amount}μを送ります。",false],
+					["よろしいですか？",false],
+					["いいえ", 1],
+					["はい", 48],
+					["§f{$uma} トップへ戻る",false],
+				];			
+			break;
+			case 48:
+
+				$this->temp = [];
 			break;
 
 //閉じてるよ画面
@@ -558,6 +619,8 @@ class Menu implements ChatInput {
 	private $page = -1;
 	private $pageData = [];
 	private $playerData = null;
+
+	private $temp = [];// チャット入力用とか
 }
 
 

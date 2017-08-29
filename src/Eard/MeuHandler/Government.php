@@ -14,7 +14,30 @@ use Eard\Utils\Chat;
 *
 *	通貨管理する政府
 */
-class Government{
+class Government implements MeuHandler {
+
+
+	// @meuHandler
+	public function getMeu(){
+		return self::$CentralBankMeu;
+	}
+
+	// @meuHandler
+	public function getName(){
+		return "政府";
+	}
+
+	// @meuHandler
+	public function getUniqueNo(){
+		return 100000;
+	}
+
+	public static function getInstance(){
+		if(!isset(self::$instance)){
+			self::$instance = new Government;
+		}
+		return self::$instance;
+	}
 
 	/**
 	*	中央銀行が発行したMeuの量を設定。鯖が開いてる時でも、コマンドとかでへんこうしていいよ。
@@ -30,7 +53,7 @@ class Government{
 			return false;
 		}
 
-		self::$CentralBankMeu　= Meu::get($newLeft, 100000);
+		self::$CentralBankMeu　= Meu::get($newLeft, 100000, self::getInstance());
 		self::$CentralBankFirst = $amount;
 		return true;
 	}
@@ -50,18 +73,7 @@ class Government{
 			$bankMeu = self::$CentralBankMeu;
 			if($bankMeu->sufficient($amount)){
 				$givenMeu = $bankMeu->spilit($amount);
-				$playerData->getMeu()->merge($givenMeu);
-				
-				// 金の使用用途を書く
-				$playerData->addHistory($givenMeu->getAmount(), $reason);
-
-				// PMMPからであれば、通知を表示
-				$player = $playerData->getPlayer();
-				if($player){ // pmmpからであれば
-					$subject = "§f政府 §7==={$givenMeu->getName()}==> §f{$player->getName()}";
-					MainLogger::getLogger()->info(Chat::Format("§7政府", "§6Console", $subject));
-					$player->sendMessage(Chat::Format("§7送金処理", "§6個人", $subject));
-				}
+				$playerData->getMeu()->merge($givenMeu, $reason);
 				return true;
 			}else{
 				return false;
@@ -85,18 +97,7 @@ class Government{
 			$meu = $playerData->getMeu();
 			if($meu->sufficient($amount)){
 				$receivedMeu = $meu->spilit($amount);
-				self::$CentralBankMeu->merge($receivedMeu);
-
-				// 金の使用用途を書く
-				$playerData->addHistory($receivedMeu->getAmount(), $reason);
-
-				// PMMPからであれば、通知を表示
-				$player = $playerData->getPlayer();
-				if($player){ // pmmpからであれば
-					$subject = "§f{$player->getName()} §7==={$receivedMeu->getName()}==> §f政府";
-					MainLogger::getLogger()->info(Chat::Format("§7政府", "§6Console", $subject));
-					$player->sendMessage(Chat::Format("§7送金処理", "§6個人", $subject));
-				}
+				self::$CentralBankMeu->merge($receivedMeu, $reason);
 				return true;
 			}else{
 				return false;
@@ -117,17 +118,17 @@ class Government{
 
 
 	public static function load(){
-		//初回用
-		self::$CentralBankFirst = 1000 * 10000;
-		self::$CentralBankMeu = Meu::get(1000 * 10000, 100000); //100000は政府のUniqueNo
 
 		//データがある場合はそっちが優先される
 		$data = DataIO::load('Government');
 		if($data){
 			self::$CentralBankFirst = $data[0];
-			self::$CentralBankMeu = Meu::get($data[1], 100000); //100000は政府のUniqueNo
+			self::$CentralBankMeu = Meu::get($data[1], self::getInstance()); //100000は政府のUniqueNo
 			MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
 		}else{
+			//初回用
+			self::$CentralBankFirst = 1000 * 10000;
+			self::$CentralBankMeu = Meu::get(1000 * 10000, self::getInstance()); //100000は政府のUniqueNo
 			MainLogger::getLogger()->notice("§eGovernment: No data found. Set the amount of Meu");
 		}
 	}
@@ -151,6 +152,7 @@ class Government{
 
 
 	private static $CentralBankFirst, $CentralBankMeu;
+	public static $instance = null;
 
 
 	/**

@@ -23,7 +23,7 @@ use Eard\Utils\Chat;
 *	Accountは、プレイヤーにかかわるデータを包括的に管理するくらす。
 *	それぞれのPlayerがもつDataについて、プレイヤーデータの読み書きの管理も行う
 */
-class Account{
+class Account implements MeuHandler {
 
 	//よくあるシングルトン
 	public static $accounts = null;
@@ -251,10 +251,16 @@ class Account{
 	*	所持ミューをMeuにして詰めて返す。Meuの扱い方についてはclass::Meuにて。
 	*	@return Meu | 所持金料などのデータ
 	*/
+	// @meuHandler
 	public function getMeu(){
 		return $this->meu;
 	}
 	private $meu;
+
+	// @meuHandler
+	public function getName(){
+		return $this->getPlayer()->getName();
+	}
 
 	/**
 	*	何かをするのに必要なパーミッションと言っていいだろう。
@@ -583,7 +589,7 @@ class Account{
 					$this->data = $data; //メモリにコンニチハ
 
 					// Meuはwebからとか関係なしに展開する
-					$this->meu = Meu::get($this->data[1], $this->getUniqueNo());
+					$this->meu = Meu::get($this->data[1], $this);
 
 					// ライセンス
 					if($this->data[5]){
@@ -626,7 +632,7 @@ class Account{
 		$this->data = self::$newdata;//初回データを読み込む
 
 		//meuは展開する
-		$this->meu = Meu::get($this->data[1], 0);
+		$this->meu = Meu::get($this->data[1], 0, $this);
     }
 
     /**
