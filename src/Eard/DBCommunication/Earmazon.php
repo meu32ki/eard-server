@@ -1,7 +1,8 @@
 <?php
-
 namespace Eard\DBCommunication;
 
+
+# Basic
 use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;

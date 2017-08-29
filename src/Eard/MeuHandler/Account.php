@@ -1,6 +1,7 @@
 <?php
 namespace Eard\MeuHandler;
 
+
 # Basic
 use pocketmine\Player;
 use pocketmine\Server;

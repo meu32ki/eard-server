@@ -1,6 +1,7 @@
 <?php
 namespace Eard\MeuHandler;
 
+
 # Basic
 use pocketmine\utils\MainLogger;
 

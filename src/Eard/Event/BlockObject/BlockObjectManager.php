@@ -38,7 +38,7 @@ class BlockObjectManager {
 			case 379: $objNo = 3; break; // 調合台
 			case 117: $objNo = 3; break; // 調合台
 		}
-		echo $objNo;
+		// echo $objNo;
 		if($objNo){
 			$obj = self::makeObject($block->x, $block->y, $block->z, $objNo);
 			$obj->Place($player);
