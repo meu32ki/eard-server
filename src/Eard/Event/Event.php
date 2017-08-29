@@ -152,7 +152,7 @@ class Event implements Listener{
 						AreaProtector::Edit($player, $x, $y, $z);
 						//キャンセルとかはさせられないので、表示を出すだけ。
 					}else{
-						$e->setCancelled( blockObjectManager::startBreak($x, $y, $z, $player) );
+						$e->setCancelled( BlockObjectManager::startBreak($x, $y, $z, $player) );
 					}
 				}
 				$x = $packet->x; $y = $packet->y; $z = $packet->z;
@@ -208,7 +208,7 @@ class Event implements Listener{
 				// 長押し
 				if($e->getAction() == 3 or $e->getAction() == 0){
 					if($x && $y && $z){ // 空中でなければ
-						blockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
+						BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 					}
 
 				// 普通にタップ
@@ -223,13 +223,13 @@ class Event implements Listener{
 							if(!AreaProtector::canActivateInLivingProtected($blockId)){
 								$e->setCancelled(true);
 							}else{
-								$r = blockObjectManager::tap($block, $player);
+								$r = BlockObjectManager::tap($block, $player);
 								$e->setCancelled( $r );
 							}
 
 						// できるばあい
 						}else{
-							$r = blockObjectManager::tap($block, $player);
+							$r = BlockObjectManager::tap($block, $player);
 							$e->setCancelled( $r );
 						}
 
@@ -241,7 +241,7 @@ class Event implements Listener{
 							$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
 							$e->setCancelled(true);
 						}else{
-							$r = blockObjectManager::tap($block, $player);
+							$r = BlockObjectManager::tap($block, $player);
 							$e->setCancelled( $r );
 						}
 					}
@@ -260,7 +260,7 @@ class Event implements Listener{
 		*/
 		if(Connection::getPlace()->isLivingArea()){
 			if(AreaProtector::Edit($player, $x, $y, $z)){
-				$r = blockObjectManager::place($block, $player);
+				$r = BlockObjectManager::place($block, $player);
 				$e->setCancelled( $r );
 			}else{
 				$e->setCancelled(true);
@@ -274,7 +274,7 @@ class Event implements Listener{
 			if( !AreaProtector::canPlaceInResource($itemId) ){
 				$e->setCancelled(true);
 			}else{
-				$r = blockObjectManager::place($block, $player);
+				$r = BlockObjectManager::place($block, $player);
 				$e->setCancelled( $r );			
 			}
 		}
@@ -292,7 +292,7 @@ class Event implements Listener{
 		*/
 		if(Connection::getPlace()->isLivingArea()){
 			if(AreaProtector::Edit($player, $x, $y, $z)){
-				$r = blockObjectManager::break($block, $player);
+				$r = BlockObjectManager::break($block, $player);
 				$e->setCancelled( $r );
 			}else{
 				$e->setCancelled(true);
@@ -308,8 +308,8 @@ class Event implements Listener{
 				EnemyRegister::summon($level, EnemyRegister::TYPE_JOOUBATI, $x+0.5, $y-4, $z+0.5);
 			}
 
-			// blockObject壊す処理
-			$r = blockObjectManager::break($block, $player);
+			// BlockObject壊す処理
+			$r = BlockObjectManager::break($block, $player);
 			$e->setCancelled( $r );
 		}
 	}
