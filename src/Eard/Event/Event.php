@@ -97,7 +97,7 @@ class Event implements Listener{
 			$inv = $player->getInventory();
 			$inv->addItem(Item::get(416));
 		}
-		$msg = Chat::Format("§8システム", "§eTips", Tips::getRandomTips());
+		$msg = Chat::Format("§8システム", "§bTips", Tips::getRandomTips());
 		$player->sendMessage($msg);
 	}
 
