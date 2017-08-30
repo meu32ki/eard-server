@@ -182,7 +182,7 @@ class ChatManager {
 				$message = $now["mon"]."月".$now["mday"]."日(".self::$day[$now["wday"]].") ";
 			}
 			$message .= $now["hours"]."時になりました";
-			$msg = Chat::Format("§8システム", "§a時報", $message);
+			$msg = Chat::Format("§8システム", "§b時報", "§a".$message);
 			Server::getInstance()->broadcastMessage($msg);
 			self::$lastTime = getdate();
 			return true;
