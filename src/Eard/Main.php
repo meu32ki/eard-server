@@ -163,7 +163,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						case "buy": // プレイヤーがこの値段で買える
 							if(5 <= count($a)){
 								$id = $a[1]; $meta = $a[2]; $amount = $a[3]; $price = $a[4]; 
-								Earmazon::addSellUnit($id, $meta, $amount, $price, false);
+								$result = Earmazon::addSellUnit($id, $meta, $amount, $price, false);
 								$msg = $result ? "追加した" : "追加できなかった";
 								$s->sendMessage(Chat::SystemToPlayer($msg));
 							}else{
