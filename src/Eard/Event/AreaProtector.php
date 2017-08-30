@@ -61,6 +61,7 @@ class AreaProtector{
 			break;
 			case Item::BED_BLOCK:
 			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
 			default:
 				return true;
 			break;
@@ -77,6 +78,7 @@ class AreaProtector{
 		switch($id){
 			case Item::FURNACE:
 			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
 				return false;
 			break;
 			default:
