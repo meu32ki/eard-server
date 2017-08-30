@@ -36,11 +36,6 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 	public function Place(Player $player){
 		$name = $player->getName();
-
-		// $particle = new FloatingTextParticle(new Vector3($this->x + 0.5, $this->y + 2, $this->z + 0.5), "", $this->name);
-		// $level = $player->getLevel()->addParticle($particle);
-
-		$this->particle = $particle;
 	}
 
 	public function Tap(Player $player){
