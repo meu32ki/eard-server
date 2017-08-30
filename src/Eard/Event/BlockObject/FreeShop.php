@@ -119,19 +119,24 @@ class FreeShop implements BlockObject {
 				break;
 				case 1:
 					//購入処理 #todo
-					$meu = Account::get($player)->getMeu()->spilit($price);
-					$ownerMeu = Account::getByName($this->ownerName, true)->getMeu();
-					$ownerMeu->merge($meu, "個人ショップからの購入");
-					$this->inventory->setItemArray($this->itemArray);
-					$items = $this->inventory->getContents();
-					$inv = $player->getInventory();
-					foreach($items as $slot => $item){
-						$inv->addItem($item);
+					$ownerAC = Account::getByName($this->ownerName, true);
+					$ownerMeu = $ownerAC->getMeu();
+					if($ownerMeu === null){
+						$message = "このショップは準備中のため、購入出来ません";
+					}else{
+						$meu = Account::get($player)->getMeu()->spilit($price);
+						$ownerMeu->merge($meu, "個人ショップからの購入");
+						$this->inventory->setItemArray($this->itemArray);
+						$items = $this->inventory->getContents();
+						$inv = $player->getInventory();
+						foreach($items as $slot => $item){
+							$inv->addItem($item);
+						}
+						$this->inventory->clearAll();
+						$this->itemArray = [];
+						$this->soldout = true;
+						$message = "商品を購入しました";
 					}
-					$this->inventory->clearAll();
-					$this->itemArray = [];
-					$this->soldout = true;
-					$message = "商品を購入しました";
 				break;				
 			}
 			$player->sendMessage(Chat::SystemToPlayer($message));
@@ -265,5 +270,19 @@ class FreeShop implements BlockObject {
 			self::$buyCheck[$this->indexNo][$name] = 0;
 			return 1;
 		}
+	}
+
+	public function getMeu($Ac){
+    	$meu = $Ac->getMeu();
+    	return $meu;//所持μ表示
+	}
+
+	public function getAccount($name){
+		$Ac = Account::getByName($name, true);//AccountID取得
+		$result=$Ac->loadData($name, true);
+		if($result === false){
+			return null;
+		}
+		return $Ac;
 	}
 }

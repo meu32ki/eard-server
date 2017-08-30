@@ -17,7 +17,7 @@ class ItemName{
 		if( isset(self::$listById[$id][$meta]) ){
 			return self::$listById[$id][$meta]; //書いてあれば日本語名
 		}else{
-			return Item::get()->getName(); //書いてなければ英名
+			return Item::get($id, $meta)->getName(); //書いてなければ英名
 		}
 	}
 
