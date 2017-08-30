@@ -196,7 +196,6 @@ class FreeShop implements BlockObject {
 		$this->itemArray = $data[1];
 		$this->shopType = $data[2];
 		$this->soldout = $data[3];
-		$this->inventory->setItemArray($this->itemArray);
 		return true;
 	}
 
