@@ -85,7 +85,7 @@ class Meu {
 		// 金の流通が発生したとconsoleに表示
 		$senderName = $meu->getMeuHandler()->getName();
 		$receiverName = $this->getMeuHandler()->getName();
-		$subject = "§f{$senderName} §7==={$meu->getName()}==> §f{$receiverName}";
+		$subject = "§f{$senderName} §7==={$meu->getName()}==> §f{$receiverName} ({$reason})";
 		MainLogger::getLogger()->info(Chat::Format("システム", "§6Console", $subject));
 
 
