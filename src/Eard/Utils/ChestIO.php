@@ -19,6 +19,8 @@ use pocketmine\nbt\tag\StringTag;
 
 class ChestIO extends BaseInventory {
 
+	protected $name = "アイテム入れるところ";
+
 	/*
 		継承
 		Inventory
@@ -66,10 +68,12 @@ class ChestIO extends BaseInventory {
 		$this->setContents($items);
 	}
 
-
+	public function setName($name){
+		$this->name = $name;
+	}
 
 	public function getName(){
-		return "アイテム入れるところ";
+		return $this->name;
 	}
 
 	/**

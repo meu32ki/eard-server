@@ -37,6 +37,7 @@ class BlockObjectManager {
 			case 247: $objNo = 2; break; // リアクターコア
 			case 379: $objNo = 3; break; // 調合台
 			case 117: $objNo = 3; break; // 調合台
+			case 218: $objNo = 4; break; // シュルカーボックス
 		}
 		// echo $objNo;
 		if($objNo){
@@ -124,6 +125,7 @@ class BlockObjectManager {
 			case 1: $obj = new ItemExchanger(); break;
 			case 2: $obj = new Shop(); break;
 			case 3: $obj = new EarmazonShop(); break;
+			case 4: $obj = new FreeShop(); break;
 		}
 		return $obj;
 	}
