@@ -77,9 +77,10 @@ class Meu {
 	*	合算する。だれかのmeuを、こいつのものにする。
 	*	@param Meu | 吸収するMeu
 	*	@param String $reason そのお金を使った理由、例 Earmazon: ～を購入 / とか
+	*	@param String $reason2 お金を送る側に、別のメッセージを送りたい場合は入れろ。上記と同じメッセージで良いなら入れるな。
 	*	@return bool
 	*/
-	public function merge(Meu $meu, $reason){
+	public function merge(Meu $meu, $reason, $reason2 = ""){
 		$this->amount = $this->amount + $meu->getAmount();
 
 		// 金の流通が発生したとconsoleに表示
@@ -109,7 +110,7 @@ class Meu {
 			$playerData = $meu->getMeuHandler();
 
 			// 金の使用用途を書く
-			$playerData->addHistory(-1 * $meu->getAmount(), $reason);
+			$playerData->addHistory(-1 * $meu->getAmount(), $reason2 ? $reason2 : $reason);
 
 			// PMMPからであれば、通知を表示
 			$player = $playerData->getPlayer();

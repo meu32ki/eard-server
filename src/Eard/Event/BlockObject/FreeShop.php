@@ -120,13 +120,14 @@ class FreeShop implements BlockObject {
 				break;
 				case 1:
 					//購入処理 #todo
-					$ownerAC = Account::getByName($this->ownerName, true);
+					$ownerName = $this->ownerName;
+					$ownerAC = Account::getByName($ownerName, true);
 					$ownerMeu = $ownerAC->getMeu();
 					if($ownerMeu === null){
 						$message = "このショップは準備中のため、購入出来ません";
 					}else{
 						$meu = Account::get($player)->getMeu()->spilit($price);
-						$ownerMeu->merge($meu, "個人ショップからの購入");
+						$ownerMeu->merge($meu, "個人ショップ: {$ownerName}からの購入", "個人ショップ: {$player->getName()}への売却");
 						$items = $this->inventory->getContents();
 						$inv = $player->getInventory();
 						foreach($items as $slot => $item){
