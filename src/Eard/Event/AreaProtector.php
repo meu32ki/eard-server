@@ -414,15 +414,15 @@ class AreaProtector{
 			}
 
 			// 購入処理
-			if(!Government::receiveMeu($playerData, $price)){
-				Government::giveMeu($playerData, $price); // はらいもどし
+			if(!Government::receiveMeu($playerData, $price, "政府: 土地購入")){
+				Government::giveMeu($playerData, $price, "政府: エラーにより払い戻し"); // はらいもどし
 				$player->sendMessage(Chat::Format("政府", "エラーが発生しました"));
 				return false;
 			}
 
 			// まだ販売できるか
 			if(!self::giveSection($playerData, $sectionNoX, $sectionNoZ) ){
-				Government::giveMeu($playerData, $price); // はらいもどし
+				Government::giveMeu($playerData, $price, "政府: エラーにより払い戻し"); // はらいもどし
 				$player->sendMessage(Chat::Format("政府", "申し訳ございません、政府の販売できる土地許容数に達しましたのでおうりできません。"));
 				return false;
 			}
