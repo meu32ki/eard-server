@@ -89,6 +89,7 @@ class FreeShop implements BlockObject {
 			$this->inventory->setItemArray($this->itemArray);
 			$this->inventory->setName($this->getShopName());
 		}
+		$this->itemArray = $this->inventory->getItemArray();
 		if($player->getName() === $this->ownerName){
 			$price = $this->getPrice();
 			if($this->soldout){
@@ -126,7 +127,6 @@ class FreeShop implements BlockObject {
 					}else{
 						$meu = Account::get($player)->getMeu()->spilit($price);
 						$ownerMeu->merge($meu, "個人ショップからの購入");
-						$this->inventory->setItemArray($this->itemArray);
 						$items = $this->inventory->getContents();
 						$inv = $player->getInventory();
 						foreach($items as $slot => $item){
@@ -196,6 +196,7 @@ class FreeShop implements BlockObject {
 		$this->itemArray = $data[1];
 		$this->shopType = $data[2];
 		$this->soldout = $data[3];
+		$this->inventory->setItemArray($this->itemArray);
 		return true;
 	}
 
