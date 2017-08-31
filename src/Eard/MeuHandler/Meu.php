@@ -31,6 +31,13 @@ class Meu {
 	}
 
 	/**
+	*	政府しか使うな!!!
+	*/
+	public function setAmount($amount){
+		$this->amount = $amount;
+	}
+
+	/**
 	*	@return MeuHandler このオブジェクトの所有者
 	*/
 	public function getMeuHandler(){
@@ -101,7 +108,6 @@ class Meu {
 			$player = $playerData->getPlayer();
 			if($player){
 				$player->sendMessage(Chat::Format("§8送金処理", "§6個人", $subject));
-				// $player->sendMessage(Chat::Format("§7送金履歴記録", "§6個人", "受け取り ({$reason})"));
 			}
 		}
 
@@ -116,7 +122,6 @@ class Meu {
 			$player = $playerData->getPlayer();
 			if($player){
 				$player->sendMessage(Chat::Format("§8送金処理", "§6個人", $subject));
-				// $player->sendMessage(Chat::Format("§7送金履歴記録", "§6個人", "受け渡し ({$reason})"));
 			}
 		}
 		return true;

@@ -13,6 +13,7 @@ use Eard\Utils\Chat;
 /****
 *
 *	通貨管理する政府
+*	getMeuみたいな関数は作るな
 */
 class Government implements MeuHandler {
 
@@ -70,10 +71,15 @@ class Government implements MeuHandler {
 	public static function giveMeu(Account $playerData, $amount, $reason){
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
+			// お金の同期、変動していたら読み込む
+			self::checkSync();
+
 			$bankMeu = self::$CentralBankMeu;
 			if($bankMeu->sufficient($amount)){
 				$givenMeu = $bankMeu->spilit($amount);
 				$playerData->getMeu()->merge($givenMeu, $reason);
+
+				self::save(); // 同期用
 				return true;
 			}else{
 				return false;
@@ -94,10 +100,16 @@ class Government implements MeuHandler {
 	public static function receiveMeu(Account $playerData, $amount, $reason){
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
+			// お金の同期、変動していたら読み込む
+			self::checkSync();
+
 			$meu = $playerData->getMeu();
 			if($meu->sufficient($amount)){
 				$receivedMeu = $meu->spilit($amount);
 				self::$CentralBankMeu->merge($receivedMeu, $reason);
+
+				 // 同期用にセーブ
+				self::save();
 				return true;
 			}else{
 				return false;
@@ -117,10 +129,29 @@ class Government implements MeuHandler {
 	}
 
 
+	/**
+	*	生活と資源でお金の量を同期させる
+	*/
+	public static function checkSync(){
+		$data = DataIO::loadFromDB('Government');
+		$bankMeu = self::$CentralBankMeu;
+		if(isset($data[1])){
+			$meuAmount = $data[1];
+			if($meuAmount != $bankMeu->getAmount()){
+				//echo "Gov: 同期が必要\n";
+				$bankMeu->setAmount($meuAmount);
+			}else{
+				//echo "Gov: 同期は不要\n";
+			}
+		}
+		return false;
+	}
+
+
 	public static function load(){
 
 		//データがある場合はそっちが優先される
-		$data = DataIO::load('Government');
+		$data = DataIO::loadFromDB('Government');
 		if($data){
 			self::$CentralBankFirst = $data[0];
 			self::$CentralBankMeu = Meu::get($data[1], self::getInstance()); //100000は政府のUniqueNo
@@ -143,7 +174,7 @@ class Government implements MeuHandler {
 				self::$CentralBankFirst,
 				$bankMeu->getAmount()
 			];
-			$result = DataIO::save('Government', $data);
+			$result = DataIO::saveIntoDB('Government', $data);
 			if($result){
 				MainLogger::getLogger()->notice("§aGovernment: data has been saved");
 			}
