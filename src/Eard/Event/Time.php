@@ -4,6 +4,7 @@ namespace Eard\Event;
 
 # Basic
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 # Eard
 use Eard\DBCommunication\Connection;
@@ -27,12 +28,15 @@ class Time {
 			if($nowMinutes % 2 == 0 or $first){
 				$level = Server::getInstance()->getDefaultLevel();
 				$place = Connection::getPlace();
-				$basetime = ( date("i") / 20 + date("s") / 60 ) * 24000; //
-				if($place->isResourceArea()){ // 資源
-					$level->setTime($basetime + 12000);
-				}else{ // 生活
-					$level->setTime($basetime);
-				}
+
+				// 計算して合わせる
+				$basetime = date("i") * 1200 + date("s") * 20;
+				$setTime = $place->isResourceArea() ? $basetime + 12000 : $basetime;
+				$level->setTime($setTime);
+
+				// 時間合わせたよー通知
+				$msg = Chat::Format("§8Time", "§6Console", "時間を {$setTime} に設定しました");
+				MainLogger::getLogger()->info($msg);
 
 				// tips todo:移動
 				$msg = Chat::Format("§8システム", "§bTips", Tips::getRandomTips());
