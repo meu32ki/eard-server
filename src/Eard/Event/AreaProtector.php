@@ -257,10 +257,13 @@ class AreaProtector{
 	
 	//そこで設置破壊できるか
 	//return bool
-	public static function Edit(Player $player, $x, $y, $z){
+	/**
+	*	@param bool $noMessage ポップアップを表示させるか デフォルトではさせる (Interactのときにつかう)
+	*/
+	public static function Edit(Player $player, $x, $y, $z, $nomessage = false){
 		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
 			// -1 … グリッド上
-			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
+			if(!$nomessage) $player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
 
@@ -270,10 +273,10 @@ class AreaProtector{
 			$sectionNoX = self::calculateSectionNo($x);
 			$sectionNoZ = self::calculateSectionNo($z);
 			if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-				$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
+				if(!$nomessage) $player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
 				return false;
 			}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-				$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
+				if(!$nomessage) $player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
 				return false;
 			}
 
@@ -286,7 +289,7 @@ class AreaProtector{
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
 					return true;
 				}else{
-					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊は許可されていません。"));							
+					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊は許可されていません。"));
 					return false;					
 				}
 			}else{
@@ -302,7 +305,7 @@ class AreaProtector{
 						$ownerName = self::getNameFromOwnerNo($ownerNo);
 						if($owner = Account::getByName($ownerName, true)){
 							if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
-								$player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+								if(!$nomessage) $player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
 								return false;
 							}
 						}
@@ -311,7 +314,7 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
+					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
 					return false;
 				}
 			}

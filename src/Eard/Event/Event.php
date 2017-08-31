@@ -217,7 +217,7 @@ class Event implements Listener{
 					if(Connection::getPlace()->isLivingArea()){
 						// editができるか？
 						// できないばあい
-						if(!AreaProtector::Edit($player, $x, $y, $z)){
+						if(!AreaProtector::Edit($player, $x, $y, $z, true)){
 							if(!AreaProtector::canActivateInLivingProtected($blockId)){
 								$e->setCancelled(true);
 							}else{
