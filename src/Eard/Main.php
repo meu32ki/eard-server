@@ -59,6 +59,12 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	public function reconnect(){
 		Connection::load();
 
+		/*
+		Earmazon::setup();
+		AreaProtector::setup();
+		Connection::setup();
+		*/
+
 		# Eard関連
 		AreaProtector::load();
 		Account::load();
@@ -66,7 +72,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Government::load();
 		new EnemyRegister();
 		ItemName::init();
-		// Earmazon::setup();
 		License::init();
 		Spawn::init(Connection::getPlace()->isLivingArea());//生活区域ならtrue、資源区域ならfalse
 

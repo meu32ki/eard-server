@@ -51,7 +51,6 @@ class Earmazon {
 		// アイテムを数個格納
 		MainLogger::getLogger()->notice("§aEarmazon: アイテムを入れます、、、");
 
-/*
 		self::addIntoStorage(Item::LOG, 0, 1000);
 		self::addIntoStorage(Item::WHEAT_SEEDS, 0, 10000);
 
@@ -71,9 +70,9 @@ class Earmazon {
 		self::addSellUnit(Item::BREAD, 0, 100, 150);
 		self::addSellUnit(Item::HORCE_ARMOR_LEATHER, 0, 150, 1000);
 
-		self::addSellUnit(Item::IRON_INGOT, 0, 100, 400);
+		self::addSellUnit(Item::IRON_INGOT, 0, 1000, 400);
 		self::addSellUnit(Item::IRON_INGOT, 0, 100, 450);
-		self::addSellUnit(Item::IRON_INGOT, 0, 100, 300);
+		self::addSellUnit(Item::IRON_ORE, 0, 1000, 300);
 		self::addSellUnit(Item::COAL, 0, 100, 50);
 		self::addSellUnit(Item::COAL, 0, 100, 30);
 		self::addSellUnit(Item::EMERALD, 0, 50, 5000);
@@ -84,16 +83,16 @@ class Earmazon {
 		self::addBuyUnit(Item::HORCE_ARMOR_LEATHER, 0, 200, 1000);
 		self::addBuyUnit(Item::WHEAT_SEEDS, 0, 10000, 2);
 
+		self::addBuyUnit(Item::IRON_ORE, 0, 1000, 470);
 		self::addBuyUnit(Item::IRON_INGOT, 0, 100, 500);
-		self::addBuyUnit(Item::IRON_INGOT, 0, 100, 600);
+		self::addBuyUnit(Item::IRON_INGOT, 0, 1000, 600);
 		self::addBuyUnit(Item::COAL, 0, 2000, 100);
 		self::addBuyUnit(Item::EMERALD, 0, 10, 10000);
 
-		self::addBuyUnit(Item::ENDER_CHEST, 0, 5, 10000);
+		self::addBuyUnit(Item::ENDER_CHEST, 0, 100, 10000);
 		self::addBuyUnit(Item::BREWING_STAND, 0, 5, 10000);
 
 		MainLogger::getLogger()->notice("§aEarmazon: 完了");
-*/
 
 		self::check();
 	}

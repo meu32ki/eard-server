@@ -595,6 +595,12 @@ class AreaProtector{
 		}
 	}
 
+	public static function setup(){
+		self::$affordableSection = 1000;
+		self::$leftSection = 1000;
+		self::save();
+	}
+
 	/**
 	*	セクションごとにそんざいするでーた。読み込む。
 	*	@return array or false
