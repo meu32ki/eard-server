@@ -8,6 +8,7 @@ use pocketmine\utils\MainLogger;
 
 # Eard
 use Eard\DBCommunication\Connection;
+use Eard\MeuHandler\Account;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 
@@ -23,7 +24,7 @@ class Time {
 		$first = self::$lastTime ? false : true;
 
 		$now = getdate();
-		if(!$now["seconds"] or $first){
+		if(!$now["seconds"] or $first){ // なんじなんふん、ぜろびょう
 			$nowMinutes = $now["minutes"];
 			if($nowMinutes % 2 == 0 or $first){
 				$level = Server::getInstance()->getDefaultLevel();
