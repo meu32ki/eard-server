@@ -219,6 +219,8 @@ class Event implements Listener{
 						// できないばあい
 						if(!AreaProtector::Edit($player, $x, $y, $z, true)){
 							if(!AreaProtector::canActivateInLivingProtected($blockId)){
+								$blockname = ItemName::getNameOf($id, $meta);
+								$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
 								$e->setCancelled(true);
 							}else{
 								$r = BlockObjectManager::tap($block, $player);
