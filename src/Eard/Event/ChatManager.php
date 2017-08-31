@@ -14,16 +14,6 @@ use Eard\Utils\Chat;
 
 
 class ChatManager {
-	private static $lastTime = null;
-	private static $day = [
-		0 => "日",
-		1 => "月",
-		2 => "火",
-		3 => "水",
-		4 => "木",
-		5 => "金",
-		6 => "土"
-	];
 
 	/**
 	 * Playerから指定半径内にいるプレイヤーを探す。複数いる場合は複数返す。
@@ -163,32 +153,6 @@ class ChatManager {
 		}
 		if($consoleMsg) MainLogger::getLogger()->info($consoleMsg);
 		return true;
-	}
-
-	/**
-	 * 時報を送信
-	 * @return bool | 時報を送信したかどうか
-	 */
-	public static function timeSignal(){
-		if(self::$lastTime === null){
-			self::$lastTime = getdate();//初期化
-			return false;
-		}
-		$now = getdate();
-		if($now["hours"] !== self::$lastTime["hours"]){
-			if($now["hours"] === 0){//日付が変わったら
-				$message = $now["mon"]."月".$now["mday"]."日(".self::$day[$now["wday"]].") ";
-			}else{
-				$message = $now["mon"]."月".$now["mday"]."日(".self::$day[$now["wday"]].") ";
-			}
-			$message .= $now["hours"]."時になりました";
-			$msg = Chat::Format("§8システム", "§b時報", "§a".$message);
-			Server::getInstance()->broadcastMessage($msg);
-			self::$lastTime = getdate();
-			return true;
-		}
-		self::$lastTime = getdate();
-		return false;
 	}
 
 	const CHATMODE_VOICE = 1;//30マスいない

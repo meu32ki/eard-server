@@ -69,6 +69,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		// Earmazon::setup();
 		License::init();
 		Spawn::init(Connection::getPlace()->isLivingArea());//生活区域ならtrue、資源区域ならfalse
+
 		self::$instance = $this;
 	}
 

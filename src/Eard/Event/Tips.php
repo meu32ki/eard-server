@@ -1,6 +1,7 @@
 <?php
 namespace Eard\Event;
 
+
 class Tips {
 
 	protected static $tips = [

@@ -9,7 +9,8 @@ use pocketmine\scheduler\Task;
 use pocketmine\level\generator\biome\Biome;
 
 # Eard
-use Eard\Event\ChatManager;
+use Eard\Event\Time;
+
 
 class Spawn extends Task{
 	public $spawnType = true;
@@ -45,7 +46,9 @@ class Spawn extends Task{
 	}
 
 	public function onRun($tick){
-		ChatManager::timeSignal();
+		Time::timeSync();
+		Time::timeSignal();
+
 		$level = Server::getInstance()->getDefaultLevel();
 		$time = $level->getTime();
 		$isNight = ($time%24000 >= 14000);
