@@ -2,6 +2,10 @@
 namespace Eard\Utils;
 
 
+# Eard
+use Eard\DBCommunication\DB;
+
+
 /***
 *
 *	データの読み書きをする奴。
@@ -17,12 +21,36 @@ class DataIO{
 		}
 	}
 
-	public static function loadFromDB(){
-
+	/**
+	* 各オブジェクトでひつようになった設定ファイルの読み込みをDBから行う
+	*　@param String $filename  読みたいファイルの名前(class名を設定しておく)
+	* @return Array | false
+	*/
+	public static function loadFromDB($filename){
+		$sql = "SELECT * FROM settings WHERE name = '{$filename}';";
+		$result = DB::get()->query($sql);
+		if($result){
+			while( $row = $result->fetch_assoc() ){
+				return unserialize($row['data']);
+			}
+		}
+		return false;
 	}
 
-	public static function saveIntoDB(){
+	/**
+	* 各オブジェクトでひつようになった設定ファイルのセーブをDBへと行う
+	*　@param String $filename　読みたいファイルの名前(class名を設定しておく)
+	* @param Array　セーブしたいデータ
+	* @return bool
+	*/
+	public static function saveIntoDB($filename, $data){
+		$data = serialize($data);
+		$sql = "INSERT INTO settings (name, data, lastupdate) VALUES ('{$filename}', '{$data}', now())".
+				"ON DUPLICATE KEY UPDATE data = '{$data}', lastupdate = now();";
+		$result = DB::get()->query($sql);
 
+		// echo $sql.": {$result}\n";
+		return $result;
 	}
 
 
