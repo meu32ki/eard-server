@@ -49,7 +49,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 	}
 
 	public function Break(Player $player){
-		return true;
+		return false;
 	}
 
 	public function Delete(){
