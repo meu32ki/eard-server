@@ -76,6 +76,7 @@ class Event implements Listener{
 		#権限関係
 		$main = Main::getInstance();
 		$perms = [
+			"pocketmine.command.gamemode" => false,
 			"pocketmine.command.version" => false,
 			"pocketmine.command.me" => false,
 			"pocketmine.command.tell" => false,
