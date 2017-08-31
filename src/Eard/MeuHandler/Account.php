@@ -729,7 +729,10 @@ class Account implements MeuHandler {
 				if($player && $player->isOnline()){
 					$playerData->updateData();
 				}else{
-					echo "呼び出されただけのデータ";
+					$name = $player->getName();
+					MainLogger::getLogger()->notice("§aAccount: {$name} data §cClosed");
+					unset(self::$accounts[$name]);
+					// echo "呼び出されただけのデータ";
 				}
 			}
 		}

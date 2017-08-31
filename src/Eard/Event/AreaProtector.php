@@ -468,7 +468,6 @@ class AreaProtector{
 
 				//オフラインリストに名前を保存
 				Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
-				Account::save();
 
 				//購入時にセーブ
 				$playerData->addSection($sectionNoX, $sectionNoZ);

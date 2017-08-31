@@ -42,25 +42,11 @@ class Time {
 				$msg = Chat::Format("§8システム", "§bTips", Tips::getRandomTips());
 				Server::getInstance()->broadcastMessage($msg);
 			}
+			if($nowMinutes % 5 == 0){
+				// save 
+				Account::save();
+			}
 		}
-
-		/*
-		$place = Connection::getPlace();
-		if($place->isResoueceArea()){ // 資源
-			
-			// 生活でのデータとる
-			$data = DataIO::loadFromDB("Time");
-
-			$time = $data[1]
-
-			$level = Server::getInstance()->getDefaultLevel();
-			$level->setTime($time);
-		}else{ // 生活
-
-			// 定期的に保存
-			$result = DataIO::saveIntoDB("Time", [$nowtime, time()] );
-		}
-		*/
 	}
 
 	/**
