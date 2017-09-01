@@ -87,6 +87,26 @@ class AreaProtector{
 		}
 	}
 
+	// return int | price;
+	public static function getTotalPrice($playerData, $x, $z){
+		$price = 2000;//最低価格(土地を所有していない場合)
+		$address = self::getHome($playerData);
+		if($address === null){//自宅なし
+			return $price;
+		}
+		$adX = self::calculateSectionNo($address[0]);
+		$adZ = self::calculateSectionNo($address[1]);
+		$secX = self::calculateSectionNo($x);
+		$secZ = self::calculateSectionNo($z);
+		$count = abs($secX - $adX) + abs($secZ - $adZ) + count($playerData->getSectionArray());
+		$mag = 1 + log10($count)*2;
+		return ($price*$mag);
+	}
+
+	public static function getHome($playerData){
+		$address = ($ad = $playerData->getAddress()) ? $ad : null;
+		return $address;
+	}
 
 	// return int | sectionno;
 	public static function calculateSectionNo($xorz){
