@@ -724,12 +724,11 @@ class Account implements MeuHandler {
 	public static function save(){
 		//全員分のデータセーブ
 		if(self::$accounts){
-			foreach(self::$accounts as $playerData){
+			foreach(self::$accounts as $name => $playerData){
 				$player = $playerData->getPlayer();
 				if($player && $player->isOnline()){
 					$playerData->updateData();
 				}else{
-					$name = $player->getName();
 					MainLogger::getLogger()->notice("§aAccount: {$name} data §cClosed");
 					unset(self::$accounts[$name]);
 					// echo "呼び出されただけのデータ";
