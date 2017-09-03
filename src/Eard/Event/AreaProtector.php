@@ -68,7 +68,6 @@ class AreaProtector{
 		}
 	}
 
-
 	/**
 	*	資源において、設置できるか 設置できる場合はtrue
 	*	@param int ItemId
@@ -85,27 +84,6 @@ class AreaProtector{
 				return true;
 			break;
 		}
-	}
-
-	// return int | price;
-	public static function getTotalPrice($playerData, $x, $z){
-		$price = 2000;//最低価格(土地を所有していない場合)
-		$address = self::getHome($playerData);
-		if($address === null){//自宅なし
-			return $price;
-		}
-		$adX = self::calculateSectionNo($address[0]);
-		$adZ = self::calculateSectionNo($address[1]);
-		$secX = self::calculateSectionNo($x);
-		$secZ = self::calculateSectionNo($z);
-		$count = abs($secX - $adX) + abs($secZ - $adZ) + count($playerData->getSectionArray());
-		$mag = 1 + log10($count)*2;
-		return ($price*$mag);
-	}
-
-	public static function getHome($playerData){
-		$address = ($ad = $playerData->getAddress()) ? $ad : null;
-		return $address;
 	}
 
 	// return int | sectionno;
@@ -556,7 +534,8 @@ class AreaProtector{
 	*	@param int | calculateSectionNo でえられるzの値
 	*	@return int | その土地の価格 0が帰る場合は、販売できないということに。
 	*/
-	public static function getTotalPrice(Account $playerData, $sectionNoX, $sectionNoZ){
+	//新しい関数に変更
+/*	public static function getTotalPrice(Account $playerData, $sectionNoX, $sectionNoZ){
 		$pofs = self::getPriceOf($sectionNoX, $sectionNoZ);
 		if($pofs == 0) return 0;
 		//priceが0の場合は、うらない。
@@ -575,6 +554,28 @@ class AreaProtector{
             //誰かの土地
             return $taxUpToPerson;
         }
+	}*/
+
+	// return int | price;
+	public static function getTotalPrice(Account $playerData, $sectionNoX, $sectionNoZ){
+		$price = 2000;//最低価格(土地を所有していない場合)
+		$address = self::getHome($playerData);
+		if($address === null){//自宅なし
+			return $price;
+		}
+		$adX = self::calculateSectionNo($address[0]);
+		$adZ = self::calculateSectionNo($address[1]);
+		/* 引数変更で削除
+		$secX = self::calculateSectionNo($x);
+		$secZ = self::calculateSectionNo($z);*/
+		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getSectionArray());
+		$mag = 1 + log10($count)*2;
+		return ($price*$mag);
+	}
+
+	public static function getHome($playerData){
+		$address = ($ad = $playerData->getAddress()) ? $ad : null;
+		return $address;
 	}
 
 	/**
