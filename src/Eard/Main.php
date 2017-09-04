@@ -7,7 +7,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\event\Listener;
 use pocketmine\plugin\PluginBase;
-
+use pocketmine\item\Item;
 use pocketmine\permission\Permission;
 
 # Command
@@ -157,27 +157,60 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 				if(isset($a[0])){
 					switch($a[0]){
 						case "sell": // プレイヤーがこの値段で売れる
-							if(5 <= count($a)){
-								$id = $a[1]; $meta = $a[2]; $amount = $a[3]; $price = $a[4]; 
+							$cnt = count($a);
+							if(4 <= $cnt){
+								$nometa = $cnt == 4 ? true : false;// パラメータが4つしかないときにはメタ値を省略
+								$id = $a[1];
+								$meta = !$nometa ? $a[2] : 0;
+								$amount = !$nometa ? $a[3] : $a[2];
+								$price = !$nometa ? $a[4] : $a[3];
 								$result = Earmazon::addSellUnit($id, $meta, $amount, $price, false);
 								$msg = $result ? "追加した" : "追加できなかった";
 								$s->sendMessage(Chat::SystemToPlayer($msg));
 							}else{
-								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea sell <id> <meta> <amount> <price>"));								
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea sell <id> <meta> <amount> <price>"));
 							}
 						break;
 						case "buy": // プレイヤーがこの値段で買える
-							if(5 <= count($a)){
-								$id = $a[1]; $meta = $a[2]; $amount = $a[3]; $price = $a[4]; 
+							$cnt = count($a);
+							if(4 <= $cnt){
+								$nometa = $cnt == 4 ? true : false;// パラメータが4つしかないときにはメタ値を省略
+								$id = $a[1];
+								$meta = !$nometa ? $a[2] : 0;
+								$amount = !$nometa ? $a[3] : $a[2];
+								$price = !$nometa ? $a[4] : $a[3];
 								$result = Earmazon::addSellUnit($id, $meta, $amount, $price, false);
 								$msg = $result ? "追加した" : "追加できなかった";
 								$s->sendMessage(Chat::SystemToPlayer($msg));
 							}else{
-								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea buy <id> <meta> <amount> <price>"));								
+								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea buy <id> <meta> <amount> <price>"));
 							}
 						break;
 						case "item":
 
+						break;
+						case "give":
+							$playerData = Account::get($s);
+							if( $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL) ){
+								$cnt = count($a);
+								if(3 <= $cnt){
+									$nometa = $cnt == 3 ? true : false;// パラメータが3つしかないときにはメタ値を省略
+									$id = $a[1];
+									$meta = !$nometa ? $a[2] : 0;
+									$amount = !$nometa ? $a[3] : $a[2];
+									if( Earmazon::removeFromStorage($id, $meta, $amount) ){
+										$item = Item::get($id, $meta, $amount);
+										$s->getInventory()->addItem($item);
+									}else{
+										$storageamount = Earmazon::getStorageAmount($id, $meta);
+										$s->sendMessage(Chat::SystemToPlayer("Earmazonのストレージにそんなに入ってない 入ってるのは {$storageamount}個"));
+									}
+								}else{
+									$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /ea give <id> <meta> <amount>"));
+								}
+							}else{
+								$s->sendMessage(Chat::SystemToPlayer("政府関係者でないので使えません"));
+							}
 						break;
 					}
 					return true;

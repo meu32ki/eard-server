@@ -77,6 +77,7 @@ class Earmazon {
 		self::addSellUnit(Item::COAL, 0, 100, 30);
 		self::addSellUnit(Item::EMERALD, 0, 50, 5000);
 
+
 		// プレイヤーがこの価格で購入できる
 		$db->query("truncate earmazon_itembuylist;");
 		self::addBuyUnit(Item::LOG, 0, 100, 50);
@@ -92,8 +93,8 @@ class Earmazon {
 		self::addBuyUnit(Item::ENDER_CHEST, 0, 100, 10000);
 		self::addBuyUnit(Item::BREWING_STAND, 0, 5, 10000);
 
-		MainLogger::getLogger()->notice("§aEarmazon: 完了");
 
+		MainLogger::getLogger()->notice("§aEarmazon: 完了");
 		self::check();
 	}
 
