@@ -32,6 +32,7 @@ use Eard\DBCommunication\Earmazon;
 # Enemys
 use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Spawn;
+use Eard\Enemys\NPC;
 
 /***
 *
@@ -338,7 +339,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			case "npc":
 				if($s instanceof Player && count($a) >= 1){
 					$s->sendMessage(Chat::SystemToPlayer("召喚したで"));
-					EnemyRegister::summon($s->getLevel(), $s->x, $s->y, $s->z, EnemyRegister::loadSkinData('Buriki'), 'Standard_Custom', $a[0]);
+					NPC::summon($s->getLevel(), $s->x, $s->y, $s->z, EnemyRegister::loadSkinData('Buriki'), 'Standard_Custom', $a[0]);
 					return true;
 				}else{
 					$s->sendMessage(Chat::SystemToPlayer("コンソールじゃ無理"));
