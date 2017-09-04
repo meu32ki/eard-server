@@ -150,10 +150,10 @@ class Menu implements ChatInput {
 				if( Connection::getPlace()->isResourceArea() ){
 					$ar = [
 						["§7[[ メニュー ]]",false],
+						["アイテムボックス",1],
 						["ステータス照会",2],
 						["チャットモード変更",20],
 						["エリア転送",30],
-						["アイテムボックス",1],
 						["μを送る", 45],
 						["§f{$uma} メニューを閉じる",false],
 					];	
@@ -163,6 +163,7 @@ class Menu implements ChatInput {
 
 					$ar = [
 						["§7[[ メニュー ]]",false],
+						["アイテムボックス",1],
 						["ステータス照会",2],
 						["チャットモード変更",20],
 						["GPS (座標情報)",3],
@@ -177,13 +178,11 @@ class Menu implements ChatInput {
 */
 			case 1:
 				if($isFirst){
+					$this->close();
 					$itembox = $playerData->getItemBox();
-					$player->getInventory()->sendContents(); // アイテムが今消えているので
 					$player->addWindow($itembox);
 				}
-				$ar = [
-					["§f{$uma} 戻る",false],
-				];
+				return true; // メニューとかは送らせない
 			break;
 /*
 *	ステータス | 2
