@@ -51,6 +51,10 @@ commands:
   description: "スキンをエンコードして保存します"
   usage: "/saveskin <name>"
   permission: eard
+ npc:
+  description: "NPCを出します"
+  usage: "/npc <name>"
+  permission: eard
 permissions:
  eard:
   default: op
