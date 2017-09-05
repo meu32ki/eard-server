@@ -44,6 +44,9 @@ class EnemyRegister{
 		self::register(Ari::class, Ari::getEnemyType());
 		self::register(HaneAri::class, HaneAri::getEnemyType());
 		self::register(Kamadouma::class, Kamadouma::getEnemyType());
+
+		//NPC
+		Entity::registerEntity(NPC::class, true);
 		self::$instance = $this;
 	}
 
