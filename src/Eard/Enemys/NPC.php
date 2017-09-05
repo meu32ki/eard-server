@@ -3,6 +3,13 @@ namespace Eard\Enemys;
 
 use pocketmine\entity\Human;
 
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\entity\Entity;
+
 /***
 *
 *	NPCの設置だけできるやつ
