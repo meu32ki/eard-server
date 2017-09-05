@@ -46,7 +46,7 @@ use Eard\Utils\ItemName;
 # Enemy
 use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Humanoid;
-
+use Eard\Enemys\NPC;
 
 /***
 *
@@ -439,6 +439,14 @@ class Event implements Listener{
 			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){
 				$damager->attackTo($e);
 			}
+
+			if($victim instanceof NPC && $damager instanceof Player){
+				$message = "やぁ!オイラは".$victim->getNameTag()."っていうんだ! よろしくな！";
+				$damager->sendMessage(Chat::Format($victim->getNameTag(), "§6個人(".$player->getDisplayName().")", $message));
+				MainLogger::getLogger()->info(Chat::Format($victim->getNameTag(), "§6個人(".$player->getDisplayName().")", $message));
+				$e->setCancelled(true);
+			}
+
 		}
 		return true;
 	}
