@@ -58,24 +58,37 @@ class Account implements MeuHandler {
     /**
     *	名前から、上記のオブジェクトを取得する。
     *	@param String | name
-    *	@param bool | オフライン時でも、読ませる必要があるか。
     *	@return Account or null
     */
-	public static function getByName($name, $forceLoad = false){
+	public static function getByName($name){
 		$name = strtolower($name);
-    	if(!isset(self::$accounts[$name])){
-    		if($forceLoad){
-    			//オフライン用のデータようにしか使っていない。
-    			// todo 20170523 このままでは、サバ内にいないプレイヤーが所有する土地で設置破壊するたびにでーたをnewしてしまうので、なんとかしなくては。
-	    		$account = new Account();
-	    		self::$accounts[$name] = $account;
+	    	if(!isset(self::$accounts[$name])){
+	    		if($forceLoad){
+	    			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
+		    		$account = new Account();
+		    		self::$accounts[$name] = $account;
 				return $account;
-    		}
-    		return null;
-    	}
-    	return self::$accounts[$name];
-    }
+	    		}
+	    		return null;
+	    	}
+	    	return self::$accounts[$name];
+	}
 
+
+    	/*
+    	*/
+    	public static function getByUniqueNo($uniqueNo){
+    		// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
+		$account = new Account();
+		$account->loadData();
+		self::$accounts[$name] = $account;
+    		/*
+    		foreach(self::$accounts as $playerData){
+    			if($playerData->getUniqueNo() === $uniqueNo) return $playerData;
+    		}
+    		*/
+    		return $account;
+    	}
 
     /**
     *	メールでの処理かもしれないが用途が不明 動作確認してるのかわからない
@@ -259,7 +272,8 @@ class Account implements MeuHandler {
 
 	// @meuHandler
 	public function getName(){
-		return $this->getPlayer()->getName();
+		// オンラインであれば正確な名前を、オフラインであればdbのなまえを 分ける必要がなぜあるのか？は、大文字小文字の問題。
+		return $this->getPlayer() instanceof Player ? $this->getPlayer()->getName() : $this->name;
 	}
 
 	/**
@@ -587,6 +601,7 @@ class Account implements MeuHandler {
 
 					// めもりにてんかい
 					$this->data = $data; //メモリにコンニチハ
+					$ths->name = $name;
 
 					// Meuはwebからとか関係なしに展開する
 					$this->meu = Meu::get($this->data[1], $this);
@@ -713,6 +728,7 @@ class Account implements MeuHandler {
 	*	オフライン用
 	*	このclass::Accountで使っている変数を保存
 	*/
+
 	public static function load(){
 		$data = DataIO::load('Account');
 		if($data){
