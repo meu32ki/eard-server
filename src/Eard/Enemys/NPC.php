@@ -1,7 +1,15 @@
 <?php
 namespace Eard\Enemys;
 
+use pocketmine\level\Level;
 use pocketmine\entity\Human;
+use pocketmine\entity\Entity;
+
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 
 /***
 *
