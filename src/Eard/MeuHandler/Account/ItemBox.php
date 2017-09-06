@@ -33,7 +33,7 @@ class ItemBox extends ChestIO {
 		$this->playerData = $playerData;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return $this->playerData->getPlayer()->getName()."専用 アイテムボックス";
 	}
 }
