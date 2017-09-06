@@ -33,6 +33,7 @@ use Eard\DBCommunication\Earmazon;
 use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Spawn;
 use Eard\Enemys\NPC;
+use Eard\MeuHandler\Account\License\Recipe;
 
 /***
 *
@@ -55,6 +56,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			//正常にmysqlにつなげた場合のみ。
 			$this->reconnect();
 		}
+
+		# 釣り変更
+		Recipe::changeFishes();
 	}
 
 	public function reconnect(){

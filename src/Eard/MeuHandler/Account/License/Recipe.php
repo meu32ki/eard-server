@@ -3,7 +3,8 @@ namespace Eard\MeuHandler\Account\License;
 
 use pocketmine\network\protocol\CraftingDataPacket;
 use pocketmine\Player;
-
+use pocketmine\entity\FishingHook;
+use pocketmine\item\Item;
 use Eard\MeuHandler\Account;
 
 /***
@@ -11,6 +12,16 @@ use Eard\MeuHandler\Account;
 *	ライセンスによってクラフトできるやつを制限
 */
 class Recipe {
+
+	public static function changeFishes(){
+		$fishes = [
+			Item::RAW_FISH, 
+			Item::RAW_SALMON, 
+			Item::CLOWN_FISH, 
+			Item::PUFFER_FISH
+		];
+		FishingHook::setFishes($fishes);
+	}
 
 	//こいつでプレイヤーごとにクラフトできるやつ返して
 	public static function getRecipe($player){
