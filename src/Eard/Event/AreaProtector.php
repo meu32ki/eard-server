@@ -301,7 +301,7 @@ class AreaProtector{
 					}else{
 						//所有者本人でない。権限が、所有者から与えられているか。
 						$ownerName = self::getNameFromOwnerNo($ownerNo);
-						if($owner = Account::getByName($ownerName, true)){
+						if($owner = Account::getByName($ownerName)){
 							if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
 								if(!$nomessage) $player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
 								return false;
