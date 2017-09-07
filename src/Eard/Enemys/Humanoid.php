@@ -41,6 +41,7 @@ class Humanoid extends Human{
 	protected $gravity = 0.14;
 	public $attackingTick = 0;
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
+	public $isDrown = true;//継承先でfalseにすると水没にダメージを受けない
 	public $returnTime = 240;//出現から自動で消えるまでの時間(秒)
 	public $spawnTime = 0;
 	public static $ground = true;
@@ -153,7 +154,7 @@ class Humanoid extends Human{
 					return true;
 				}
 				$weather = $this->level->getWeather()->getWeather();
-				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || (($id = $this->level->getBlock($this)->getId()) === 9 || $id === 8)) && $this->getHealth() > 0){
+				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || (($id = $this->level->getBlock($this)->getId()) === 9 || $id === 8) && $this->isDrown) && $this->getHealth() > 0){
 					$this->deadTicks = 0;
 					$this->attack(2, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
 				}

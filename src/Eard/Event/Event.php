@@ -18,6 +18,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerFishEvent;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -47,6 +48,8 @@ use Eard\Utils\ItemName;
 use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Humanoid;
 use Eard\Enemys\NPC;
+use Eard\Enemys\Unagi;
+use Eard\Enemys\AI;
 
 /***
 *
@@ -125,7 +128,15 @@ class Event implements Listener{
 		}
 	}
 
-
+	public function F(PlayerFishEvent $e){
+		$item = $e->getItem();
+		if($item->getId() === 280){
+			$hook = $e->getHook();
+			$unagi = Unagi::summon($e->getPlayer()->getLevel(), $hook->x, $hook->y, $hook->z);
+			AI::jump($unagi);
+			$e->setCancelled(true);
+		}
+	}
 
 	public function PacketReceive(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();
