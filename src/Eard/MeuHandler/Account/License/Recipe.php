@@ -14,12 +14,20 @@ use Eard\MeuHandler\Account;
 class Recipe {
 
 	public static function changeFishes(){
-		$fishes = [
-			Item::RAW_FISH, 
-			Item::RAW_SALMON, 
-			Item::CLOWN_FISH, 
-			Item::PUFFER_FISH
+		$list = [
+			[Item::RAW_FISH, 60], 
+			[Item::RAW_SALMON, 25],
+			[Item::PUFFER_FISH, 13],
+			[Item::CLOWN_FISH, 2],
 		];
+		$fishes = [];
+		foreach($list as $key => $item){
+			$id = $item[0];
+			$count = $item[1];
+			for($i = 0; $i < $count; $i++){
+				$fishes[] = $id;
+			}
+		}
 		FishingHook::setFishes($fishes);
 	}
 

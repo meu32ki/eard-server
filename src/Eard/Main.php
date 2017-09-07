@@ -9,6 +9,7 @@ use pocketmine\event\Listener;
 use pocketmine\plugin\PluginBase;
 use pocketmine\item\Item;
 use pocketmine\permission\Permission;
+use pocketmine\entity\FishingHook;
 
 # Command
 use pocketmine\command\Command;
@@ -59,6 +60,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# 釣り変更
 		Recipe::changeFishes();
+		FishingHook::setPower(4);
 	}
 
 	public function reconnect(){
