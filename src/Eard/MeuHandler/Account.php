@@ -275,6 +275,7 @@ class Account implements MeuHandler {
 		// オンラインであれば正確な名前を、オフラインであればdbのなまえを 分ける必要がなぜあるのか？は、大文字小文字の問題。
 		return $this->getPlayer() instanceof Player ? $this->getPlayer()->getName() : $this->name;
 	}
+	private $name;
 
 	/**
 	*	何かをするのに必要なパーミッションと言っていいだろう。
@@ -601,7 +602,7 @@ class Account implements MeuHandler {
 
 					// めもりにてんかい
 					$this->data = $data; //メモリにコンニチハ
-					$ths->name = $name;
+					$this->name = $name;
 
 					// Meuはwebからとか関係なしに展開する
 					$this->meu = Meu::get($this->data[1], $this);
