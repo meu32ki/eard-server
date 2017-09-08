@@ -397,7 +397,12 @@ class AreaProtector{
 		
 		$playerData = Account::get($player);
 		if($uniqueNo = $playerData->getUniqueNo()){
-			//購入できるか確認
+			//購入できるか確認	
+
+			// 念のため一応確認 オンラインでないと買えない	
+			if( !$playerData->isOnline() ){
+				return false;
+			}
 
 			// すでに持ってるか
 			if(self::getOwnerNoOfSection($sectionNoX, $sectionNoZ)){
@@ -459,13 +464,13 @@ class AreaProtector{
 		if(self::$leftSection <= 0){
 			return false;
 		}else{
-			if( ($player = $playerData->getPlayer()) instanceof Player){
-		        //新規セクションデーター
+			if( $playerData->isOnline() ){
+				//新規セクションデーター
 				$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 				//残りの数を減らす 販売数
-		        --self::$leftSection;
+				--self::$leftSection;
 
 				//オフラインリストに名前を保存
 				Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
@@ -488,7 +493,7 @@ class AreaProtector{
 	public static function registerSectionAsGovernment($player, $sectionNoX, $sectionNoZ){
 		$uniqueNo = 100000;
 
-        //新規セクションデーター
+		//新規セクションデーター
 		$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
 		self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 

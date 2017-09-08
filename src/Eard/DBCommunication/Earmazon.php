@@ -324,7 +324,7 @@ class Earmazon {
 			return false;
 		}
 
-		if($itemBox = $playerData->getItemBox()){
+		if($playerData->isOnline()){
 			// アイテムボックスが展開されている = pmmp
 			/*
 				インベントリにItemをaddItemで投げてもいいんだけど、なんか統一性ないし、
@@ -705,8 +705,6 @@ class Earmazon {
 			echo "skipped\n";
 		}
 		echo "\n\n";
-
-
 	}
 
 }

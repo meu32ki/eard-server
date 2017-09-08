@@ -63,13 +63,10 @@ class Account implements MeuHandler {
 	public static function getByName($name){
 		$name = strtolower($name);
 	    	if(!isset(self::$accounts[$name])){
-	    		if($forceLoad){
-	    			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
-		    		$account = new Account();
-		    		self::$accounts[$name] = $account;
-				return $account;
-	    		}
-	    		return null;
+    			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
+	    		$account = new Account();
+	    		self::$accounts[$name] = $account;
+			return $account;
 	    	}
 	    	return self::$accounts[$name];
 	}
@@ -90,26 +87,6 @@ class Account implements MeuHandler {
     		return $account;
     	}
 
-    /**
-    *	メールでの処理かもしれないが用途が不明 動作確認してるのかわからない
-    *	発見 2017/6/30
-	*	@param None
-    *	@return Account[]
-    */
-	public static function getOnlineUsers(){
-		$players = Server::getInstance()->getOnlinePlayers();
-
-		$accounts = [];
-
-		foreach($players as $player) {
-			$accounts[] = Account::get($player);
-		}
-
-		return $accounts;
-	}
-
-
-
 /* Player
 */
 
@@ -129,6 +106,13 @@ class Account implements MeuHandler {
 	private $player;
 
 
+	/**
+	*	オフライン用ではないことを確かめるのにつかえ
+	*	@return bool
+	*/
+	public function isOnline(){
+		return $this->player instanceof Player && $this->player->isOnline();
+	}
 
 /* Block管理
 */
