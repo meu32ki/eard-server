@@ -1,6 +1,8 @@
 <?php
 namespace Eard\Enemys;
 
+
+# Basic
 use pocketmine\level\Level;
 use pocketmine\entity\Human;
 use pocketmine\entity\Entity;
@@ -11,11 +13,15 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 
+# Eard
+use Eard\Event\BlockObject\ChatInput;
+
+
 /***
 *
 *	NPCの設置だけできるやつ
 */
-class NPC extends Human{
+class NPC extends Human implements ChatInput {
 
 	public static function summon($level, $x, $y, $z, $skinData, $skinId, $custom_name = null){
 		$nbt = new CompoundTag("", [
@@ -55,5 +61,31 @@ class NPC extends Human{
 		parent::__construct($level, $nbt);
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_CAN_SHOW_NAMETAG, true);
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG, true);
+	}
+
+	public function Tap(Player $player){
+		// ここで条件分岐
+		// とりあえず実装 20170908
+		if(true){
+			$this->singleTap($player);
+		}else{
+			$this->doubleTap($player);
+		}
+
+	}
+
+	// NPC会話フレームワーク
+	public function singleTap(){
+
+	}
+
+	// NPC会話フレームワーク
+	public function doubleTap(){
+
+	}
+
+	// @ChatInput
+	public function Chat(Player $player, String $txt){
+
 	}
 }

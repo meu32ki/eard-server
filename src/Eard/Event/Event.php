@@ -441,9 +441,12 @@ class Event implements Listener{
 			}
 
 			if($victim instanceof NPC && $damager instanceof Player){
+				/*
 				$message = "やぁ!オイラは".$victim->getNameTag()."っていうんだ! よろしくな！";
 				$damager->sendMessage(Chat::Format($victim->getNameTag(), "§6個人(".$damager->getDisplayName().")", $message));
 				MainLogger::getLogger()->info(Chat::Format($victim->getNameTag(), "§6個人(".$damager->getDisplayName().")", $message));
+				*/
+				$victim->Tap($damager);
 				$e->setCancelled(true);
 			}
 
