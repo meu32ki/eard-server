@@ -9,6 +9,7 @@ use pocketmine\event\Listener;
 use pocketmine\plugin\PluginBase;
 use pocketmine\item\Item;
 use pocketmine\permission\Permission;
+use pocketmine\entity\FishingHook;
 
 # Command
 use pocketmine\command\Command;
@@ -33,6 +34,7 @@ use Eard\DBCommunication\Earmazon;
 use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Spawn;
 use Eard\Enemys\NPC;
+use Eard\MeuHandler\Account\License\Recipe;
 
 /***
 *
@@ -55,6 +57,10 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			//正常にmysqlにつなげた場合のみ。
 			$this->reconnect();
 		}
+
+		# 釣り変更
+		Recipe::changeFishes();
+		FishingHook::setPower(4);
 	}
 
 	public function reconnect(){
