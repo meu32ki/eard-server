@@ -178,11 +178,25 @@ class Connection {
 
 			// この鯖をオンラインと記録
 			$place->makeOnline();
+
+			// かこのぷれいやーばいばい
+			$place->erase();
 		}
 
 		// 他のサバのIPやportを取得
 		foreach(self::$places as $placeNo => $p){
 			$p->loadAddrInfo();
+		}
+	}
+
+	public static function close(){
+		if(self::$placeNo){
+			// オフラインと記録する処理
+			$place = self::$places[self::$placeNo];
+			$place->makeOffline();
+
+			// 一応全員消し去る
+			$place->erase();
 		}
 	}
 

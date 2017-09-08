@@ -222,7 +222,7 @@ class Place {
 			$result = DB::get()->query($sql);
 			return $result;
 		}else{
-			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。Method Place::recordLogin() failed.");
 		}
 	}
 
@@ -239,7 +239,7 @@ class Place {
 			$result = DB::get()->query($sql);
 			return $result;
 		}else{
-			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。プレイヤーがログインしたということを記録できませんでした");
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。Method Place::recordLogout() failed.");
 		}
 	}
 
@@ -249,11 +249,33 @@ class Place {
 	*	@param Int 		場所番号(生活区域 = 1, 資源区域 = 2)
 	*	@return bool 	クエリが成功したか
 	*/
+	/*
+	// duplicated 20170907
 	private function recordUpdate($name){
 		$place = $this->place; // 場所番号/鯖番号 (生活区域 = 1, 資源区域 = 2)
 		$sql = "UPDATE statistics_player SET place = {$place} WHERE name = '{$name}'; ";
 		$result = DB::get()->query($sql);
 		return $result;
 	}
+	*/
+
+	/**
+	*	そのplaceにいる、と記録されているプレイヤーを全削除する
+	*	@param String 	プレイヤー名
+	*	@param Int 		場所番号(生活区域 = 1, 資源区域 = 2)
+	*	@return int 	-1 ~ 1 (-1...取得/接続不可 0...クエリ失敗 1...クエリ成功)
+	*/
+	public function erase(){
+		$place = $this->place; // 場所番号/鯖番号 (生活区域 = 1, 資源区域 = 2)
+		if($place){
+			$sql = "DELETE FROM statistics_player WHERE place = {$place}; ";
+			$result = DB::get()->query($sql);
+			return $result;
+		}else{
+			MainLogger::getLogger()->notice("§ePlace: このサーバーのplaceが設定されていません。Method Place::erase() failed.");
+		}
+	}
+
+
 
 }

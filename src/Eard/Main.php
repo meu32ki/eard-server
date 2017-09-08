@@ -89,7 +89,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		AreaProtector::save();
 
 		# DB系
-		Connection::getPlace()->makeOffline();
+		Connection::close();
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){
