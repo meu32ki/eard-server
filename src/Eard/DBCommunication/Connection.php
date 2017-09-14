@@ -153,7 +153,7 @@ class Connection {
 /*	クラスで使うデータ
 */
 
-	public static function load(){
+	public static function load(bool $fromweb = false){
 		$data = DataIO::load('Connection');
 		if($data){
 			self::$placeNo = (int) $data[0];
@@ -161,14 +161,13 @@ class Connection {
 		}else{
 			MainLogger::getLogger()->notice("§eConnection: Cannnot load place data. You should set your 'connection place' immedeately!");
 		}
-
 		self::$places[1] = new Place(1);
 		self::$places[2] = new Place(2);
 		self::$places[8] = new Place(8); //開発用のさばの場合
 		self::$places[9] = new Place(9); //開発用のさばの場合
 
 		// この鯖の情報を書き込む。オンラインにする。
-		if(self::$placeNo){
+		if(!$fromweb and self::$placeNo){
 			$place = self::$places[self::$placeNo];
 
 			// この鯖のIPをportの情報を書き込み
