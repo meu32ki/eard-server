@@ -81,7 +81,7 @@ class Unagi extends Humanoid implements Enemy{
 	public static function getBiomes() : array{
 		return [
 			//雨なし
-			Biome::HELL => true, 
+			//Biome::HELL => true, 
 			Biome::END => true,
 			//Biome::DESERT => true,
 			//Biome::DESERT_HILLS => true,
@@ -91,19 +91,19 @@ class Unagi extends Humanoid implements Enemy{
 			//雨あり
 			//Biome::OCEAN => true,
 			//Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
-			Biome::TAIGA => true,
-			Biome::SWAMP => true,
+			//Biome::MOUNTAINS => true,
+			//Biome::FOREST => true,
+			//Biome::TAIGA => true,
+			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			Biome::ICE_PLAINS => true,
+			//Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	public static function getSpawnRate() : int{
-		return 32;
+		return 50;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -180,7 +180,7 @@ class Unagi extends Humanoid implements Enemy{
 				[Item::PRISMARINE_CRYSTALS, 0, 2],
 				[Item::PRISMARINE_CRYSTALS, 0, 2],
 				[Item::PRISMARINE_CRYSTALS, 0, 2],
-				[Item::PRISMARINE_CRYSTALS, 0, 1],
+				[Item::SPONGE, 1, 1],
 				[Item::PUFFER_FISH, 0, 1],
 				[Item::EMERALD , 0, 1],
 			]
