@@ -131,26 +131,26 @@ class Unagi extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::RAW_FISH, 0, 1],
+					[Item::CHORUS_FRUIT, 0, 3],
 				],
 			],
 			[100, 1,
 				[
-					[Item::PRISMARINE_CRYSTALS, 0, 1],
+					[Item::PRISMARINE_CRYSTALS, 0, 3],
 				],
 			],
 			[75, 2,
 				[
-					[Item::RAW_SALMON, 0, 1],
-					[Item::RAW_FISH, 0, 2],
-					[Item::PRISMARINE_CRYSTALS, 0, 1],
+					[Item::ICE, 0, 6],
+					[Item::CHORUS_FRUIT, 0, 2],
+					[Item::PRISMARINE_CRYSTALS, 0, 3],
 					[Item::PRISMARINE_CRYSTALS, 0, 2],
 				]
 			],
 			[60, 2,
 				[
-					[Item::RAW_FISH, 0, 1],
-					[Item::RAW_SALMON, 0, 1],
+					[Item::CHORUS_FRUIT, 0, 1],
+					[Item::ICE, 0, 8],
 					[Item::PRISMARINE_CRYSTALS, 0, 1],
 				],
 			],
@@ -175,13 +175,12 @@ class Unagi extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
+				[Item::DIAMOND , 0, 1],
 				[Item::IRON_INGOT, 0, 1],
 				[Item::PRISMARINE_CRYSTALS, 0, 3],
 				[Item::PRISMARINE_CRYSTALS, 0, 2],
-				[Item::PRISMARINE_CRYSTALS, 0, 2],
-				[Item::PRISMARINE_CRYSTALS, 0, 2],
 				[Item::SPONGE, 1, 1],
-				[Item::PUFFER_FISH, 0, 1],
+				[Item::EYE_OF_ENDER, 0, 1],
 				[Item::EMERALD , 0, 1],
 			]
 		];
