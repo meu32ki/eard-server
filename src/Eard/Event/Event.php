@@ -49,6 +49,7 @@ use Eard\Enemys\EnemyRegister;
 use Eard\Enemys\Humanoid;
 use Eard\Enemys\NPC;
 use Eard\Enemys\Unagi;
+use Eard\Enemys\Umimedama;
 use Eard\Enemys\AI;
 
 /***
@@ -130,11 +131,22 @@ class Event implements Listener{
 
 	public function F(PlayerFishEvent $e){
 		$item = $e->getItem();
-		if($item->getId() === 280){
-			$hook = $e->getHook();
-			$unagi = Unagi::summon($e->getPlayer()->getLevel(), $hook->x, $hook->y, $hook->z);
-			AI::jump($unagi);
-			$e->setCancelled(true);
+		$hook = $e->getHook();
+		switch($item->getId()){
+			case 280:
+				if(Connection::getPlace()->isLivingArea()){
+					$wiht = Umimedama::summon($e->getPlayer()->getLevel(), $hook->x, $hook->y, $hook->z);
+				}else{
+					$wiht = Unagi::summon($e->getPlayer()->getLevel(), $hook->x, $hook->y, $hook->z);					
+				}
+				AI::jump($wiht);
+				$e->setCancelled(true);
+			break;
+			case 281:
+				$wiht = Umimedama::summon($e->getPlayer()->getLevel(), $hook->x, $hook->y, $hook->z);
+				AI::jump($wiht);
+				$e->setCancelled(true);
+			break;
 		}
 	}
 

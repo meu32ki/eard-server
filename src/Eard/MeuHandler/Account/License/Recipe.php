@@ -19,7 +19,8 @@ class Recipe {
 			[Item::RAW_SALMON, 25],
 			[Item::PUFFER_FISH, 13],
 			[Item::CLOWN_FISH, 2],
-			[Item::STICK, 1]
+			[Item::STICK, 2],
+			[Item::BOWL, 4]
 		];
 		$fishes = [];
 		foreach($list as $key => $item){
