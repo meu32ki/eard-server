@@ -28,6 +28,9 @@ class EnemyRegister{
 	const TYPE_KAMADOUMA = 12;
 	const TYPE_UNAGI = 13;
 	const TYPE_BURIKI = 14;
+	const TYPE_GINMEKKI = 15;
+	const TYPE_KINMEKKI = 16;
+	const TYPE_MUKURO_TONBO = 17;
 
 	private static $instance = null;
 	public static $register = [];
@@ -48,6 +51,9 @@ class EnemyRegister{
 		self::register(Kamadouma::class, Kamadouma::getEnemyType());
 		self::register(Unagi::class, Unagi::getEnemyType());
 		self::register(Buriki::class, Buriki::getEnemyType());
+		self::register(Ginmekki::class, Ginmekki::getEnemyType());
+		self::register(Kinmekki::class, Kinmekki::getEnemyType());
+		self::register(Mukurotonbo::class, Mukurotonbo::getEnemyType());
 
 		//NPC
 		Entity::registerEntity(NPC::class, true);

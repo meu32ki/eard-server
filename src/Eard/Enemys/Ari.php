@@ -129,7 +129,7 @@ class Ari extends Humanoid implements Enemy{
 			//雨なし
 			//Biome::HELL => true, 
 			//Biome::END => true,
-			//Biome::DESERT => true,
+			Biome::DESERT => true,
 			//Biome::DESERT_HILLS => true,
 			//Biome::MESA => true,
 			//Biome::MESA_PLATEAU_F => true,

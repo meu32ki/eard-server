@@ -20,9 +20,7 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\particle\DestroyBlockParticle;
-use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\particle\SpellParticle;
-use pocketmine\level\sound\GhastSound;
 use pocketmine\level\generator\biome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
@@ -41,31 +39,29 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Unagi extends Humanoid implements Enemy{
+class Mukurotonbo extends Humanoid implements Enemy{
 
-	protected $gravity = 0.025;
+	protected $gravity = 0;
 	public $attackingTick = 0;
-	public $rainDamage = false;
-	public $isDrown = false;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ウナギ";
+		return "ムクロトンボ";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_UNAGI;
+		return EnemyRegister::TYPE_MUKURO_TONBO;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 60;
+		return 35;
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 2;
+		return 1.5;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -83,7 +79,7 @@ class Unagi extends Humanoid implements Enemy{
 			//雨なし
 			//Biome::HELL => true, 
 			Biome::END => true,
-			//Biome::DESERT => true,
+			Biome::DESERT => true,
 			//Biome::DESERT_HILLS => true,
 			//Biome::MESA => true,
 			//Biome::MESA_PLATEAU_F => true,
@@ -94,7 +90,7 @@ class Unagi extends Humanoid implements Enemy{
 			//Biome::MOUNTAINS => true,
 			//Biome::FOREST => true,
 			//Biome::TAIGA => true,
-			//Biome::SWAMP => true,
+			Biome::SWAMP => true,
 			//Biome::RIVER => true,
 			//Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
@@ -103,7 +99,7 @@ class Unagi extends Humanoid implements Enemy{
 	}
 
 	public static function getSpawnRate() : int{
-		return 50;
+		return 36;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -131,27 +127,27 @@ class Unagi extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::CHORUS_FRUIT, 0, 3],
+					[Item::STRING, 0, 1],
 				],
 			],
 			[100, 1,
 				[
-					[Item::PRISMARINE_CRYSTALS, 0, 3],
+					[Item::BONE, 0, 1],
 				],
 			],
 			[75, 2,
 				[
-					[Item::PACKED_ICE, 0, 6],
-					[Item::CHORUS_FRUIT, 0, 2],
-					[Item::PRISMARINE_CRYSTALS, 0, 3],
-					[Item::PRISMARINE_CRYSTALS, 0, 2],
+					[Item::STRING, 0, 1],
+					[Item::STRING, 0, 2],
+					[Item::BONE, 0, 1],
+					[Item::BONE, 0, 2],
 				]
 			],
 			[60, 2,
 				[
-					[Item::CHORUS_FRUIT, 0, 1],
-					[Item::PACKED_ICE, 0, 8],
-					[Item::PRISMARINE_CRYSTALS, 0, 1],
+					[Item::BLAZE_ROD, 0, 1],
+					[Item::BLAZE_ROD, 0, 1],
+					[Item::BONE, 0, 1],
 				],
 			],
 			[7, 1,
@@ -175,12 +171,13 @@ class Unagi extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::DIAMOND , 0, 1],
 				[Item::IRON_INGOT, 0, 1],
-				[Item::PRISMARINE_CRYSTALS, 0, 3],
-				[Item::PRISMARINE_CRYSTALS, 0, 2],
-				[Item::SPONGE, 1, 1],
-				[Item::EYE_OF_ENDER, 0, 1],
+				[Item::BONE, 0, 4],
+				[Item::BONE, 0, 4],
+				[Item::BONE, 0, 4],
+				[Item::BONE, 0, 4],
+				[Item::BONE, 0, 4],
+				[Item::BONE, 0, 4],
 				[Item::EMERALD , 0, 1],
 			]
 		];
@@ -203,15 +200,15 @@ class Unagi extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Unagi')),
-				new StringTag("Name", 'Biome2_Biome2NetherBanished')
+				new StringTag("Data", EnemyRegister::loadSkinData('Mukurotonbo')),
+				new StringTag("Name", 'JTTW_JTTWShaWujing')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Unagi($level, $nbt);
+		$entity = new Mukurotonbo($level, $nbt);
 		$random_hp = 1+(mt_rand(-10, 10)/100);
 		$entity->setMaxHealth(round(self::getHP()+$random_hp));
 		$entity->setHealth(round(self::getHP()+$random_hp));
@@ -234,7 +231,7 @@ class Unagi extends Humanoid implements Enemy{
 		$this->walkSpeed = 0.2;
 		$this->float = true;
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
-		//$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
+		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
@@ -242,12 +239,12 @@ class Unagi extends Humanoid implements Enemy{
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
 			$this->timings->startTiming();
-			if(!$this->target) $this->target = AI::searchTarget($this, 900);
-			if($this->target && ($disq = $this->distanceSquared($this->target)) <= 750){
+			$this->target = AI::searchTarget($this, 500);
+			if($this->target && ($disq = $this->distanceSquared($this->target)) <= 250){
 				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
 				switch($this->charge){
 					case 0:
-						AI::setRate($this, 20);
+						AI::setRate($this, 40);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
 						$this->walkSpeed = -0.025;
@@ -255,11 +252,10 @@ class Unagi extends Humanoid implements Enemy{
 						$this->charge = 1;
 					break;
 					case 1:
-						AI::setRate($this, 40);
+						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
-						$this->walk = false;
-						$this->walkSpeed = 0.01;
-						$this->pitch += 9;
+						$this->walk = true;
+						$this->walkSpeed = 0.5;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -276,7 +272,7 @@ class Unagi extends Humanoid implements Enemy{
 						$this->charge = 0;
 					break;
 				}
-			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 1000){
+			}else if($this->target && ($disq = $this->distanceSquared($this->target)) < 500){
 				AI::setRate($this, 9);
 				AI::lookAt($this, $this->target);
 				$this->walk = true;
@@ -297,14 +293,11 @@ class Unagi extends Humanoid implements Enemy{
 					;
 				break;
 				case 1:
-					$this->level->addSound(new GhastSound($this, 2));
-					$p = AI::getFrontVector($this, true)->multiply(2)->add($this);
-					$this->level->addParticle(new SpellParticle($p, 41, 41, 229));
+					;
 				break;
 				case 2:
-					//$p = AI::getFrontVector($this, true)->multiply(2)->add($this);
-					AI::chargerShot($this, 35, new TerrainParticle($this, Block::get(8)), new DestroyBlockParticle($this, Block::get(8)), 8, 0, 1.6, true);
-					$this->pitch -= 3;
+					AI::rangeAttack($this, 3.5, 2);
+					$this->level->addParticle(new SpellParticle($this, 170, 161, 153));
 				break;
 			}
 		}
@@ -317,13 +310,15 @@ class Unagi extends Humanoid implements Enemy{
 			}
 		}
 
-		if($this->walk){
+		if($this->charge == 2){
+			$v = AI::getFrontVector($this, true);
+			$this->move($v->x, $v->y, $v->z);
+		}elseif($this->walk){
 			$can = AI::walkFront($this, $this->walkSpeed);
 			if(!$can){
 				$this->yaw = mt_rand(1, 360);
 			}
-		}
-		//AI::walkFront($this, 0.08);
+		}		//AI::walkFront($this, 0.08);
 		parent::onUpdate($tick);
 	}
 
@@ -332,6 +327,19 @@ class Unagi extends Humanoid implements Enemy{
 		if($source instanceof EntityDamageByEntityEvent){
 			$damager = $source->getDamager();
 			$this->target = $damager;
+		}
+	}
+
+	public function attackTo(EntityDamageEvent $source){
+		$victim = $source->getEntity();
+		if($victim instanceof Player){
+			$f = $victim->getFood();
+			$f -= 3;
+			if($f <= 0){
+				$f = 0;
+				$source->setDamage($source->getDamage()*6);
+			}
+			$victim->setFood($f);
 		}
 	}
 

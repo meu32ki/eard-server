@@ -37,21 +37,21 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
-class Buriki extends Humanoid implements Enemy{
+class Ginmekki extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "ブリキ";
+		return "ギンメッキ";
 	}
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_BURIKI;
+		return EnemyRegister::TYPE_GINMEKKI;
 	}
 
 	//最大HPを取得
 	public static function getHP(){
-		return 40;
+		return 70;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -79,38 +79,38 @@ class Buriki extends Humanoid implements Enemy{
 			*/
 			[100, 4,
 				[
-					[Item::SAND, 1, 1],//赤砂
-					[Item::BRICK, 1, 1],//レンガ
+					[Item::IRON_NUGGET, 0, 1],
+					[Item::IRON_NUGGET, 0, 2],
 				],
 			],
 			[85, 3,
 				[
-					[Item::BRICK, 1, 1],//レンガ
-					[Item::SAND, 1, 1],//赤砂
+					[Item::IRON_NUGGET, 0, 1],
+					[Item::IRON_NUGGET, 0, 2],
 				],
 			],
 			[50, 3,
 				[
-					[Item::SAND, 1, 2],//赤砂
-					[Item::BRICK, 1, 2],//レンガ
+					[Item::IRON_NUGGET, 0, 2],
+					[Item::IRON_NUGGET, 0, 3],
 				],
 			],
 			[25, 3,
 				[
-					[Item::SAND, 1, 2],//赤砂
-					[Item::BRICK, 1, 2],//レンガ
+					[Item::IRON_NUGGET, 0, 2],
+					[Item::IRON_NUGGET, 0, 3],
 				],
 			],
 			[5, 3,
 				[
-					[Item::SAND, 1, 4],//赤砂
-					[Item::BRICK, 1, 4],//レンガ
+					[Item::IRON_NUGGET, 0, 4],
+					[Item::IRON_INGOT, 0, 1],
 				],
 			],
 			[3, 3,
 				[
-					[Item::SAND, 1, 5],//赤砂
-					[Item::BRICK, 1, 5],//レンガ
+					[Item::IRON_NUGGET, 0, 5],
+					[Item::IRON_INGOT, 0, 1],
 				],
 			],
 			[2, 1,
@@ -124,15 +124,15 @@ class Buriki extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::SAND, 1, 3],//赤砂
-				[Item::BRICK, 1, 3],//レンガ
+				[Item::IRON_INGOT, 0, 1],
+				[Item::IRON_NUGGET, 0, 3],
 			]
 		];
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 0.75;
+		return 0.8;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -150,13 +150,13 @@ class Buriki extends Humanoid implements Enemy{
 		//コピペ用全種類を置いておく
 		return [
 			//雨なし
-			Biome::HELL => true, 
+			//Biome::HELL => true, 
 			//Biome::END => true,
-			Biome::DESERT => true,
-			Biome::DESERT_HILLS => true,
-			Biome::MESA => true,
-			Biome::MESA_PLATEAU_F => true,
-			Biome::MESA_PLATEAU => true,
+			//Biome::DESERT => true,
+			//Biome::DESERT_HILLS => true,
+			//Biome::MESA => true,
+			//Biome::MESA_PLATEAU_F => true,
+			//Biome::MESA_PLATEAU => true,
 			//雨あり
 			Biome::OCEAN => true,
 			//Biome::PLAINS => true,
@@ -173,7 +173,7 @@ class Buriki extends Humanoid implements Enemy{
 
 	//スポーンする頻度を返す(大きいほどスポーンしにくい)
 	public static function getSpawnRate() : int{
-		return 80;
+		return 100;
 	}
 
 	public static function summon($level, $x, $y, $z){
@@ -193,7 +193,7 @@ class Buriki extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("Data", EnemyRegister::loadSkinData('Buriki')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Ginmekki')),
 				new StringTag("Name", 'Standard_Custom')
 			]),
 		]);
@@ -201,7 +201,7 @@ class Buriki extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Buriki($level, $nbt);
+		$entity = new Ginmekki($level, $nbt);
 		$entity->setMaxHealth(self::getHP());
 		$entity->setHealth(self::getHP());
 		AI::setSize($entity, self::getSize());
@@ -228,12 +228,12 @@ class Buriki extends Humanoid implements Enemy{
 				AI::setRate($this, 10);
 		}
 		if($this->walk){
-			$can = AI::walkFront($this, 0.35);
+			$can = AI::walkFront($this, 0.4);
 		}else{
 			$can = AI::walkFront($this, 0.1);
 		}
 		if(!$can){
-			$this->yaw += mt_rand(-90, 90);
+			AI::jump($this);
 		}
 		parent::onUpdate($tick);
 	}
