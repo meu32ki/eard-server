@@ -632,7 +632,7 @@ class Account implements MeuHandler {
 		$this->data = self::$newdata;//初回データを読み込む
 
 		//meuは展開する
-		$this->meu = Meu::get($this->data[1], 0, $this);
+		$this->meu = Meu::get($this->data[1], $this);
     }
 
     /**
