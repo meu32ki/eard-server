@@ -2,27 +2,20 @@
 namespace Eard\MeuHandler\Account\License;
 
 
-class Miner extends License {
-
-	/*
-		1 => さいくつそくとあっぷ(1)
-		2 => さいくつそくどあっぷ(1) きん/だいやがほれる
-		3 => さいくつそくどあっぷ(2) きん/だいやがほれる RS/らぴすがほれる
-		４　=> さいくつそくどあっぷ(3) きん/だいやがほれる RS/らぴすがほれる えーてるでなんかすごいやつ(雑)
-		5 => さいくつそくどあっぷ(4) きん/だいやがほれる RS/らぴすがほれる えーてるでなんかすごいやつ(雑) すごいやつだいにだんがつかえる
-	*/
+class Miner extends Costable {
 
 	public function getLicenseNo(){
 		return self::MINER;
 	}
 
-	protected $ranktxt = [
-		1 => "初級",
-		2 => "三級",
-		3 => "二級",
-		4 => "一級",
-		5 => "マスター",
+	protected static $ranktxt = [
+		1 => "1",
+		2 => "2",
 	];
-	protected $name = "採掘士";
+	protected static $rankcost = [
+	    1 => 2,
+        2 => 3
+    ];
+	protected static $name = "採掘士";
 
 }
