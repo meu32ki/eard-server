@@ -355,7 +355,7 @@ abstract class AI{
 				}
 			}
 		}
-		return true;
+		return new Vector3($sx, $sy, $sz);
 	}
 
 }
