@@ -1,5 +1,5 @@
 <?php
-namespace Eard\MeuHandler;
+namespace Eard\DBCommunication;
 
 
 class Mail {
@@ -26,27 +26,27 @@ class Mail {
 		プロパティに直接アクセスして情報参照のこと
 	*/
 
-	public function setFrom(MeuHandler $MeuHandler){
-		$this->from = $playerData->getUniqueId();
+	public function setFrom(Account $playerData){
+		$this->from = $playerData->getUniqueNo();
 	}
 
-	public function setTo(MeuHandler $MeuHandler){
-		$this->to = $playerData->getUniqueId();
+	public function setTo(Account $playerData){
+		$this->to = $playerData->getUniqueNo();
 	}
 
 	public function setCC($playerDatas){
 		if($this->to !== 0){
 			foreach($playerDatas as $playerData){
-				$this->cc[] = $playerData->getUniqueId();
+				$this->cc[] = $playerData->getUniqueNo();
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public function addCC(MeuHandler $MeuHandler){
+	public function addCC(Account $playerData){
 		if($this->to !== 0){
-			$this->cc[] = $playerData->getUniqueId();
+			$this->cc[] = $playerData->getUniqueNo();
 			return true;
 		}
 		return false;

@@ -1,5 +1,5 @@
 <?php
-namespace Eard\MeuHandler;
+namespace Eard\DBCommunication;
 
 
 # Basic
@@ -89,7 +89,7 @@ class MailManager {
     *   @return Mail[]
     */
     public static function getAllMailsSentTo(Account $playerData){
-        $uniqueNo = $playerData->getUniqueId();
+        $uniqueNo = $playerData->getUniqueNo();
         $sql = "SELECT * FROM mail WHERE ToUniqueId = ? OR ToUniqueId = 0;";
 
         $db = DB::get();
@@ -109,7 +109,7 @@ class MailManager {
     *   @return Mail[]
     */
     public static function getUnreadMailsSentTo(Account $playerData){
-        $uniqueNo = $playerData->getUniqueId();
+        $uniqueNo = $playerData->getUniqueNo();
 
         // 取得のためのsql
         $state = Mail::STATE_UNREAD;
@@ -133,7 +133,7 @@ class MailManager {
     *   @return Mail[]
     */
     public static function getAllMailsSentFrom(Account $playerData){
-        $uniqueNo = $playerData->getUniqueId();
+        $uniqueNo = $playerData->getUniqueNo();
 
         // 取得のためのsql
         $state = Mail::STATE_UNREAD;
