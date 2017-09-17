@@ -34,8 +34,8 @@ class License {
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
 		self::$list[self::BUILDER] = new Builder;
 		self::$list[self::MINER] = new Miner;
-		self::$list[self::FARAMER] = new Farmer;
-		self::$list[self::DANGEROUS_ITEM_HANDLER] = new DangerousItemHandler;
+		//self::$list[self::FARAMER] = new Farmer;
+		//self::$list[self::DANGEROUS_ITEM_HANDLER] = new DangerousItemHandler;
 	}
 
 	/**
