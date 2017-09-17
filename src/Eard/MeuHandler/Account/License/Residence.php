@@ -14,13 +14,13 @@ class Residence extends License {
 		return self::RESIDENCE;
 	}
 
-	protected $ranktxt = [
+	protected static $ranktxt = [
 		1 => "浮浪者",
 		2 => "一般",
 		3 => "中流",
 		4 => "上流",
 		5 => "富裕"
 	];
-	protected $name = "生活レベル";
+	protected static $name = "生活レベル";
 
 }

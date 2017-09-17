@@ -93,10 +93,15 @@ class Kumo extends Humanoid implements Enemy{
 					[Item::IRON_NUGGET, 0, 2],
 				],
 			],
+			[60, 1,
+				[
+					[Item::ENDER_PEARL, 0, 1],
+				],
+			],
 			[25, 1,
 				[
 					[Item::IRON_NUGGET, 0, 3],
-					[Item::DYE, 5, 1],
+					[Item::ENDER_PEARL, 0, 1],
 				],
 			],
 			[15, 1,
@@ -120,7 +125,8 @@ class Kumo extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::IRON_INGOT, 0, 1]
+				[Item::IRON_INGOT, 0, 1],
+				[Item::ENDER_PEARL, 0, 1]
 			]
 		];
 	}

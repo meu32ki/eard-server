@@ -8,13 +8,13 @@ class Builder extends License {
 		return self::BUILDER;
 	}
 
-	protected $ranktxt = [
+	protected static $ranktxt = [
 		1 => "初級",
 		2 => "三級",
 		3 => "二級",
 		4 => "一級",
 		5 => "マスター",
 	];
-	protected $name = "建築士";
+	protected static $name = "建築士";
 
 }
