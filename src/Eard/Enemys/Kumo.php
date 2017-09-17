@@ -18,6 +18,8 @@ use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\particle\TerrainParticle;
+use pocketmine\level\particle\SpellParticle;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -33,13 +35,17 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
+use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
 class Kumo extends Humanoid implements Enemy{
+	protected $gravity = 0.03;
+	public static $ground = false;
+	public $rainDamage = false;
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "Kumo";
+		return "クモ";
 	}
 
 	//エネミー識別番号を取得
@@ -49,7 +55,7 @@ class Kumo extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 25;
+		return 30;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
@@ -75,13 +81,13 @@ class Kumo extends Humanoid implements Enemy{
 			*/
 			[100, 2,
 				[
-					[Item::RAW_RABBIT, 0, 1],
+					[Item::COBWEB, 0, 1],
 					[Item::LEATHER, 0, 1],
 				],
 			],
 			[75, 2,
 				[
-					[Item::RAW_RABBIT, 0, 1],
+					[Item::FEATHER, 0, 1],
 					[Item::LEATHER, 0, 1],
 					[Item::IRON_NUGGET, 0, 1],
 					[Item::IRON_NUGGET, 0, 2],
@@ -90,7 +96,7 @@ class Kumo extends Humanoid implements Enemy{
 			[25, 1,
 				[
 					[Item::IRON_NUGGET, 0, 3],
-					[Item::DYE, 0, 1],//イカスミ
+					[Item::DYE, 5, 1],
 				],
 			],
 			[15, 1,
@@ -121,7 +127,7 @@ class Kumo extends Humanoid implements Enemy{
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 1;
+		return 2;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -137,24 +143,24 @@ class Kumo extends Humanoid implements Enemy{
 	public static function getBiomes() : array{
 		return [
 			//雨なし
-			Biome::HELL => true, 
-			Biome::END => true,
+			//Biome::HELL => true, 
+			//Biome::END => true,
 			Biome::DESERT => true,
-			Biome::DESERT_HILLS => true,
-			Biome::MESA => true,
-			Biome::MESA_PLATEAU_F => true,
-			Biome::MESA_PLATEAU => true,
+			//Biome::DESERT_HILLS => true,
+			//Biome::MESA => true,
+			//Biome::MESA_PLATEAU_F => true,
+			//Biome::MESA_PLATEAU => true,
 			//雨あり
-			Biome::OCEAN => true,
+			//Biome::OCEAN => true,
 			Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
+			//Biome::MOUNTAINS => true,
+			//Biome::FOREST => true,
 			//Biome::TAIGA => true,
-			Biome::SWAMP => true,
+			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
-			//Biome::ICE_PLAINS => true,
-			Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			Biome::ICE_PLAINS => true,
+			//Biome::SMALL_MOUNTAINS => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
@@ -180,8 +186,7 @@ class Kumo extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("Data", EnemyRegister::loadSkinData('Kumo')),
-				//new StringTag("Name", 'JTTW_JTTWSpiderDemon')
-				new StringTag("Name", 'Standard_Custom')
+				new StringTag("Name", 'JTTW_JTTWSpiderDemon')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
@@ -206,8 +211,8 @@ class Kumo extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
-		$this->pitch = 45;
-		//$this->setSneaking(1);
+		$this->pitch = 90;
+		$this->setSneaking(1);
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_SITTING, true);
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
@@ -216,14 +221,62 @@ class Kumo extends Humanoid implements Enemy{
 	public function onUpdate($tick){
 		if($this->getHealth() > 0 && AI::getRate($this)){
 			if($this->target = AI::searchTarget($this)){
-				AI::lookAt($this, $this->target);
-				$this->pitch += 45;
 				AI::rangeAttack($this, 2.25, 4);
 				AI::setRate($this, 12);
+				switch($this->mode){
+					case 0:
+						AI::setRate($this, 20);
+						AI::lookAt($this, $this->target);
+						$this->mode = 1;
+						$this->charge = 0;
+						$this->walk = false;
+						$this->pitch += 90;
+					break;
+					case 1:
+						switch($this->charge){
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:
+								$this->level->addParticle(new SpellParticle($this, 170, 161, 153));
+								AI::lookAt($this, $this->target);
+								++$this->charge;
+								AI::setRate($this, 7);
+								$this->pitch += 90;
+							break;
+
+							case 5:
+							case 6:
+							case 7:
+								AI::lookAt($this, $this->target);
+								$pos = AI::chargerShot($this, 20, new TerrainParticle($this, Block::get(Block::COBWEB)), new TerrainParticle($this, Block::get(Block::COBWEB)), 4, 15, 0.8);
+								$pos->y += 1;
+								if($this->level->getBlock($pos)->getId() === 0){
+									$this->level->setBlock($pos, Block::get(Block::COBWEB));
+								}
+								++$this->charge;
+								$this->pitch += 90;
+								AI::setRate($this, 3);
+							break;
+							case 8:
+								$this->charge = 0;
+								$this->mode = 0;
+								$this->walk = true;
+								AI::lookAt($this, $this->target);
+								$this->pitch += 90;
+								AI::setRate($this, 60);
+							break;
+						}
+					break;
+				}
 			}else{
-				$this->yaw += mt_rand(-60, 60);
-				AI::setRate($this, 40);
+				$this->charge = 0;
+				$this->mode = 0;
+				$this->walk = true;
+				$this->yaw += mt_rand(-30, 30);
 			}
+
 		}
 		$can = AI::walkFront($this, 0.15);
 		if(!$can){
@@ -232,14 +285,12 @@ class Kumo extends Humanoid implements Enemy{
 		parent::onUpdate($tick);
 	}
 
-	public function attackTo(EntityDamageEvent $source){
+/*	public function attackTo(EntityDamageEvent $source){
 		$victim = $source->getEntity();
-		if(!$victim->isSneaking()) $source->setKnockBack(1);
-		$pk = new AnimatePacket();
-		$pk->eid = $this->getId();
-		$pk->action = 1;//ArmSwing
-		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
-	}
+		if($this->level->getBlock($victim)->getId() === 0){
+			$this->level->setBlock($victim, Block::get(Block::COBWEB));
+		}
+	}*/
 
 	public function attack($damage, EntityDamageEvent $source){
 		parent::attack($damage, $source);
