@@ -17,6 +17,20 @@ class Costable extends License {
 		return isset(self::$rankcost[$rank]) ? self::$rankcost[$rank] : 0;
 	}
 
+    /**
+    *   今有効になっているなら、コストを返す。無効になっていればコストとしては見ない。
+    *   @return Int
+    */
+    public function getRealCost(){
+        $isTimeValid = $this->isValidTime();
+        return $isTimeValid ? $this->getCost() : 0;
+    }
+
+    // @License
+    public function getFullName(){
+        return $this->getName().$this->getRankText();
+    }
+
 	protected static $rankcost = [];
 
 }

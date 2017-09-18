@@ -16,11 +16,12 @@ class License {
 	const RESIDENCE = 1;
 	const GOVERNMENT_WORKER = 2;
 	const BUILDER = 3;
-	const MINER = 4;
 
+	const REFINER = 4;
 	const FARAMER = 5;
 	const DANGEROUS_ITEM_HANDLER = 6;
-
+	const MINER = 7;
+	const APPAREL = 8;
 
 	const RANK_BEGINNER = 1;
 	const RANK_GENERAL = 2;
@@ -57,6 +58,68 @@ class License {
 		return $license;
 	}
 
+/*
+	プレイヤーの更新関係
+*/
+
+	/**
+	*	強制的にそのライセンスを無効にする
+	*/
+	public function expire(){
+		$this->time = time();
+		return true;
+	}
+
+	/**
+	*	そのライセンスの有効期限を伸ばす。値がなければ一週間。
+	*	@param int 増やす時間(秒)
+	*/
+	public function update($timeAmount = 0){
+		if($timeAmount === 0){
+			$timeAmount = 604800; // 一週間
+		}
+		// まだ有効期限内
+		if(time() < $this->time){
+			$this->time = $this->time + $timeAmount;
+		// もう有効期限切れてる
+		}else{
+			$this->time = time() + $timeAmount;
+		}
+	}
+
+	/**
+	*	そのライセンスに、次のランクがあるのであれば、ライセンスの有効期間を一週間短くすることでランクを1段階上げる
+	*	有効期限は伸びない。
+	*/
+	public function upgrade(){
+		return false;
+	}
+
+	/**
+	*	ライセンスのランクがあげられる場合にはtrueを返す
+	*/
+	public function canUpgrade(){
+		return false;
+	}
+
+	/**
+	*	ランクが上がった状態であるならば、ランクを一段階下げる
+	*	有効期限は伸びない。
+	*/
+	public function downgrade(){
+		return false;
+	}
+
+	/**
+	*	ライセンスのランクがさげられる場合にはtrueを返す
+	*/
+	public function canDowngrade(){
+		return false;
+	}
+/*
+	オブジェクトの値関係
+*/
+
 	/**
 	*	@return Int 	各ライセンスに割り当てられた番号
 	*/
@@ -65,7 +128,7 @@ class License {
 	}
 
     /**
-     *	ライセンスが有効であるか
+     *	ライセンスがそのランクを満たしており、かつ有効であるか
      *	@param Int self::RANKからはじまる値
      *	@return bool
      */
@@ -102,7 +165,7 @@ class License {
 	*	@return String
 	*/
 	public function getValidTimeText(){
-		return $this->time === -1 ? "無期限" : date("n月j日G時i分")."まで";
+		return $this->time === -1 ? "無期限" : ( time() < $this->time ? date("n月j日G時i分")."まで有効" : date("n月j日G時i分")."に無効化済" );
 	}
 
 	/**
@@ -153,6 +216,7 @@ class License {
 	public function getFullName(){
 		return $this->getName()."(".$this->getRankText().")";
 	}
+
 
 	private static $list = [];
 	private $no = 0;
