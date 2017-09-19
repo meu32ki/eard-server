@@ -40,6 +40,7 @@ use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
+use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Recipe;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
@@ -211,67 +212,96 @@ class Event implements Listener{
 		$playerData = Account::get($player);
 		$block = $e->getBlock();
 		$blockId = $block->getId();
+		$x = $block->x; $y = $block->y; $z = $block->z;
 
-		switch($blockId){
-			case 130: // エンダーチェスト
-				//if(Connection::getPlace()->isLivingArea()){
+		// 長押し
+		if($e->getAction() == 3 or $e->getAction() == 0){
+			if($x && $y && $z){ // 空中でなければ
+				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
+			}
+
+		// 普通にタップ
+		}else{
+			$itemId = $e->getItem()->getId();
+
+			/*	生活区域
+			*/
+			if(Connection::getPlace()->isLivingArea()){
+				// editができるか？
+				// できないばあい
+				if(!AreaProtector::Edit($player, $x, $y, $z, true)){
+					if(!AreaProtector::canActivateInLivingProtected($blockId)){
+						$blockname = ItemName::getNameOf($itemId, $meta);
+						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
+						$e->setCancelled(true);
+					}else{
+						$r = BlockObjectManager::tap($block, $player);
+						$e->setCancelled( $r );
+					}
+
+				// できるばあい
+				}else{
+					$r = BlockObjectManager::tap($block, $player);
+					$e->setCancelled( $r );
+				}
+
+			/*	資源区域
+			*/
+			}else{
+				if(!AreaProtector::canActivateInResource($blockId)){
+					$placename = Connection::getPlace()->getName();
+					$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
+					$e->setCancelled(true);
+				}else{
+					$r = BlockObjectManager::tap($block, $player);
+					$e->setCancelled( $r );
+				}
+			}
+
+			switch($blockId){
+				case 60; // こうち
+					switch($itemId){
+						case 295: // むぎのたね
+						case 361: // かぼちゃ
+						case 362: // すいか
+						case 458: // ビートルート
+						case 392: // じゃがいも
+							if(!$playerData->hasValidLicense(License::FARMER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
+					}
+				break;
+				case 61: // かまど
+					if(!$playerData->hasValidLicense(License::REFINER)){
+						$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));
+						$e->setCancelled(true);
+					}
+				break;
+				case 130: // エンダーチェスト
 					$inv = $playerData->getItemBox();
 					$player->addWindow($inv);
-				//}
-				$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
-			break;
-/*			case 218: // シュルカーボックス
-				$inv = $player->getInventory();
-				$inv->addItem(Item::get(416));
-				$player->sendMessage(Chat::SystemToPlayer("「携帯」を送りました。ベータテスト中限定だよ～。"));
-			break;*/
-			default: // それいがい
-				$x = $block->x; $y = $block->y; $z = $block->z;
-
-				// 長押し
-				if($e->getAction() == 3 or $e->getAction() == 0){
-					if($x && $y && $z){ // 空中でなければ
-						BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
-					}
-
-				// 普通にタップ
-				}else{
-
-					/*	生活区域
-					*/
-					if(Connection::getPlace()->isLivingArea()){
-						// editができるか？
-						// できないばあい
-						if(!AreaProtector::Edit($player, $x, $y, $z, true)){
-							if(!AreaProtector::canActivateInLivingProtected($blockId)){
-								$blockname = ItemName::getNameOf($id, $meta);
-								$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
+					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+				break;
+				default: 
+					switch($itemId){
+						case 259: // うちがね
+							if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
-							}else{
-								$r = BlockObjectManager::tap($block, $player);
-								$e->setCancelled( $r );
 							}
-
-						// できるばあい
-						}else{
-							$r = BlockObjectManager::tap($block, $player);
-							$e->setCancelled( $r );
-						}
-
-					/*	資源区域
-					*/
-					}else{
-						if(!AreaProtector::canActivateInResource($blockId)){
-							$placename = Connection::getPlace()->getName();
-							$player->sendMessage(Chat::SystemToPlayer("§e{$placename}ではそのブロックの使用が制限されています。生活区域でしか使えません！"));
-							$e->setCancelled(true);
-						}else{
-							$r = BlockObjectManager::tap($block, $player);
-							$e->setCancelled( $r );
-						}
+						break;
+						case 338: // さとうきび
+							if(!$playerData->hasValidLicense(License::FARMER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
 					}
-				}
-			break;
+				break;
+			} // endswitch
+
 		}
 	}
 
