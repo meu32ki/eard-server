@@ -37,21 +37,30 @@ class Recipe {
 	public static function getRecipe($player){
 		$playerData = Account::get($player);
 		$recipe = [ //全員クラフト・精錬できるレシピ
-			5 => true,//木材
-			50 => true,//松明
-			280 => true,//棒
-			268 => true,//木剣
-			269 => true,//木のシャベル
-			270 => true,//木のツルハシ
-			271 => true,//木の斧
-			290 => true,//木の鍬
-			272 => true,//石の剣
-			273 => true,//石のシャベル
-			274 => true,//石のツルハシ
-			275 => true,//石の斧
-			279 => true,//石のくわ
-			265 => true,//鉄インゴット(精錬も含む)
-			266 => true,//金インゴット(精錬も含む)
+			5 => [],//木材
+			50 => [],//松明
+			280 => [],//棒
+			268 => [],//木剣
+			269 => [],//木のシャベル
+			270 => [],//木のツルハシ
+			271 => [],//木の斧
+			290 => [],//木の鍬
+			272 => [],//石の剣
+			273 => [],//石のシャベル
+			274 => [],//石のツルハシ
+			275 => [],//石の斧
+			279 => [],//石のくわ
+			265 => [],//鉄インゴット(精錬も含む)
+			266 => [],//金インゴット(精錬も含む)
+			/*
+			1 => [
+				0 => true,
+				1 => true,
+				3 => true
+			],
+			みたいに書くとダメージ値ごとに設定できる
+			全部許可したい場合は空の配列渡して
+			*/
 		];
 		switch (true) {
 			// Minerは追加レシピなし
@@ -80,17 +89,17 @@ class Recipe {
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::PROCECCER): // 加工1
+			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::PROCECCER, 2): // 加工2
+			case $playerData->hasValidLicense(License::PROCESSOR, 2): // 加工2
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::PROCECCER, 3): // 加工3
+			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
 				$recipe += [
 					
 				];
@@ -123,7 +132,13 @@ class Recipe {
 	public static function packetFilter(CraftingDataPacket $pk, Player $player){
 		$fil = self::getRecipe($player);
 		$F = function ($recipe) use ($fil){
-			return (isset($fil[$recipe->getResult()->getId()]));
+			if(isset($fil[$recipe->getResult()->getId()])){
+				$check = $fil[$recipe->getResult()->getId()];
+				if($check === [] || isset($check[$recipe->getResult()->getDamage()])){
+					return true;
+				}
+			}
+			return false;
 		};
 		$recipes = $pk->entries;
 		$re = array_filter($recipes, $F);
