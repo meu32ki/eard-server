@@ -127,6 +127,11 @@ class Kamadouma extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
+					[Item::RABBIT_FOOT, 0, 2],
+				]
+			],
+			[100, 1,
+				[
 					[Item::IRON_NUGGET, 0, 1],
 				],
 			],
@@ -139,6 +144,7 @@ class Kamadouma extends Humanoid implements Enemy{
 				[
 					[Item::GLOWSTONE_DUST, 0, 1],
 					[Item::IRON_NUGGET, 0, 3],
+					[Item::RABBIT_FOOT, 0, 2],
 				],
 			],
 			[40, 1,
@@ -165,7 +171,9 @@ class Kamadouma extends Humanoid implements Enemy{
 			[
 				[Item::IRON_INGOT, 0, 1],
 				[Item::GLOWSTONE_DUST, 0, 2],
-				[Item::GOLD_NUGGET, 0, 2]
+				[Item::GOLD_NUGGET, 0, 2],
+				[Item::RABBIT_FOOT, 0, 2],
+				[Item::RABBIT_FOOT, 0, 1],
 			]
 		];
 

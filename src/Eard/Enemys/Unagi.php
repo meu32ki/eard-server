@@ -131,6 +131,11 @@ class Unagi extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
+					[Item::GHAST_TEAR, 0, 2],
+				],
+			],
+			[100, 1,
+				[
 					[Item::CHORUS_FRUIT, 0, 3],
 				],
 			],
@@ -182,6 +187,8 @@ class Unagi extends Humanoid implements Enemy{
 				[Item::SPONGE, 1, 1],
 				[Item::EYE_OF_ENDER, 0, 1],
 				[Item::EMERALD , 0, 1],
+				[Item::GHAST_TEAR, 0, 2],
+				[Item::GHAST_TEAR, 0, 2],
 			]
 		];
 	}
