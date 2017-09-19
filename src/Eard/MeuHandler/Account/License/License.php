@@ -16,16 +16,6 @@ class License {
 	const RESIDENCE = 1;
 	const GOVERNMENT_WORKER = 2;
 
-<<<<<<< HEAD
-	const REFINER = 4;
-	const FARAMER = 5;
-	const DANGEROUS_ITEM_HANDLER = 6;
-	const MINER = 7;
-	const APPAREL_DESIGNER = 8;
-	const PROCESSOR = 9;
-	const HUNTER = 10;
-	const HANDIWORKER = 11;
-=======
 	const REFINER = 3;
 	const FARMER = 4;
 	const DANGEROUS_ITEM_HANDLER = 5;
@@ -34,7 +24,7 @@ class License {
 	const PROCESSOR = 7;
 	const HUNTER = 9;
 	const HANDIWORKER = 10;
->>>>>>> master
+
 
 
 	const RANK_BEGINNER = 1;
