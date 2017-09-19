@@ -14,6 +14,7 @@ use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
 use Eard\MeuHandler\Account\License\License;
+use Eard\MeuHandler\Account\License\Costable;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 
@@ -265,9 +266,11 @@ class Account implements MeuHandler {
 	*	何かをするのに必要なパーミッションと言っていいだろう。
 	*	@return Int 	-1...すでに持ってる 0...あげれない 1...あげれた
 	*/
-	public function addLicense($license){
-		if($license instanceof License){
-			$licenseNo = $license->getLicenseNo();
+	public function addLicense(License $license){
+		$licenseNo = $license->getLicenseNo();
+
+		// コスト
+		if($this->canAddNewLicense($license)){
 			if($oldone = $this->getLicense($licenseNo)){
 				// すでに持ってたら
 				$oldrank = $oldone->getRank();
@@ -296,8 +299,10 @@ class Account implements MeuHandler {
 				$this->licenses[$licenseNo] = $license;
 				return 1;
 			}
+		}else{
+			// そのライセンスは、コストが大きくて付けられない
+			return 0;
 		}
-		return 0;
 	}
 
 	/**
@@ -323,11 +328,43 @@ class Account implements MeuHandler {
 	}
 
 	/**
+	*	今現在持っており、有効なライセンスのコストの総計
+	*	@return Int
+	*/
+	public function getNowLicenseCost(){
+		$cost = 0;
+		foreach($licenses as $l){
+			if($l instanceof Costable){
+				$cost += $l->getRealCost();
+			}
+		}
+		return $cost;
+	}
+
+	/**
+	*	新しいライセンスを得る際、コストに問題がないかを計算してくれる
+	*	そのライセンスを付けられるか、コストの面から見る
+	*	@return bool | つけられるならtrue つけられないならfalse
+	*/
+	public function canAddNewLicense(License $license){
+		$residence = $this->getLicense(License::RESIDENCE);
+
+		// residenceを持っており、かつ上流以上であれば
+		$maxCost = ( $residence instanceof License && 4 <= $residence->getRank() ) ? 5 : 6;
+
+		// 今現在持っており、有効なライセンスのコストの総計
+		$nowCost = $this->getNowLicenseCost();
+		$theCost = $license instanceof Costable ? $license->getRealCost() : 0; // つけようとしているライセンスのコスト
+		return $theCost < $maxCost - $nowCost;
+	}
+
+	/**
 	*	@return License[]
 	*/
 	public function getAllLicenses(){
 		return $this->licenses;
 	}
+
 	private $licenses = [];
 
 
