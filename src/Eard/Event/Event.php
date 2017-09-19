@@ -212,6 +212,7 @@ class Event implements Listener{
 		$playerData = Account::get($player);
 		$block = $e->getBlock();
 		$blockId = $block->getId();
+		$blockMeta = $block->getDamage();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 
 		// 長押し
@@ -222,7 +223,6 @@ class Event implements Listener{
 
 		// 普通にタップ
 		}else{
-			$itemId = $e->getItem()->getId();
 
 			/*	生活区域
 			*/
@@ -231,7 +231,7 @@ class Event implements Listener{
 				// できないばあい
 				if(!AreaProtector::Edit($player, $x, $y, $z, true)){
 					if(!AreaProtector::canActivateInLivingProtected($blockId)){
-						$blockname = ItemName::getNameOf($itemId, $meta);
+						$blockname = ItemName::getNameOf($blockId, $blockMeta);
 						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
 						$e->setCancelled(true);
 					}else{
@@ -258,6 +258,8 @@ class Event implements Listener{
 				}
 			}
 
+
+			$itemId = $e->getItem()->getId();
 			switch($blockId){
 				case 60; // こうち
 					switch($itemId){
