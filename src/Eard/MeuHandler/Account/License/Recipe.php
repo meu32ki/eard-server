@@ -58,7 +58,7 @@ class Recipe {
 		];
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
-			case $playerData->hasValidLicense(License::FARAMER): // 農家
+			case $playerData->hasValidLicense(License::FARMER): // 農家
 				$recipe += [
 					170 => true,
 					322 => true,
