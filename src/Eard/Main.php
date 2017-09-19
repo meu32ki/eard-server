@@ -60,6 +60,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# 釣り変更
 		Recipe::changeFishes();
+		Recipe::addOriginalRecipe();//オリジナルレシピ追加
 		FishingHook::setPower(4);
 	}
 

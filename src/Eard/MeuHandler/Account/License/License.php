@@ -22,7 +22,7 @@ class License {
 	const DANGEROUS_ITEM_HANDLER = 6;
 	const MINER = 7;
 	const APPAREL_DESIGNER = 8;
-	const PROCESSER = 9;
+	const PROCESSOR = 9;
 	const HUNTER = 10;
 	const HANDIWORKER = 11;
 
