@@ -78,6 +78,11 @@ class HaneAri extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
+					[Item::NETHER_WART, 0, 1],
+				],
+			],
+			[100, 1,
+				[
 					[Item::FEATHER, 0, 1],
 				],
 			],
@@ -111,6 +116,7 @@ class HaneAri extends Humanoid implements Enemy{
 			[
 				[Item::IRON_NUGGET, 0, 3],
 				[Item::FEATHER, 0, 1],
+				[Item::NETHER_WART, 0, 1],
 			]
 		];
 	}

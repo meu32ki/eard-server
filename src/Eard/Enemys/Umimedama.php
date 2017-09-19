@@ -83,12 +83,14 @@ class Umimedama extends Humanoid implements Enemy{
 				[
 					[Item::PRISMARINE_CRYSTALS, 0, 1],
 					[Item::QUARTZ, 0, 1],
+
 				],
 			],
 			[40, 2,
 				[
 					[Item::IRON_NUGGET, 0, 2],
 					[Item::PRISMARINE_CRYSTALS, 0, 2],
+					[Item::GHAST_TEAR, 0, 1],
 				],
 			],
 			[3, 1,
@@ -109,6 +111,7 @@ class Umimedama extends Humanoid implements Enemy{
 			[
 				[Item::IRON_NUGGET, 0, 1],
 				[Item::PRISMARINE_CRYSTALS, 0, 2],
+				[Item::GHAST_TEAR, 0, 1],
 			]
 		];
 	}

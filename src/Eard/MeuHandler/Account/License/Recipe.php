@@ -249,7 +249,13 @@ class Recipe {
 	public static function packetFilter(CraftingDataPacket $pk, Player $player){
 		$fil = self::getRecipe($player);
 		$F = function ($recipe) use ($fil){
-			return (isset($fil[$recipe->getResult()->getId()]));
+			if(isset($fil[$recipe->getResult()->getId()])){
+				$check = $fil[$recipe->getResult()->getId()];
+				if($check === [] || isset($check[$recipe->getResult()->getDamage()])){
+					return true;
+				}
+			}
+			return false;
 		};
 		$recipes = $pk->entries;
 		$re = array_filter($recipes, $F);

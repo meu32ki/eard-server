@@ -75,6 +75,11 @@ class Ari extends Humanoid implements Enemy{
 				],
 			],
 			*/
+			[100, 1,
+				[
+					[Item::NETHER_WART, 0, 1],
+				],
+			],
 			[100, 2,
 				[
 					[Item::LOG, 0, 1],
@@ -105,6 +110,7 @@ class Ari extends Humanoid implements Enemy{
 			[
 				[Item::IRON_NUGGET, 0, 1],
 				[Item::LOG, 0, 1],
+				[Item::NETHER_WART, 0, 1],
 			]
 		];
 	}

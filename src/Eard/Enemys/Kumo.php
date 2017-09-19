@@ -79,6 +79,11 @@ class Kumo extends Humanoid implements Enemy{
 				],
 			],
 			*/
+			[100, 1,
+				[
+					[Item::SPIDER_EYE, 0, 1],
+				],
+			],
 			[100, 2,
 				[
 					[Item::COBWEB, 0, 1],
@@ -126,7 +131,8 @@ class Kumo extends Humanoid implements Enemy{
 		return [100, 1,
 			[
 				[Item::IRON_INGOT, 0, 1],
-				[Item::ENDER_PEARL, 0, 1]
+				[Item::ENDER_PEARL, 0, 1],
+				[Item::SPIDER_EYE, 0, 1],
 			]
 		];
 	}
