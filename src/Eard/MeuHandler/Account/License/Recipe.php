@@ -54,58 +54,67 @@ class Recipe {
 			266 => true,//金インゴット(精錬も含む)
 		];
 		switch (true) {
-			case $playerData->hasValidLicense(License::NEET):
+			// Minerは追加レシピなし
+			case $playerData->hasValidLicense(License::REFINER): // 精錬
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::RESIDENCE):
+			case $playerData->hasValidLicense(License::FARAMER): // 農家
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::GOVERNMENT_WORKER):
+			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER): // 危険物取扱
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::BUILDER):
+			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::MINER):
-				$recipe += [
-					257 => true,//鉄のツルハシ
-					278 => true,//ダイヤのツルハシ
-					285 => true,//金のツルハシ
-				];
-			break;
-/*			case $playerData->hasValidLicense(License::TRADER):
+			case $playerData->hasValidLicense(License::APPAREL_DESIGNER, 2): // 服飾2
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::SERVICER):
+			case $playerData->hasValidLicense(License::PROCECCER): // 加工1
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::ENTREPRENEUR):
+			case $playerData->hasValidLicense(License::PROCECCER, 2): // 加工2
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::FARAMER):
+			case $playerData->hasValidLicense(License::PROCECCER, 3): // 加工3
 				$recipe += [
 					
 				];
 			break;
-			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER):
+			case $playerData->hasValidLicense(License::HUNTER): // ハンター,今はほとんどレシピなし？ 20170919
 				$recipe += [
 					
 				];
-			break;*/
+			break;
+			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
+				$recipe += [
+					
+				];
+			break;
+			case $playerData->hasValidLicense(License::HANDIWORKER, 2): // 細工師2
+				$recipe += [
+					
+				];
+			break;
+			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
+				$recipe += [
+					
+				];
+			break;
 		}
 		return $recipe;
 	}

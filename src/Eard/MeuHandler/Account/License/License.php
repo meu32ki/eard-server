@@ -21,7 +21,11 @@ class License {
 	const FARAMER = 5;
 	const DANGEROUS_ITEM_HANDLER = 6;
 	const MINER = 7;
-	const APPAREL = 8;
+	const APPAREL_DESIGNER = 8;
+	const PROCESSER = 9;
+	const HUNTER = 10;
+	const HANDIWORKER = 11;
+
 
 	const RANK_BEGINNER = 1;
 	const RANK_GENERAL = 2;
