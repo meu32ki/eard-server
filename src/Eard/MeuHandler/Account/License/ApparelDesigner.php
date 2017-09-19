@@ -2,11 +2,11 @@
 namespace Eard\MeuHandler\Account\License;
 
 
-class Miner extends Costable {
+class ApparelDesigner extends Costable {
 
 	// @License
 	public function getLicenseNo(){
-		return self::MINER;
+		return self::APPAREL_DESIGNER;
 	}
 
 	// @License
@@ -41,8 +41,8 @@ class Miner extends Costable {
 	];
 	protected static $rankcost = [
 	    1 => 2,
-        2 => 3
+        2 => 3,
     ];
-	protected static $name = "採掘士";
+	protected static $name = "服飾";
 
 }

@@ -15,8 +15,8 @@ class License {
 	// const NEET = 0; const NOJOBS = 0;
 	const RESIDENCE = 1;
 	const GOVERNMENT_WORKER = 2;
-	const BUILDER = 3;
 
+<<<<<<< HEAD
 	const REFINER = 4;
 	const FARAMER = 5;
 	const DANGEROUS_ITEM_HANDLER = 6;
@@ -25,6 +25,16 @@ class License {
 	const PROCESSOR = 9;
 	const HUNTER = 10;
 	const HANDIWORKER = 11;
+=======
+	const REFINER = 3;
+	const FARMER = 4;
+	const DANGEROUS_ITEM_HANDLER = 5;
+	const MINER = 6;
+	const APPAREL_DESIGNER = 7;
+	const PROCESSOR = 7;
+	const HUNTER = 9;
+	const HANDIWORKER = 10;
+>>>>>>> master
 
 
 	const RANK_BEGINNER = 1;
@@ -37,11 +47,17 @@ class License {
 	public static function init(){
 		self::$list[self::RESIDENCE] = new Residence;
 		self::$list[self::GOVERNMENT_WORKER] = new GovernmentWorker;
-		self::$list[self::BUILDER] = new Builder;
+
+		self::$list[self::REFINER] = new Refiner;
+		self::$list[self::FARMER] = new Farmer;
+		self::$list[self::DANGEROUS_ITEM_HANDLER] = new DangerousItemHandler;
 		self::$list[self::MINER] = new Miner;
-		//self::$list[self::FARAMER] = new Farmer;
-		//self::$list[self::DANGEROUS_ITEM_HANDLER] = new DangerousItemHandler;
+		self::$list[self::APPAREL_DESIGNER] = new ApparelDesigner;
+		self::$list[self::PROCESSOR] = new Processor;
+		self::$list[self::HUNTER] = new Hunter;
+		self::$list[self::HANDIWORKER] = new Handiworker;
 	}
+
 
 	/**
 	*	@param int 				各ライセンスに割り当てられた番号
@@ -62,33 +78,32 @@ class License {
 		return $license;
 	}
 
+	/**
+	*	存在するすべてのライセンスを返す
+	*/
+	public static function getAll(){
+		return self::$list;
+	}
+
+
+
 /*
-	プレイヤーの更新関係
+	オブジェクトの値関係
 */
 
 	/**
-	*	強制的にそのライセンスを無効にする
+	*	@return Int 	各ライセンスに割り当てられた番号
 	*/
-	public function expire(){
-		$this->time = time();
-		return true;
+	public function getLicenseNo(){
+		return $this->no;
 	}
 
 	/**
-	*	そのライセンスの有効期限を伸ばす。値がなければ一週間。
-	*	@param int 増やす時間(秒)
+	*	ライセンスのアップグレード時/購入時かかるお金を返す
+	*	@return Int
 	*/
-	public function update($timeAmount = 0){
-		if($timeAmount === 0){
-			$timeAmount = 604800; // 一週間
-		}
-		// まだ有効期限内
-		if(time() < $this->time){
-			$this->time = $this->time + $timeAmount;
-		// もう有効期限切れてる
-		}else{
-			$this->time = time() + $timeAmount;
-		}
+	public function getPrice(){
+		return 1000;
 	}
 
 	/**
@@ -120,15 +135,38 @@ class License {
 	public function canDowngrade(){
 		return false;
 	}
-/*
-	オブジェクトの値関係
-*/
 
 	/**
-	*	@return Int 	各ライセンスに割り当てられた番号
+	*	そのライセンスの有効期間を一週間延ばす場合にかかるお金を返す
+	*	@return Int
 	*/
-	public function getLicenseNo(){
-		return $this->no;
+	public function getUpdatePrice(){
+		return 1000;
+	}
+
+	/**
+	*	強制的にそのライセンスを無効にする
+	*/
+	public function expire(){
+		$this->time = time();
+		return true;
+	}
+
+	/**
+	*	そのライセンスの有効期限を伸ばす。値がなければ一週間。
+	*	@param int 増やす時間(秒)
+	*/
+	public function update($timeAmount = 0){
+		if($timeAmount === 0){
+			$timeAmount = 604800; // 一週間
+		}
+		// まだ有効期限内
+		if(time() < $this->time){
+			$this->time = $this->time + $timeAmount;
+		// もう有効期限切れてる
+		}else{
+			$this->time = time() + $timeAmount;
+		}
 	}
 
     /**
