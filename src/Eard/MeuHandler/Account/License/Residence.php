@@ -14,6 +14,32 @@ class Residence extends License {
 		return self::RESIDENCE;
 	}
 
+	// @License
+	public function canUpgrade(){
+		if(1 <= $this->rank and $this->rank < 5) return true;
+		return false;
+	}
+
+	// @License
+	public function upgrade(){
+		if($this->canUpgrade()){
+			$this->rank += 1;
+		}
+	}
+
+	// @License
+	public function canDowngrade(){
+		if(1 < $this->rank and $this->rank <= 5) return true;
+		return false;
+	}
+
+	// @License
+	public function downgrade(){
+		if($this->canDowngrade()){
+			$this->rank -= 1;
+		}
+	}
+
 	public function getPrice(){
 		switch($this->getCost()){
 			case 1: $price = 0; break;

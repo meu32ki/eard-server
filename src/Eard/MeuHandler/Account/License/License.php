@@ -74,9 +74,18 @@ class License {
 		return self::$list;
 	}
 
+
+
 /*
-	プレイヤーの更新関係
+	オブジェクトの値関係
 */
+
+	/**
+	*	@return Int 	各ライセンスに割り当てられた番号
+	*/
+	public function getLicenseNo(){
+		return $this->no;
+	}
 
 	/**
 	*	ライセンスのアップグレード時/購入時かかるお金を返す
@@ -84,6 +93,36 @@ class License {
 	*/
 	public function getPrice(){
 		return 1000;
+	}
+
+	/**
+	*	そのライセンスに、次のランクがあるのであれば、ライセンスの有効期間を一週間短くすることでランクを1段階上げる
+	*	有効期限は伸びない。
+	*/
+	public function upgrade(){
+		return false;
+	}
+
+	/**
+	*	ライセンスのランクがあげられる場合にはtrueを返す
+	*/
+	public function canUpgrade(){
+		return false;
+	}
+
+	/**
+	*	ランクが上がった状態であるならば、ランクを一段階下げる
+	*	有効期限は伸びない。
+	*/
+	public function downgrade(){
+		return false;
+	}
+
+	/**
+	*	ライセンスのランクがさげられる場合にはtrueを返す
+	*/
+	public function canDowngrade(){
+		return false;
 	}
 
 	/**
@@ -117,46 +156,6 @@ class License {
 		}else{
 			$this->time = time() + $timeAmount;
 		}
-	}
-
-	/**
-	*	そのライセンスに、次のランクがあるのであれば、ライセンスの有効期間を一週間短くすることでランクを1段階上げる
-	*	有効期限は伸びない。
-	*/
-	public function upgrade(){
-		return false;
-	}
-
-	/**
-	*	ライセンスのランクがあげられる場合にはtrueを返す
-	*/
-	public function canUpgrade(){
-		return false;
-	}
-
-	/**
-	*	ランクが上がった状態であるならば、ランクを一段階下げる
-	*	有効期限は伸びない。
-	*/
-	public function downgrade(){
-		return false;
-	}
-
-	/**
-	*	ライセンスのランクがさげられる場合にはtrueを返す
-	*/
-	public function canDowngrade(){
-		return false;
-	}
-/*
-	オブジェクトの値関係
-*/
-
-	/**
-	*	@return Int 	各ライセンスに割り当てられた番号
-	*/
-	public function getLicenseNo(){
-		return $this->no;
 	}
 
     /**

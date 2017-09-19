@@ -38,7 +38,7 @@ class Processor extends Costable {
 	protected static $ranktxt = [
 		1 => "1",
 		2 => "2",
-		2 => "3",
+		3 => "3",
 	];
 	protected static $rankcost = [
 	    1 => 1,
