@@ -14,6 +14,7 @@ class ItemName{
 
 
 	public static function getNameOf(Int $id, Int $meta){
+		if(15 < $meta) $meta = 0;
 		if( isset(self::$listById[$id][$meta]) ){
 			return self::$listById[$id][$meta]; //書いてあれば日本語名
 		}else{
@@ -32,6 +33,7 @@ class ItemName{
 		}
 		self::$listById = $listById;
 		self::$listByCat = $listByCat;
+		// print_r($listById);
 	}
 
 	public static function getListById(){
