@@ -41,22 +41,6 @@ class Recipe {
 	public static function getRecipe($player){
 		$playerData = Account::get($player);
 		$recipe = [ //全員クラフト・精錬できるレシピ
-			5 => [],//木材
-			50 => [],//松明
-			280 => [],//棒
-			268 => [],//木剣
-			269 => [],//木のシャベル
-			270 => [],//木のツルハシ
-			271 => [],//木の斧
-			290 => [],//木の鍬
-			272 => [],//石の剣
-			273 => [],//石のシャベル
-			274 => [],//石のツルハシ
-			275 => [],//石の斧
-			279 => [],//石のくわ
-			265 => [],//鉄インゴット(精錬も含む)
-			266 => [],//金インゴット(精錬も含む)
-			Item::POTION => [],
 			/*
 			1 => [
 				0 => true,
@@ -66,190 +50,368 @@ class Recipe {
 			みたいに書くとダメージ値ごとに設定できる
 			全部許可したい場合は空の配列渡して
 			*/
+			5 => [
+				2 => true,
+				1 => true
+				],
+			24 => [],
+			50 => [],
+			53 => [],
+			58 => [],
+			65 => [],
+			268 => [],
+			269 => [],
+			270 => [],
+			271 => [],
+			272 => [],
+			273 => [],
+			274 => [],
+			275 => [],
+			280 => [],
+			281 => [],
+			282 => [],
+			290 => [],
 		];
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
 			case $playerData->hasValidLicense(License::FARMER): // 農家
 				$recipe += [
-					170 => true,
-					322 => true,
-					353 => true,
-					354 => true,
-					357 => true,
-					393 => true,
-					396 => true,
-					400 => true,
-					413 => true,
-					459 => true,
+					170 => [],
+					322 => [],
+					353 => [],
+					354 => [],
+					357 => [],
+					393 => [],
+					396 => [],
+					400 => [],
+					413 => [],
+					459 => [],
 				];
 			break;
 			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER): // 危険物取扱
 				$recipe += [
-					46 => true,
-					259 => true,
+					46 => [],
+					259 => [],
 				];
 			break;
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
 				$recipe += [
-298 => true,
-299 => true,
-300 => true,
-301 => true,
-306 => true,
-307 => true,
-308 => true,
-309 => true,				
+					298 => [],
+					299 => [],
+					300 => [],
+					301 => [],
+					306 => [],
+					307 => [],
+					308 => [],
+					309 => [],
 				];
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER, 2): // 服飾2
 				$recipe += [
-310 => true,
-311 => true,
-312 => true,
-313 => true,
-314 => true,
-315 => true,
-316 => true,
-317 => true,						
+					310 => [],
+					311 => [],
+					312 => [],
+					313 => [],
+					314 => [],
+					315 => [],
+					316 => [],
+					317 => [],
 				];
 			break;
 			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
 				$recipe += [
-1 => true,
-35 => true,
-43 => true,
-54 => true,
-61 => true,
-67 => true,
-69 => true,
-70 => true,
-72 => true,
-75 => true,
-76 => true,
-77 => true,
-80 => true,
-85 => true,
-91 => true,
-96 => true,
-101 => true,
-102 => true,
-107 => true,
-112 => true,
-113 => true,
-147 => true,
-148 => true,
-158 => true,
-180 => true,
-181 => true,
-182 => true,
-183 => true,
-184 => true,
-291 => true,
-321 => true,
-323 => true,
-324 => true,
-339 => true,
-340 => true,
-355 => true,
-427 => true,
-428 => true,				
+					1 => [
+						6 => true,
+						4 => true,
+						2 => true
+						],
+					35 => [
+						1 => true
+						],
+					43 => [
+						3 => true,
+						2 => true
+						],
+					54 => [],
+					61 => [],
+					67 => [],
+					69 => [],
+					70 => [],
+					72 => [],
+					75 => [],
+					76 => [],
+					77 => [],
+					80 => [],
+					85 => [
+						2 => true,
+						1 => true
+						],
+					91 => [],
+					96 => [],
+					101 => [],
+					102 => [],
+					107 => [],
+					112 => [],
+					113 => [
+						2 => true,
+						1 => true
+						],
+					147 => [],
+					148 => [],
+					158 => [
+						2 => true,
+						1 => true
+						],
+					180 => [],
+					181 => [],
+					182 => [],
+					183 => [],
+					184 => [],
+					291 => [],
+					321 => [],
+					323 => [],
+					324 => [],
+					339 => [],
+					340 => [],
+					355 => [],
+					427 => [],
+					428 => [],				
 				];
 			case $playerData->hasValidLicense(License::PROCESSOR, 2): // 加工2
 				$recipe += [
-5 => true,
-43 => true,
-47 => true,
-85 => true,
-108 => true,
-113 => true,
-114 => true,
-128 => true,
-134 => true,
-135 => true,
-136 => true,
-139 => true,
-145 => true,
-158 => true,
-160 => true,
-163 => true,
-164 => true,
-167 => true,
-172 => true,
-182 => true,
-185 => true,
-186 => true,
-187 => true,
-256 => true,
-257 => true,
-258 => true,
-265 => true,
-267 => true,
-292 => true,
-325 => true,
-328 => true,
-330 => true,
-345 => true,
-346 => true,
-347 => true,
-351 => true,
-359 => true,
-380 => true,
-429 => true,
-430 => true,
-431 => true,					
+					5 => [
+						5 => true,
+						4 => true,
+						3 => true
+						],
+					43 => [
+						5 => true,
+						4 => true,
+						1 => true
+						],
+					47 => [],
+					85 => [
+						5 => true,
+						4 => true,
+						3 => true
+						],
+					108 => [],
+					113 => [
+						5 => true,
+						4 => true,
+						3 => true
+						],
+					114 => [],
+					128 => [],
+					134 => [],
+					135 => [],
+					136 => [],
+					139 => [
+						1 => true
+						],
+					145 => [],
+					158 => [
+						5 => true,
+						4 => true,
+						3 => true
+						],
+					160 => [],
+					163 => [],
+					164 => [],
+					167 => [],
+					172 => [],
+					182 => [
+						1 => true
+						],
+					185 => [],
+					186 => [],
+					187 => [],
+					256 => [],
+					257 => [],
+					258 => [],
+					265 => [],
+					267 => [],
+					292 => [],
+					325 => [],
+					328 => [],
+					330 => [],
+					345 => [],
+					346 => [],
+					347 => [],
+					351 => [
+						15 => true
+						],
+					359 => [],
+					380 => [],
+					429 => [],
+					430 => [],
+					431 => [],
 				];
 			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
 				$recipe += [
-35 => true,
-43 => true,
-48 => true,
-49 => true,
-121 => true,
-155 => true,
-165 => true,
-168 => true,
-169 => true,
-173 => true,
-266 => true,
-276 => true,
-277 => true,
-278 => true,
-279 => true,
-283 => true,
-284 => true,
-285 => true,
-286 => true,
-293 => true,
-294 => true,					
+					35 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true
+						],
+					43 => [
+						7 => true,
+						6 => true
+						],
+					48 => [],
+					49 => [],
+					121 => [],
+					155 => [],
+					165 => [],
+					168 => [
+						2 => true,
+						1 => true
+						],
+					169 => [],
+					173 => [],
+					266 => [],
+					276 => [],
+					277 => [],
+					278 => [],
+					279 => [],
+					283 => [],
+					284 => [],
+					285 => [],
+					286 => [],
+					293 => [],
+					294 => [],
 				];
 			break;
 			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
 				$recipe += [
-24 => true,
-98 => true,
-109 => true,
-179 => true,
-390 => true,					
+					24 => [
+						2 => true,
+						1 => true
+						],
+					98 => [
+						3 => true,
+						1 => true
+						],
+					109 => [],
+					179 => [
+						2 => true,
+						1 => true
+						],
+					390 => [],				
 				];
 			case $playerData->hasValidLicense(License::HANDIWORKER, 2): // 細工師2
 				$recipe += [
-159 => true,
-171 => true,
-236 => true,
-237 => true,	
+					159 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true
+						],
+					171 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true
+						],
+					236 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true
+						],
+					237 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true
+						],
 				];
 			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
 				$recipe += [
-22 => true,
-41 => true,
-42 => true,
-57 => true,
-89 => true,
-133 => true,
-152 => true,
-155 => true,
-156 => true,
-208 => true,
-355 => true,					
+					22 => [],
+					41 => [],
+					42 => [],
+					57 => [],
+					89 => [],
+					133 => [],
+					152 => [],
+					155 => [
+						2 => true,
+						1 => true
+						],
+					156 => [],
+					208 => [],
+					355 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true
+						],
 				];
 			break;
 		}
