@@ -39,7 +39,6 @@ use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
 class Umimedama extends Humanoid implements Enemy{
-	public static $ground = false;
 	public $rainDamage = false;
 	public $isDrown = false;
 
@@ -156,7 +155,7 @@ class Umimedama extends Humanoid implements Enemy{
 	}
 
 	public static function getSpawnRate() : int{
-		return 40;
+		return 20;
 	}
 
 	public static function summon($level, $x, $y, $z){
