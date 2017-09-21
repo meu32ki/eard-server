@@ -14,7 +14,7 @@ class Costable extends License {
      */
 	public function getCost(){
 	    $rank = $this->getRank();
-		return isset(self::$rankcost[$rank]) ? self::$rankcost[$rank] : 0;
+		return isset($this->rankcost[$rank]) ? $this->rankcost[$rank] : 0;
 	}
 
     /**
@@ -41,6 +41,6 @@ class Costable extends License {
         return $this->getCost() * 500;
     }
 
-	protected static $rankcost = [];
+	public $rankcost = [];
 
 }

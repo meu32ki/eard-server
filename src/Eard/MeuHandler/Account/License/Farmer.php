@@ -13,9 +13,9 @@ class Farmer extends Costable {
 		return $this->getName();
 	}
 
-	protected static $rankcost = [
+	public $rankcost = [
 	    1 => 3,
     ];
-	protected static $name = "農家";
+	public $name = "農家";
 
 }

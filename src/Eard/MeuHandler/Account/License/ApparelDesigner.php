@@ -35,14 +35,14 @@ class ApparelDesigner extends Costable {
 		}
 	}
 
-	protected static $ranktxt = [
+	public $ranktxt = [
 		1 => "1",
 		2 => "2",
 	];
-	protected static $rankcost = [
+	public $rankcost = [
 	    1 => 2,
         2 => 3,
     ];
-	protected static $name = "服飾";
+	public $name = "服飾";
 
 }

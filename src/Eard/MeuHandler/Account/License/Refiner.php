@@ -13,9 +13,9 @@ class Refiner extends Costable {
 		return $this->getName();
 	}
 
-	protected static $rankcost = [
+	public $rankcost = [
 	    1 => 3,
     ];
-	protected static $name = "精錬";
+	public $name = "精錬";
 
 }

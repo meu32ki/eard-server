@@ -13,9 +13,9 @@ class DangerousItemHandler extends Costable {
 		return $this->getName();
 	}
 
-	protected static $rankcost = [
+	public $rankcost = [
 	    1 => 1,
     ];
-	protected static $name = "危険物取扱";
+	public $name = "危険物取扱";
 
 }

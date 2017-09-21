@@ -35,16 +35,16 @@ class Processor extends Costable {
 		}
 	}
 
-	protected static $ranktxt = [
+	public $ranktxt = [
 		1 => "1",
 		2 => "2",
 		3 => "3",
 	];
-	protected static $rankcost = [
+	public $rankcost = [
 	    1 => 1,
         2 => 3,
         3 => 5
     ];
-	protected static $name = "加工";
+	public $name = "加工";
 
 }

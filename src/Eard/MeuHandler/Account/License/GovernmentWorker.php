@@ -13,13 +13,13 @@ class GovernmentWorker extends License {
 		return self::GOVERNMENT_WORKER;
 	}
 
-	protected static $ranktxt = [
+	public $ranktxt = [
 		1 => "土木技術者",
 		2 => "研修者",
 		3 => "1",
 		4 => "2",
 		5 => "3"
 	];
-	protected static $name = "政府関係者";
+	public $name = "政府関係者";
 
 }

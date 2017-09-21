@@ -229,7 +229,8 @@ class License {
 	*/
 	public function getRankText(){
 		$rank = $this->rank;
-		return isset(self::$ranktxt[$rank]) ? self::$ranktxt[$rank] : "[UNDEFINED]";
+		if(!$rank) return "";
+		return isset($this->ranktxt[$rank]) ? $this->ranktxt[$rank] : "[UNDEFINED]";
 	}
 
 
@@ -238,7 +239,7 @@ class License {
 	*	@return String
 	*/
 	public function getName(){
-		return self::$name;
+		return $this->name;
 	}
 
 	/**
@@ -259,8 +260,8 @@ class License {
 	private static $list = [];
 	private $no = 0;
 	private $time = 0;
-	private $rank = 0;
-	protected static $name = "";
-	protected static $ranktxt = [];
+	public $rank = 0;
+	public $name = "";
+	public $ranktxt = [];
 
 }
