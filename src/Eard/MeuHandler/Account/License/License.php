@@ -135,11 +135,20 @@ class License {
 	}
 
 	/**
-	*	強制的にそのライセンスを無効にする
+	*	強制的にそのライセンスを無効にする 実際に無効化されるのは2時間後
 	*/
 	public function expire(){
-		$this->time = time();
+		$this->time = time() + 60 * 60 * 2;
 		return true;
+	}
+
+	/**
+	*	現在無効化段階に入っているか(残り二時間を切っているか) 切っていればtrue
+	*	無期限の場合はfalseを返す
+	*	@return bool
+	*/
+	public function isExpireing(){
+		return $this->time === -1 ? false : $this->time - time() < 7200;
 	}
 
 	/**
