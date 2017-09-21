@@ -27,12 +27,18 @@ class LicenseForm extends ModalForm {
 						$lNo = $l->getLicenseNo();
 						if($license = $playerData->getLicense($lNo) ){
 							$status = "§d".$license->getValidTimeText();
+							$url = $license->getImgPath();
 						}else{
 							$status = "§f未所持";
+							$url = $l->getImgPath();
 						}
 
 						$buttons[] = [
-							'text' => $l->getFullName()." ". $status;
+							'text' => $l->getFullName()." ". $status,
+							'image' => [
+								'type' => 'url',
+								'data' => $url
+							]
 						]
 					}
 				}

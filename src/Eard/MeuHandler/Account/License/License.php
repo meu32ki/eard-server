@@ -55,7 +55,7 @@ class License {
 	*	@param Int 				self::RANK から始まる値
 	*	@return License | null
 	*/
-	public static function get($licenseNo, $time = null, $rank = null){
+	public static function get($licenseNo, $time = null, $rank = 1){
 		$license = isset(self::$list[$licenseNo]) ? clone self::$list[$licenseNo] : null;
 		if($license){
 			if($time){
@@ -249,11 +249,17 @@ class License {
 		return $this->getName()."(".$this->getRankText().")";
 	}
 
+	public function getImgPath(){
+		$classname = get_class($this);
+		$rank = $this->getRank();
+		return "http://eard.space/image/license/{$classname}_{$rank}.png";
+	}
+
 
 	private static $list = [];
 	private $no = 0;
 	private $time = 0;
-	private $rank = self::RANK_BEGINNER;
+	private $rank = 0;
 	protected static $name = "";
 	protected static $ranktxt = [];
 

@@ -6,7 +6,7 @@ class Hunter extends Costable {
 
 	// @License
 	public function getLicenseNo(){
-		return self::MINER;
+		return self::HUNTER;
 	}
 
 	// @License
