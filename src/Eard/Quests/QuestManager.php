@@ -36,7 +36,7 @@ class QuestManager{
 				for($i = 0; $i < self::LEVELS; $i++){
 					$data['buttons'][] = ['text' => "レベル$i"];
 				}
-				$id = 1;
+				$id = 1000;
 			break;
 			default:
 				$data = [
@@ -50,7 +50,7 @@ class QuestManager{
 				foreach($quests as $questId => $questClass){
 					$data['buttons'][] = ['text' => $questClass::getName()."\n".$questClass::getDescription()];
 				}
-				$id = 2;
+				$id = 1000+$stage;
 			break;
 		}
 		self::createWindow($player, $data, $id);
@@ -66,7 +66,7 @@ class QuestManager{
 			'button1' => "はい",
 			'button2' => "いいえ",
 		];
-		self::createWindow($player, $data, 3);
+		self::createWindow($player, $data, 1500+$questId);
 	}
 
 	public static function createWindow(Player $player, $data, int $id){
