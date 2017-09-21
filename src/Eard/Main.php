@@ -29,6 +29,7 @@ use Eard\Utils\ItemName;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 use Eard\DBCommunication\Earmazon;
+use Eard\Form\LicenseForm;
 
 # Enemys
 use Eard\Enemys\EnemyRegister;
@@ -103,7 +104,11 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
-				Earmazon::check();
+				$player = Server::getInstance()->getPlayer($a[0]);
+				$playerData = Account::get($player);
+				$l = new LicenseForm($playerData);
+				echo "\n\n\n";
+				$l->Send(2);
 				return true;
 			break;
 			case "li": // らいせんすかんけい
