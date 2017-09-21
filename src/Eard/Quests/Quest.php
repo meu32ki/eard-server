@@ -4,11 +4,45 @@ namespace Eard\Quests;
 class Quest{
 	public static $allQuests = [];
 
+
+	const QUESTID = 0;
+	const NORM = 0;
+	public $achievement = 0;
+
+	const TYPE_SUBJUGATION = 1;//討伐系
+	const TYPE_DELIVERY = 2;//納品系
+	const TYPE_SPECIAL = 3;//特殊なやつ
+
 	public static function getAllQuests(){
 		return self::$allQuests;
 	}
 
 	public static function get(int $id){
-		return isset(self::$allQuests[$id])? self::$allQuests[$id] : null;
+		if(isset(self::$allQuests[$id])){
+			$class = self::$allQuests[$id];
+			return new $class();
+		}
+		return null;
+	}
+
+	/*目的達成するたびに+1
+	*/
+	public function addAchievement(){
+		$this->achievement++;
+		if($this->checkAchievement()){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/*現在の達成状況を返す
+	*/
+	public function getAchievement(){
+		return $this->achievement;
+	}
+
+	public function checkAchievement(){
+		return (self::NORM >= $this->achievement);
 	}
 }
