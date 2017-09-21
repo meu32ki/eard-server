@@ -5,6 +5,9 @@ namespace Eard\Form;
 # Basic
 use pocketmine\Player;
 
+# Eard
+use Eard\MeuHandler\Account;
+
 
 class Form {
 
@@ -33,12 +36,16 @@ class Form {
 	}
 
 	public function Show(Account $playerData, $id, $data){
+
+		/*
 		$player = $playerData->getPlayer();
 		$pk = new ShowModalFormPacket();
 		$pk->formId = $id;
 		$pk->data = json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
 		$player->dataPacket($pk);
 		return true;
+		*/
+		echo json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
 	}
 
 	public function close(){

@@ -10,6 +10,7 @@ use pocketmine\utils\MainLogger;
 # Eard
 use Eard\DBCommunication\DB;
 use Eard\Event\ChatManager;
+use Eard\Form\Form;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
@@ -201,7 +202,7 @@ class Account implements MeuHandler {
 
 
 
-	public function setFormObject($obj){
+	public function setFormObject(Form $obj){
 		$this->formObj = $obj;
 		return true;
 	}
@@ -348,7 +349,7 @@ class Account implements MeuHandler {
 	*/
 	public function getNowLicenseCost(){
 		$cost = 0;
-		foreach($licenses as $l){
+		foreach($this->licenses as $l){
 			if($l instanceof Costable){
 				$cost += $l->getRealCost();
 			}

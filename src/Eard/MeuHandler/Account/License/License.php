@@ -194,10 +194,12 @@ class License {
 	}
 
 	/**
+	*	そのライセンスの有効期限はいつまでか
 	*	@return String
 	*/
 	public function getValidTimeText(){
-		return $this->time === -1 ? "無期限" : ( time() < $this->time ? date("n月j日G時i分")."まで有効" : date("n月j日G時i分")."に無効化済" );
+		return $this->time === -1 ? "無期限" : ( time() < $this->time ? date("n月j日G時i分", $this->time)."まで有効" : date("n月j日G時i分", $this->time)."に無効化済" );
+	}
 	}
 
 	/**
@@ -251,9 +253,10 @@ class License {
 	}
 
 	public function getImgPath(){
-		$classname = get_class($this);
+		$classar = explode("\\", get_class($this));
+		$classname = $classar[count($classar) - 1];
 		$rank = $this->getRank();
-		return "http://eard.space/image/license/{$classname}_{$rank}.png";
+		return "http://eard.space/images/license/{$classname}_{$rank}.png";
 	}
 
 
