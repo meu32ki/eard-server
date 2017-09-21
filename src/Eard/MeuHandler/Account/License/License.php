@@ -209,6 +209,29 @@ class License {
 	public function getValidTimeText(){
 		return $this->time === -1 ? "無期限" : ( time() < $this->time ? date("n月j日G時i分", $this->time)."まで有効" : date("n月j日G時i分", $this->time)."に無効化済" );
 	}
+
+	/**
+	*	そのライセンスの有効期限まで何日何分何秒か
+	*	@return String
+	*/
+	public function getLeftTimeText(){
+		$sec = $this->time - time();
+		if(0 < $sec){
+			$s_sec = $sec % 60;
+			$s_min = floor($sec / 60);
+			if(60 <= $s_min){
+				$s_hour = floor($s_min / 60);
+				$s_min = $s_min % 60;
+				$out = "{$s_hour}時間{$s_min}分";
+			}else{
+				if($s_min < 1){
+					$out = "{$s_sec}秒";
+				}elseif($s_min < 60){
+					$out = "{$s_min}分{$s_sec}秒";
+				}
+			}
+		}
+		return $this->time === -1 ? "" : (0 < $sec ? "残り {$out}" : "");
 	}
 
 	/**
