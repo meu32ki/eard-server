@@ -200,6 +200,21 @@ class Account implements MeuHandler {
 	private $chatmode = 1;
 
 
+
+	public function setFormObject($obj){
+		$this->formObj = $obj;
+		return true;
+	}
+	public function getFormObject(){
+		return $this->formObj;
+	}
+	private function removeFormObject(){
+		$this->formObj = null;
+		return true;
+	}
+	private $formObj;
+
+
 	/**
 	*	playerのチャットをそのオブジェクトに入力(とばしたい)させたい時は
 	*	setChatObjectをつかう。setChatModeではなく。

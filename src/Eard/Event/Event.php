@@ -126,7 +126,8 @@ class Event implements Listener{
 			$e->setQuitMessage($msg);
 
 			$playerData->onUpdateTime();
-			$playerData->updateData(true);//quitの最後に持ってくること。他の処理をこの後に入れない。セーブされないデータが出てきてしまうかもしれないから。
+			$playerData->updateData(true);
+			//quitの最後に持ってくること。他の処理をこの後に入れない。セーブされないデータが出てきてしまうかもしれないから。
 		}
 	}
 
@@ -507,6 +508,19 @@ class Event implements Listener{
 
 		}
 		return true;
+	}
+
+
+	public function D(DataPacketReceiveEvent $e){
+		$pk = $e->getPacket();
+/*
+		if($pk instanceof ModalFormResponsePacket){
+			$playerData = Account::get($e->getPlayer());
+			if($obj = $playerData->getFormObject()){
+				$obj->Receive($pk->formId, $pk->data);
+			}
+		}
+*/
 	}
 
 
