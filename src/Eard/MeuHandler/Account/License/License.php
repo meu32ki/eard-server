@@ -57,7 +57,7 @@ class License {
 	*/
 	public static function get($licenseNo, $time = null, $rank = 1){
 		$license = isset(self::$list[$licenseNo]) ? clone self::$list[$licenseNo] : null;
-		if($license){
+		if($license　&& $this->isRankExist()){
 			if($time){
 				$license->setValidTime($time);
 			}
@@ -258,6 +258,14 @@ class License {
 	}
 
 	/**
+	*	そのランクが存在しているかどうか (giveの時の確認に使う)
+	*	@return bool
+	*/
+	public function isRankExist(){
+		return isset($this->ranktxt[$this->rank]);
+	}
+
+	/**
 	*	そのランクの名前を返す
 	*	@return String
 	*/
@@ -266,7 +274,6 @@ class License {
 		if(!$rank) return "";
 		return isset($this->ranktxt[$rank]) ? $this->ranktxt[$rank] : "[UNDEFINED]";
 	}
-
 
 	/**
 	*	ライセンスの名前を返す
@@ -284,6 +291,10 @@ class License {
 		return $this->getName()."(".$this->getRankText().")";
 	}
 
+	/**
+	*	ライセンスの画像の置き場所のurlを返す
+	*	@return String URL
+	*/
 	public function getImgPath(){
 		$classar = explode("\\", get_class($this));
 		$classname = $classar[count($classar) - 1];

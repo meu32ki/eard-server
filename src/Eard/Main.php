@@ -120,10 +120,11 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								$no = $a[2];
 								if(isset($a[3])){
 									$time = $a[3] == -1 ? -1 : time() + (int) $a[3]; // 無期限でなければ、それを秒数だと認識し
+									$rank = isset($a[4]) ? (int) $a[4] : 1;
 								}else{
 									$time = time() + 600; // デフォルトでは10分
+									$rank = isset($a[3]) ? (int) $a[3] : 1;
 								}
-								$rank = isset($a[4]) ? (int) $a[4] : 1;
 								$player = Server::getInstance()->getPlayer($name);
 								if($player instanceof Player){
 									$playerData = Account::get($player);
