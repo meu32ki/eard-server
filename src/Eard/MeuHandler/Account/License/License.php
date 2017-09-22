@@ -57,7 +57,7 @@ class License {
 	*/
 	public static function get($licenseNo, $time = null, $rank = 1){
 		$license = isset(self::$list[$licenseNo]) ? clone self::$list[$licenseNo] : null;
-		if($license　&& $this->isRankExist()){
+		if($license && $license->isRankExist($rank)){
 			if($time){
 				$license->setValidTime($time);
 			}

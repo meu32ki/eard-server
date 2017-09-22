@@ -134,11 +134,18 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 										return true;
 									}
 
+
+									$s->sendMessage(Chat::SystemToPlayer("あげるらいせんす 有効期限: {$license->getValidTimeText()}, ランク: {$license->getRank()} コスト: {$license->getRealCost()}"));
+
 									$result = $playerData->addLicense($license);
-									$out = 0 < $result ? "あげました" : "あげれませんでした";
+									switch($result){
+										case -1: $out = "新しく上げたほうのランクが低い"; break;
+										case 0: $out = "コストのかんけいであげれませんでした"; break;
+										case 1: $out = "上げました"; break;
+									}
 									$s->sendMessage(Chat::SystemToPlayer($out));
 
-									if($result){
+									if($result === 1){
 										$player->sendMessage(Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！ 有効期限：{$license->getValidTimeText()}"));
 									}
 								}else{

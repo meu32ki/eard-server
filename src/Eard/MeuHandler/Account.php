@@ -283,10 +283,11 @@ class Account implements MeuHandler {
 	*	@return Int 	-1...すでに持ってる 0...あげれない 1...あげれた
 	*/
 	public function addLicense(License $license){
-		$licenseNo = $license->getLicenseNo();
+
 
 		// コスト
 		if($this->canAddNewLicense($license)){
+			$licenseNo = $license->getLicenseNo();
 			if($oldone = $this->getLicense($licenseNo)){
 				// すでに持ってたら
 				$oldrank = $oldone->getRank();
@@ -299,7 +300,7 @@ class Account implements MeuHandler {
 					// 同じなら、まだ追加できる可能性がある
 					$oldtime = $oldone->getValidTime();
 					$newtime = $license->getValidTime();
-					if(0 < $oldtime && $oldtime < $newtime){ // 古いライセンスの有効期限が無期限でなければ、延長
+					if(0 <= $oldtime && $oldtime <= $newtime){ // 古いライセンスの有効期限が無期限でなければ、延長
 						$this->licenses[$licenseNo] = $license;
 						return 1;
 					}else{
