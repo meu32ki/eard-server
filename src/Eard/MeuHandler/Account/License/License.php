@@ -301,7 +301,8 @@ class License {
 		$classar = explode("\\", get_class($this));
 		$classname = $classar[count($classar) - 1];
 		$rank = $this->getRank();
-		return "http://eard.space/images/license/{$classname}_{$rank}.png";
+		$status = $this->isValidTime() ? "activated" : "normal";
+		return "http://eard.space/images/license/{$status}/{$classname}_{$rank}.png";
 	}
 
 
