@@ -108,7 +108,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 				$playerData = Account::get($player);
 				$l = new LicenseForm($playerData);
 				echo "\n\n\n";
-				$l->Send(2);
+				$l->selectedLicenseNo = $a[1];
+				$l->send(6);
 				return true;
 			break;
 			case "li": // らいせんすかんけい
