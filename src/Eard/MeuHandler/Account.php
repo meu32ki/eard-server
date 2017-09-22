@@ -344,20 +344,6 @@ class Account implements MeuHandler {
 	}
 
 	/**
-	*	今現在持っており、有効なライセンスのコストの総計
-	*	@return Int
-	*/
-	public function getNowLicenseCost(){
-		$cost = 0;
-		foreach($this->licenses as $l){
-			if($l instanceof Costable){
-				$cost += $l->getRealCost();
-			}
-		}
-		return $cost;
-	}
-
-	/**
 	*	新しいライセンスを得る際、コストに問題がないかを計算してくれる
 	*	そのライセンスを付けられるか、コストの面から見る
 	*	@return bool | つけられるならtrue つけられないならfalse
@@ -369,9 +355,17 @@ class Account implements MeuHandler {
 		$maxCost = ( $residence instanceof License && 4 <= $residence->getRank() ) ? 5 : 6;
 
 		// 今現在持っており、有効なライセンスのコストの総計
-		$nowCost = $this->getNowLicenseCost();
+		$newLicenseNo = $license->getLicenseNo();
+		$cost = 0;
+		foreach($this->licenses as $lNo => $l){
+			if($l instanceof Costable && $newLicenseNo !== $lNo){ // 新しく追加したいライセンスを、すでに持っている(=更新など)場合には、古いそれを計算から除外して考える
+				$cost += $l->getRealCost();
+			}
+		}
+		$nowCost = $cost;
+		
 		$theCost = $license instanceof Costable ? $license->getRealCost() : 0; // つけようとしているライセンスのコスト
-		return $theCost < $maxCost - $nowCost;
+		return 0 <= $maxCost - $nowCost - $theCost;
 	}
 
 	/**
