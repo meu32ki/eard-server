@@ -259,10 +259,12 @@ class License {
 
 	/**
 	*	そのランクが存在しているかどうか (giveの時の確認に使う)
+	*	@param Int (Rank) 入れた場合には、そのランクが存在するかを返し、入れなかった場合には、現在のこのライセンスのランクが存在するかを返す
 	*	@return bool
 	*/
-	public function isRankExist(){
-		return isset($this->ranktxt[$this->rank]);
+	public function isRankExist($rank = false){
+		$rank = $rank ? $rank : $this->rank;
+		return isset($this->ranktxt[$rank]);
 	}
 
 	/**
