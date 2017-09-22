@@ -127,11 +127,11 @@ class License {
 	}
 
 	/**
-	*	そのライセンスの有効期間を一週間延ばす場合にかかるお金を返す
+	*	そのライセンスの有効期間を一日延ばす場合にかかるお金を返す
 	*	@return Int
 	*/
 	public function getUpdatePrice(){
-		return 1000;
+		return 100;
 	}
 
 	/**

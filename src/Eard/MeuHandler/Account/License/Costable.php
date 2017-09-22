@@ -38,7 +38,7 @@ class Costable extends License {
 
     // @License
     public function getUpdatePrice(){
-        return $this->getCost() * 500;
+        return $this->getCost() * 100;
     }
 
 	public $rankcost = [];
