@@ -14,8 +14,11 @@ class Farmer extends Costable {
 	}
 
 	public $rankcost = [
-	    1 => 3,
-    ];
+		1 => 3,
+	];
+	public $ranktxt = [
+		1 => "",
+	];
 	public $name = "農家";
 
 }
