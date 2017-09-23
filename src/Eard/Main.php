@@ -317,7 +317,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								$player = Server::getInstance()->getPlayer($name);
 								if($player instanceof Player){
 									$playerData = Account::get($player);
-									$result = Government::giveMeu($playerData, $amount);
+									$result = Government::giveMeu($playerData, $amount, "デバッグ用");
 									$out = $result ? "{$amount}μあげた" : "あげられなかった 政府の予算が足りない";
 									$s->sendMessage(Chat::SystemToPlayer($out));
 								}else{
