@@ -52,7 +52,7 @@ class Form {
 		return true;
 		*/
 		echo json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
-		echo "\n";
+		echo " Formid: {$id}\n";
 	}
 
 	/**
@@ -101,46 +101,65 @@ class Form {
 		];
 		$this->cache = [$b1jump, $b2jump ? $b2jump : $b1jump];
 
+		$this->lastSendData = $data;
 		$this->Show($this->playerData, 1000, $data);
-		$this->lastsend = $data;
 	}
 
 	/**
 	*	次のsend()のために、送られてきたデータを格納する。
 	*	@param Int [$id]		受け取るformId (packetからダイレクトに来る)
 	*	@param String [$data] 	いろいろはいってる
+	*	@return bool
 	*/
 	public function Receive($id, $data){
+		# echo "Receive {$id} {$data}\n";
 		if($data === null){	// [x]ボタンを押して閉じたとき
 			$this->close();
 			return false;
 		}
+
+		if($id !== 1000){
+			$this->lastFormId = (int) $id;
+		}
+
+		# echo "lastSendData ";
+		# print_r($this->lastSendData);
+		# echo "cache ";
+		# print_r($this->cache);
+
 		switch($this->lastSendData['type']){
 			case 'form':
 				$buttonNo = $data;
+				$formid = isset($this->cache[$buttonNo]) ? $this->cache[$buttonNo] : $this->cache[0];
 				$this->lastMode = self::TYPE_FORM;
 				$this->lastData = $data;
-				$this->Send( isset($this->cache[$buttonNo]) ? $this->cache[$buttonNo] : $this->cache[0]);
+				$this->Send($formid);
+				# echo "form send {$formid}\n";
 			break;
 			case 'modal':
 				$this->lastMode = self::TYPE_MODAL;
 				switch($data){
 					case "true\n":
-						$this->Send($this->cache[0]);
 						$this->lastData = 0;
+						$this->Send($this->cache[0]);
+						# echo "true send "; 
+						# echo $this->cache[0];
+						# echo "\n";
 					break;
 					case "false\n":
-						$this->Send( isset($this->cache[1]) ? $this->cache[1] : $this->cache[0] );
 						$this->lastData = 1;
+						$formid = isset($this->cache[1]) ? $this->cache[1] : $this->cache[0];
+						$this->Send($formid);
+						# echo "false send {$formid}\n";
 					break;
 				}
 			break;
 		}
-		$this->lastFormId = $id;
+		return true;
 	}
 
 	protected $cache = [];
-	protected $lastSendData = "";
+	protected $lastSendData = [];
 
 	protected $lastFormId = 0;
 	protected $lastData = "";

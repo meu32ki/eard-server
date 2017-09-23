@@ -15,10 +15,14 @@ commands:
   usage: "/s"
   permission: eard
  test:
-  description: ""
+  description: "command for test"
   usage: "/test"
   permission: eard
-  aliases: [test2, test3, test4, t]
+  aliases: [test2, test3, test4]
+ t:
+  description: "command for test"
+  usage: "/t"
+  permission: eard  
  ap:
   description: "eard: AreaProtector"
   usage: "/ap [a|v|give]"
