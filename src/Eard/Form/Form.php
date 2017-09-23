@@ -118,6 +118,14 @@ class Form {
 			return false;
 		}
 
+		// ほけん
+		/*
+		if($this->lastFormId && $this->lastFormId != $id){
+			echo "idがちがうため処理を取りやめ";
+			return false;
+		}
+		*/
+
 		if($id !== 1000){
 			$this->lastFormId = (int) $id;
 		}
@@ -140,6 +148,7 @@ class Form {
 				$this->lastMode = self::TYPE_MODAL;
 				switch($data){
 					case "true\n":
+					case 0:
 						$this->lastData = 0;
 						$this->Send($this->cache[0]);
 						# echo "true send "; 
@@ -147,6 +156,7 @@ class Form {
 						# echo "\n";
 					break;
 					case "false\n":
+					case 1:
 						$this->lastData = 1;
 						$formid = isset($this->cache[1]) ? $this->cache[1] : $this->cache[0];
 						$this->Send($formid);

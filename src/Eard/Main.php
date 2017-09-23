@@ -110,9 +110,11 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 				return true;
 			break;
 			case "t":
+				if(count($a) != 2) return false;
 				$player = Server::getInstance()->getPlayer("meu32ki");
 				$playerData = Account::get($player);
 				$playerData->getFormObject()->Receive($a[0], $a[1]);
+				return true;
 			break;
 			case "li": // らいせんすかんけい
 				if(isset($a[0])){
