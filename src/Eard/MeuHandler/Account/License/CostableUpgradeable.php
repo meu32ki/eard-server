@@ -13,7 +13,9 @@ class CostableUpgradeable extends Costable {
     public function upgrade(){
         if($this->canUpgrade()){
             $this->rank += 1;
+            return true;
         }
+        return false;
     }
 
     // @License
@@ -25,7 +27,9 @@ class CostableUpgradeable extends Costable {
     public function downgrade(){
         if($this->canDowngrade()){
             $this->rank -= 1;
+            return true;
         }
+        return false;
     }
 
 }

@@ -75,10 +75,20 @@ class Form {
 
 	/**
 	*	プレイヤーにエラーメッセージを送りつける send() の簡易版
+	*	@param String [$title]	上に出る文字
 	*	@param String [$content]	そのエラー内容
 	*	@param Int [$b1jump]		プレイヤーがエラー内容を了承し、ボタンのどちらかをきちんと押したときの挙動
 	*/
-	public function sendErrorModal($content, $b1jump){
+	public function sendErrorModal($title, $content, $b1jump){
+		$this->sendModal($title, $content, "OK", $b1jump);
+	}
+
+	/**
+	*	プレイヤー側の落ち度でない場合のエラーにはこっちを使え
+	*	@param String [$content]	そのエラー内容
+	*	@param Int [$b1jump]		プレイヤーがエラー内容を了承し、ボタンのどちらかをきちんと押したときの挙動
+	*/
+	public function sendInternalErrorModal($content, $b1jump){
 		$this->sendModal("エラー", $content, "OK", $b1jump);
 	}
 

@@ -97,7 +97,7 @@ class License {
 	}
 
 	/**
-	*	そのライセンスに、次のランクがあるのであれば、ライセンスの有効期間を一週間短くすることでランクを1段階上げる
+	*	そのライセンスに、次のランクがあるのであれば、ランクを1段階上げる
 	*	有効期限は伸びない。
 	*/
 	public function upgrade(){
@@ -138,8 +138,13 @@ class License {
 	*	強制的にそのライセンスを無効にする 実際に無効化されるのは2時間後
 	*/
 	public function expire(){
-		$this->time = time() + 60 * 60 * 2;
-		return true;
+		if(!$this->isExpireing()){
+			$this->time = time() + 60 * 60 * 2;
+			return true;
+		}else{
+			// すでに無効化段階に入っている場合は何もしない。期限が伸びることになるので。
+			return false;
+		}
 	}
 
 	/**
@@ -155,10 +160,7 @@ class License {
 	*	そのライセンスの有効期限を伸ばす。値がなければ一週間。
 	*	@param int 増やす時間(秒)
 	*/
-	public function update($timeAmount = 0){
-		if($timeAmount === 0){
-			$timeAmount = 604800; // 一週間
-		}
+	public function update($timeAmount){
 		// まだ有効期限内
 		if(time() < $this->time){
 			$this->time = $this->time + $timeAmount;
@@ -166,6 +168,7 @@ class License {
 		}else{
 			$this->time = time() + $timeAmount;
 		}
+		return true;
 	}
 
     /**
@@ -207,7 +210,12 @@ class License {
 	*	@return String
 	*/
 	public function getValidTimeText(){
-		return $this->time === -1 ? "無期限" : ( time() < $this->time ? date("n月j日G時i分", $this->time)."まで有効" : date("n月j日G時i分", $this->time)."に無効化済" );
+		switch($this->time){
+			case -1: $out = "無期限"; break;
+			case 0: $out = "未使用"; break;
+			default: $out = time() < $this->time ? date("n月j日G時i分", $this->time)."まで有効" : date("n月j日G時i分", $this->time)."に無効化済"; break;
+		}
+		return $out;
 	}
 
 	/**
