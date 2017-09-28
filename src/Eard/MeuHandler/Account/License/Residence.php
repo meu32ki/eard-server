@@ -16,28 +16,30 @@ class Residence extends License {
 
 	// @License
 	public function canUpgrade(){
-		if(1 <= $this->rank and $this->rank < 5) return true;
-		return false;
+		return $this->isRankExist($this->rank + 1);
 	}
 
 	// @License
 	public function upgrade(){
 		if($this->canUpgrade()){
 			$this->rank += 1;
+			return true;
 		}
+		return false;
 	}
 
 	// @License
 	public function canDowngrade(){
-		if(1 < $this->rank and $this->rank <= 5) return true;
-		return false;
+		return $this->isRankExist($this->rank - 1);
 	}
 
 	// @License
 	public function downgrade(){
 		if($this->canDowngrade()){
 			$this->rank -= 1;
+			return true;
 		}
+		return false;
 	}
 
 	public function getPrice(){
@@ -53,13 +55,19 @@ class Residence extends License {
 	public function getUpdatePrice(){
 		switch($this->getCost()){
 			case 1: $price = 0; break;
-			case 2: $price = 500; break;
-			case 3: $price = 2000; break;
-			case 4: $price = 4500; break;
-			case 5: $price = 8000; break;
+			case 2: $price = 50; break;
+			case 3: $price = 200; break;
+			case 4: $price = 400; break;
+			case 5: $price = 800; break;
 		}
 	}
 
+	public function getImgPath(){
+		$classar = explode("\\", get_class($this));
+		$classname = $classar[count($classar) - 1];
+		$rank = $this->isValidTime() ? $this->getRank() : 0;
+		return "http://eard.space/images/license/normal/{$classname}_{$rank}.png";
+	}
 
 	public $ranktxt = [
 		1 => "浮浪者",
@@ -68,6 +76,6 @@ class Residence extends License {
 		4 => "上流",
 		5 => "富裕"
 	];
-	public $name = "生活レベル";
+	public $name = "生活";
 
 }
