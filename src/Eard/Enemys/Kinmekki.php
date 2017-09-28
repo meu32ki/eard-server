@@ -17,7 +17,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 use pocketmine\level\particle\SpellParticle;
 use pocketmine\level\particle\RedstoneParticle;
 
@@ -236,17 +236,17 @@ class Kinmekki extends Humanoid implements Enemy{
 			$this->yaw += mt_rand(-90, 90);
 			AI::jump($this);
 		}
-		parent::onUpdate($tick);
+		return parent::onUpdate($tick);
 	}
 
 		public function attack(EntityDamageEvent $source){
-		$damage = $cource->getDamage();// 20170928 src変更による書き換え
-		parent::attack($damage, $source);
+		$damage = $source->getDamage();// 20170928 src変更による書き換え
+		parent::attack($source);
 		AI::setRate($this, 10);
 		$this->walk = false;
 	}
 	
-	public function getName(){
+	public function getName() : string{
 		return self::getEnemyName();
 	}
 }

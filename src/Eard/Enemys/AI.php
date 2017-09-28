@@ -6,8 +6,8 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 use pocketmine\block\Liquid;
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\ExplodePacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\item\Item as ItemItem;
 
 use pocketmine\command\Command;
@@ -275,7 +275,7 @@ abstract class AI{
 			$disq = $enemy->distanceSquared($player);
 			if($disq <= pow($range, 2)){
 				$ev = new EntityDamageByEntityEvent($enemy, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($power), 0);
-				$player->attack(round($power), $ev);
+				$player->attack($ev);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ abstract class AI{
 					if(sqrt(pow($x+$xx*$dis-$vx,2)+pow($y+$yy*$dis-$vy,2)+pow($z+$zz*$dis-$vz,2)) <= $rr){
 						$knockback = 0;
 						$ev = new EntityDamageByEntityEvent($enemy, $player_v, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($damage), $knockback);
-						$player_v->attack(round($damage), $ev);
+						$player_v->attack($ev);
 					}
 				}
 			}

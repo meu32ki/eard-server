@@ -6,7 +6,7 @@ namespace Eard\Enemys;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\scheduler\Task;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 
 # Eard
 use Eard\Event\Time;

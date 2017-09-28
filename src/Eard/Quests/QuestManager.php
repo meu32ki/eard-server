@@ -2,8 +2,8 @@
 namespace Eard\Quests;
 
 use pocketmine\event\server\DataPacketReceiveEvent;
-//use pocketmine\network\protocol\ModalFormResponsePacket;
-//use pocketmine\network\protocol\ModalFormRequestPacket;
+//use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+//use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\Player;
 
 # Quests

@@ -10,11 +10,11 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 use pocketmine\level\particle\SpellParticle;
 
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -157,7 +157,7 @@ class Humanoid extends Human{
 				$weather = $this->level->getWeather()->getWeather();
 				if((($this->rainDamage && $weather <= 2 && $weather >= 1 && !isset(self::$noRainBiomes[$this->level->getBiomeId(intval($this->x), intval($this->z))])) || (($id = $this->level->getBlock($this)->getId()) === 9 || $id === 8) && $this->isDrown) && $this->getHealth() > 0){
 					$this->deadTicks = 0;
-					$this->attack(2, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
+					$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2));
 				}
 
 				$this->motionY -= $this->gravity;
@@ -191,11 +191,11 @@ class Humanoid extends Human{
 	}
 
 	public function attack(EntityDamageEvent $source){
-		$damage = $cource->getDamage();// 20170928 src変更による書き換え
+		$damage = $source->getDamage();// 20170928 src変更による書き換え
 		if($source->getCause() === EntityDamageEvent::CAUSE_FALL){
 			$source->setCancelled(true);
 		}
-		parent::attack($damage, $source);
+		parent::attack($source);
 		if(!$source->isCancelled() && $source instanceof EntityDamageByEntityEvent){
 			$attacker = $source->getDamager();
 			if($attacker instanceof Player){

@@ -29,8 +29,8 @@ use pocketmine\event\block\BlockPlaceEvent;
 # NetWork
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 
 # Eard
 use Eard\Main;
@@ -160,7 +160,7 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$name = $player->getName();
 		switch($packet::NETWORK_ID){
-			case ProtocolInfo::USE_ITEM_PACKET:
+			/*case ProtocolInfo::USE_ITEM_PACKET:
 				// Menu::染料タップ
 				$itemId = $packet->item->getId();
 				if($itemId === Menu::$selectItem || $itemId === Menu::$menuItem){
@@ -171,7 +171,7 @@ class Event implements Listener{
 						$playerData->getMenu()->useMenu();
 					}
 				}
-			break;
+			break; エラー吐く*/
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				//壊し始めたとき
 				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
@@ -193,15 +193,13 @@ class Event implements Listener{
 		$pk = $e->getPacket();
 		$player = $e->getPlayer();
 		switch($pk::NETWORK_ID){
-			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
-				/*
+			/*case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
 					Note: Menuは、偽のインベントリで動いている。
 					時々偽のインベントリチェックがはいるため、メニュー使用時はそれを無効にする。
-				*/
 				if(Account::get($player)->getMenu()->isActive()){
 					$e->setCancelled(true);
 				}
-			break;
+			break; エラー吐く*/
 			# クラフトレシピ削除
 			case ProtocolInfo::CRAFTING_DATA_PACKET:
 				//$pk->clean();

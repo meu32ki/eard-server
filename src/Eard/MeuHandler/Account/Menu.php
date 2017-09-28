@@ -10,9 +10,9 @@ use pocketmine\utils\MainLogger;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
 
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
-use pocketmine\network\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 
 # Event
 use pocketmine\event\player\PlayerInteractEvent;
