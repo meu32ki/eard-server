@@ -8,8 +8,8 @@ namespace Eard\MeuHandler\Account\License;
 */
 class License {
 
-
-	//20180709 仕様が決まったのでゴリゴリ書いていこう
+	//20170925 すげえいろいろ書き足したなあ
+	//20170709 仕様が決まったのでゴリゴリ書いていこう
 	//20170521 仕様が決まっていないためとりあえず放置
 
 	// const NEET = 0; const NOJOBS = 0;

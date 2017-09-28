@@ -287,7 +287,8 @@ class Event implements Listener{
 					$player->addWindow($inv);
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
-				default: 
+				default:
+					// 手持ちアイテム
 					switch($itemId){
 						case 259: // うちがね
 							if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){

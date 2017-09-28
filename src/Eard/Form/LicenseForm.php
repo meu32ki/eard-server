@@ -26,6 +26,9 @@ class LicenseForm extends Form {
 	*/
 
 	/*
+		選択 = form
+		確認 = modal
+		実行 = 終了後modalで確認
 		1 選択 親0 ライセンス
 		2 選択 親1 ライセンスに対しての動作
 		3 未
