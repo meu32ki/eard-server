@@ -229,8 +229,13 @@ class License {
 			$s_min = floor($sec / 60);
 			if(60 <= $s_min){
 				$s_hour = floor($s_min / 60);
-				$s_min = $s_min % 60;
-				$out = "{$s_hour}時間{$s_min}分";
+				if(24 <= $s_hour){
+					$s_day = floor($s_hour / 24);
+					$out = "{$s_day}日{$s_hour}時間";
+				}else{
+					$s_min = $s_min % 60;
+					$out = "{$s_hour}時間{$s_min}分";
+				}
 			}else{
 				if($s_min < 1){
 					$out = "{$s_sec}秒";
@@ -266,7 +271,7 @@ class License {
 	}
 
 	/**
-	*	そのランクが存在しているかどうか (giveの時の確認に使う)
+	*	そのランクが存在しているかどうか (giveの時の確認、レベルアップ確認に使う)
 	*	@param Int (Rank) 入れた場合には、そのランクが存在するかを返し、入れなかった場合には、現在のこのライセンスのランクが存在するかを返す
 	*	@return bool
 	*/
