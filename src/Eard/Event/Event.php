@@ -131,6 +131,8 @@ class Event implements Listener{
 		}
 	}
 
+/*
+	// 20170928 1.2対応のためいったん無効
 	public function F(PlayerFishEvent $e){
 		$item = $e->getItem();
 		$hook = $e->getHook();
@@ -151,6 +153,7 @@ class Event implements Listener{
 			break;
 		}
 	}
+*/
 
 	public function PacketReceive(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();

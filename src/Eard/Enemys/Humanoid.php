@@ -97,7 +97,7 @@ class Humanoid extends Human{
 		$this->spawnTime = microtime(true);
 	}
 
-	public function getDrops($score = 0){
+	public function getDrops($score = 0): array{
 		if($score === 0){
 			return [];
 		}
@@ -136,7 +136,7 @@ class Humanoid extends Human{
 	}
 
 	//ちゃんと動いてもらうための補助関数(PMMP側から呼び出される)
-	public function onUpdate($tick){
+	public function onUpdate(int $tick): bool{
 		if($this instanceof Human){
 			if($this->attackingTick > 0){
 				$this->attackingTick--;
@@ -190,7 +190,8 @@ class Humanoid extends Human{
 		return $grandParent::onUpdate($tick);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
+		$damage = $cource->getDamage();// 20170928 src変更による書き換え
 		if($source->getCause() === EntityDamageEvent::CAUSE_FALL){
 			$source->setCancelled(true);
 		}

@@ -219,7 +219,7 @@ class Kinmekki extends Humanoid implements Enemy{
 		$this->walk = true;
 	}
 
-	public function onUpdate($tick){
+	public function onUpdate(int $tick): bool{
 		if($this->getHealth() > 0 && AI::getRate($this)){
 				$this->charge = 0;
 				$this->mode = 0;
@@ -239,7 +239,8 @@ class Kinmekki extends Humanoid implements Enemy{
 		parent::onUpdate($tick);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+		public function attack(EntityDamageEvent $source){
+		$damage = $cource->getDamage();// 20170928 src変更による書き換え
 		parent::attack($damage, $source);
 		AI::setRate($this, 10);
 		$this->walk = false;

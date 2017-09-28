@@ -52,7 +52,7 @@ class Spawn extends Task{
 		$this->spawnType = $spawnType;
 	}
 
-	public function onRun($tick){
+	public function onRun(int $tick){
 		Time::timeSync();
 		Time::timeSignal();
 

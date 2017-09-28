@@ -236,7 +236,7 @@ class Mukurotonbo extends Humanoid implements Enemy{
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
-	public function onUpdate($tick){
+	public function onUpdate(int $tick): bool{
 		if($this->getHealth() > 0 && AI::getRate($this)){
 			$this->timings->startTiming();
 			$this->target = AI::searchTarget($this, 500);
@@ -322,7 +322,8 @@ class Mukurotonbo extends Humanoid implements Enemy{
 		parent::onUpdate($tick);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+		public function attack(EntityDamageEvent $source){
+		$damage = $cource->getDamage();// 20170928 src変更による書き換え
 		parent::attack($damage, $source);
 		if($source instanceof EntityDamageByEntityEvent){
 			$damager = $source->getDamager();

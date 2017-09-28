@@ -34,7 +34,10 @@ class Recipe {
 				$fishes[] = $id;
 			}
 		}
+		/*
+		// 20170928 src変更により一時的に無効
 		FishingHook::setFishes($fishes);
+		*/
 	}
 
 	//こいつでプレイヤーごとにクラフトできるやつ返して
@@ -514,9 +517,14 @@ class Recipe {
 	}
 
 	public static function addPotionRecipe(Item $result, Item $material, Item $bottle){
+
+/*
+		// 20170928 1.2の書き換えにより
+		// [12:11:47] [Server thread/CRITICAL]: TypeError: "Argument 2 passed to pocketmine\inventory\ShapedRecipe::__construct() must be of the type array, integer given, called in C:\OneDrive\Eard02\plugins\Eard\src\Eard\MeuHandler\Account\License\Recipe.php on line 520" (EXCEPTION) in "src/pocketmine/inventory/ShapedRecipe" at line 62
 		Server::getInstance()->getCraftingManager()->registerRecipe((new ShapedRecipe($result, 2, 1))->
 			addIngredient(0, 0, $material)->
 			addIngredient(0, 1, $bottle));
+*/
 	}
 
 	//いじらないで

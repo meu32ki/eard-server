@@ -100,7 +100,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Connection::close();
 	}
 
-	public function onCommand(CommandSender $s, Command $cmd, $label, array $a){
+	public function onCommand(CommandSender $s, Command $cmd, string $label, array $a): bool{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う

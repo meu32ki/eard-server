@@ -214,7 +214,7 @@ class HaneAri extends Humanoid implements Enemy{
 		$this->getInventory()->setItemInHand($item);*/
 	}
 
-	public function onUpdate($tick){
+	public function onUpdate(int $tick): bool{
 		if($this->getHealth() > 0 && AI::getRate($this)){
 			$this->walk = true;
 			if($this->target = AI::searchTarget($this)){
@@ -252,7 +252,8 @@ class HaneAri extends Humanoid implements Enemy{
 		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+		public function attack(EntityDamageEvent $source){
+		$damage = $cource->getDamage();// 20170928 src変更による書き換え
 		parent::attack($damage, $source);
 	}
 	
