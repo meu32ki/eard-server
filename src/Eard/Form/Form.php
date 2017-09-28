@@ -174,6 +174,11 @@ class Form {
 					break;
 				}
 			break;
+			case 'custom_form':
+				$this->lastMode = self::TYPE_MODAL;
+				$this->lastData = json_decode($data, true);
+				$this->Send($this->cache[0]);
+			break;
 		}
 		return true;
 	}
