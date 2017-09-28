@@ -62,7 +62,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		# 釣り変更
 		Recipe::changeFishes();
 		Recipe::addOriginalRecipe();//オリジナルレシピ追加
-		FishingHook::setPower(4);
+		// 20170928 1.2のため無効化
+		// FishingHook::setPower(4);
 	}
 
 	public function reconnect(){
