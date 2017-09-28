@@ -55,11 +55,15 @@ class LicenseForm extends Form {
 				$this->selectedLicenseNo = 0; // リセット
 				$buttons = [];
 				foreach(License::getAll() as $l){
-					if($l instanceof Costable){
-
-						$lNo = $l->getLicenseNo();
+					$lNo = $l->getLicenseNo();
+					if($l instanceof Costable or $lNo === 1){
 						if($license = $playerData->getLicense($lNo) ){
-							$status = $license->isValidTime() ? "§c§l有効" : "無効";
+							if($lNo === 1){
+								// 生活の場合はちょっと表示形式変える
+								$status = $license->isValidTime() ? getValidTimeText() : "無効";
+							}else{
+								$status = $license->isValidTime() ? "§c§l有効" : "無効";
+							}
 							$url = $license->getImgPath();
 						}else{
 							$status = "未所持";
@@ -104,7 +108,7 @@ class LicenseForm extends Form {
 
 					$isValid = $license->isValidTime();
 					if($isValid){
-						$buttons[] = ['text' => "有効化期限を延ばす"];
+						$buttons[] = ['text' => "有効期限を延ばす"];
 						$cache[] = 6;
 
 						// 残り時間が2時間以上あれば
