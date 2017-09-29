@@ -303,7 +303,7 @@ class License {
 	*	@return String
 	*/
 	public function getFullName(){
-		return $this->getName()."(".$this->getRankText().")";
+		return $this->rank ? $this->getName()."(".$this->getRankText().")" : $this->getName();
 	}
 
 	/**
