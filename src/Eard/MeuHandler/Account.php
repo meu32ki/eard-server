@@ -198,7 +198,19 @@ class Account implements MeuHandler {
 	*/
 
 	public function loadNowQuest(){
-
+		if(isset($this->data[9][0][0])){
+			return $this->nowQuest = Quest::get($this->data[9][0][0], $this->data[9][0][1]);
+		}
+		return null;
+	}
+	public function updateNowQuestData(){
+		$quest = $this->nowQuest;
+		if($quest === null){
+			$this->resetQuest();
+			return $this->data[9];
+		}
+		$this->data[9][0] = [$quest->getQuestId(), $quest->getAchievement()];
+		return $this->data[9];
 	}
 	public function getNowQuest(){
 		return $this->nowQuest;
@@ -215,17 +227,20 @@ class Account implements MeuHandler {
 		return true;
 	}
 	public function isClearedQuest(int $id){
-		if(!isset($this->data[9][1])){
-			return false;
+		if(isset($this->data[9][1][$id])){
+			return true;
 		}
-		$q = $this->data[9][1];
-		return isset($q[$id]);
+		return false;
 	}
 	public function setQuestData($array){
 		$this->data[9] = $array;
 	}
 	public function getQuestData(){
 		return $this->data[9];
+	}
+	public function resetQuest(){
+		$this->nowQuest = null;
+		$this->data[9][0] = [];
 	}
 	private $nowQuest = null;
 
@@ -683,6 +698,8 @@ class Account implements MeuHandler {
 					$this->data = $data; //メモリにコンニチハ
 					$this->name = $name;
 
+					$this->loadNowQuest();
+
 					// Meuはwebからとか関係なしに展開する
 					$this->meu = Meu::get($this->data[1], $this);
 
@@ -751,7 +768,7 @@ class Account implements MeuHandler {
 		}
 
 		// questDataがつかわれていたようであればセーブ
-		if( $quest = $this->getNowQuest()){// itemBoxは必ず展開されているわけではないから
+		if( $quest = $this->updateNowQuestData()){// itemBoxは必ず展開されているわけではないから
 			$this->setQuestData($quest);
 		}
 

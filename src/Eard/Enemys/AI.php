@@ -332,7 +332,7 @@ abstract class AI{
 						$block->onBreak($air);
 						$level->addParticle(new DestroyBlockParticle($pos, $block));
 						foreach ($drops as $key => $item){
-							$level->dropItem($pos, ItemItem::get($item[0], $item[1], $item[2]));
+							$level->dropItem($pos, $item);
 						}
 					}
 				}

@@ -28,7 +28,7 @@ class Quest{
 	}
 
 	public function getQuestId(){
-		return self::QUESTID;
+		return static::QUESTID;
 	}
 
 	/*目的達成するたびに+1
@@ -49,6 +49,6 @@ class Quest{
 	}
 
 	public function checkAchievement(){
-		return (self::NORM >= $this->achievement);
+		return (static::NORM <= $this->achievement);
 	}
 }

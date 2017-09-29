@@ -32,6 +32,8 @@ use pocketmine\entity\Human;
 
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
+use Eard\MeuHandler\Account;
+use Eard\Quests\Quest;
 
 /**各エネミーに継承させるためのクラス
  */
@@ -231,6 +233,20 @@ class Humanoid extends Human{
 				}
 				$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
 				$player->sendMessage(Chat::SystemToPlayer($str));
+				$account = Account::get($player);
+				if($account->getNowQuest() !== null && $account->getNowQuest()->getQuestType() === Quest::TYPE_SUBJUGATION && $account->getNowQuest()->getTarget() === static::getEnemyType()){
+					$result = $account->getNowQuest()->addAchievement();
+					if($result){
+						$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
+						//ここで報酬を送り付ける
+						if($account->addClearQuest($account->getNowQuest()->getQuestId())){
+							$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
+						}
+						$account->resetQuest();
+					}else{
+						$player->sendMessage(Chat::SystemToPlayer("あと".($account->getNowQuest()->getNormI()-$account->getNowQuest()->getAchievement())."体です"));
+					}
+				}
 			}
 		}
 		parent::kill();
