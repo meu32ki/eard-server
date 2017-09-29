@@ -104,7 +104,7 @@ class MailManager {
 
 
     /**
-    *   未読のメールを取得しメモリ上に保存しておく
+    *   政府からのメール含め、未読のメールを取得しメモリ上に保存しておく
     *   @param Account このプレイヤーの受信できるメールを取得する
     *   @return Mail[]
     */
@@ -150,6 +150,7 @@ class MailManager {
         return $mails;
     }
 
+
     /**
     *   向こう側で出したgetがわのstmtをここで処理する
     *   @return Mail[]
@@ -185,7 +186,7 @@ class MailManager {
             $mails[] = $mail;
         }
         $stmt->close();
-        return $mails[];
+        return $mails;
     }
 
 

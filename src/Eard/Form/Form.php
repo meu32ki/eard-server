@@ -4,6 +4,7 @@ namespace Eard\Form;
 
 # Basic
 use pocketmine\Player;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 
 # Eard
 use Eard\MeuHandler\Account;
@@ -29,6 +30,20 @@ class Form {
 
 	*/
 
+	/*
+		$this->lastsend と $this->cache は Send() でのみ
+		$this->lastjob は Receive() でのみ
+
+		cache は form のとき n番目のボタンが押されたらFormIdがmのものを送る、と指定するためのもの
+				modalのとき 上のボタンが押されたら n[0] 番のFormIdを持つものを送る、
+
+		正直Receiveでの分岐にFormIdいらなくね？formIdでの分岐はしないように作るべし(?)
+
+		send() のなかで modal送るのと sendModal() を使うのとでは差はないが、コードが長くなりそうならsend()にかいて、短く簡潔にまとめたい時はsendModal() 使ってる
+
+		20170922
+	*/
+
 	public function __construct(Account $playerData){
 		$this->playerData = $playerData;
 		$this->playerData->setFormObject($this);
@@ -42,17 +57,16 @@ class Form {
 	*	@param Array [$data] フォーマットに沿ったかきかたをしたarray
 	*/
 	public function Show(Account $playerData, $id, $data){
+		$player = $playerData->getPlayer();
+		$pk = new ModalFormRequestPacket;
+		$pk->formId = $id;
+		$pk->formData = json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
+		$player->dataPacket($pk);
 
 		/*
-		$player = $playerData->getPlayer();
-		$pk = new ShowModalFormPacket();
-		$pk->formId = $id;
-		$pk->data = json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
-		$player->dataPacket($pk);
-		return true;
-		*/
 		echo json_encode( $data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE );
 		echo " Formid: {$id}\n";
+		*/
 	}
 
 	/**
@@ -123,10 +137,13 @@ class Form {
 	*/
 	public function Receive($id, $data){
 		# echo "Receive {$id} {$data}\n";
-		if($data === null){	// [x]ボタンを押して閉じたとき
+		if($data === "null\n" or $data === null){	// [x]ボタンを押して閉じたとき
+			// echo "null sent\n";
 			$this->close();
 			return false;
 		}
+		$data = (int) $data;
+		//echo $data."\n";
 
 		// ほけん
 		/*

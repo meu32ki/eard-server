@@ -10,20 +10,6 @@ use Eard\MeuHandler\Account\License\Costable;
 
 
 class LicenseForm extends Form {
-	
-	/*
-		$this->lastsend と $this->cache は Send() でのみ
-		$this->lastjob は Receive() でのみ
-
-		cache は form のとき n番目のボタンが押されたらFormIdがmのものを送る、と指定するためのもの
-				modalのとき 上のボタンが押されたら n[0] 番のFormIdを持つものを送る、
-
-		正直Receiveでの分岐にFormIdいらなくね？formIdでの分岐はしないように作るべし(?)
-
-		send() のなかで modal送るのと sendModal() を使うのとでは差はないが、コードが長くなりそうならsend()にかいて、短く簡潔にまとめたい時はsendModal() 使ってる
-
-		20170922
-	*/
 
 	/*
 		選択 = form
@@ -46,7 +32,7 @@ class LicenseForm extends Form {
 		15 実行 親13/14 
 	*/
 
-	public function send(Int $id){
+	public function send(int $id){
 		$playerData = $this->playerData;
 		$cache = [];
 		switch($id){
@@ -60,7 +46,7 @@ class LicenseForm extends Form {
 						if($license = $playerData->getLicense($lNo) ){
 							if($lNo === 1){
 								// 生活の場合はちょっと表示形式変える
-								$status = $license->isValidTime() ? getValidTimeText() : "無効";
+								$status = $license->isValidTime() ? $license->getValidTimeText() : "無効";
 							}else{
 								$status = $license->isValidTime() ? "§c§l有効" : "無効";
 							}
@@ -198,6 +184,7 @@ class LicenseForm extends Form {
 					}else{
 						$dis = $newlicense->isExpireing() ? "有効期限に変化はありません。" : "有効期限が時間§7(無効化操作と同じ)になります。";
 						$newlicense->expire(); // このあとにisExpireingいれてもぜったいexpireingでtrueが帰ってきてしまうから
+						$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 						$data = [
 							'type'    => "modal",
 							'title'   => "ライセンス > {$oldlicense->getName()} > ランクアップ (確認)",
@@ -205,7 +192,7 @@ class LicenseForm extends Form {
 										"§c手数料として{$price}μを支払います。また、2{$dis}n".
 										"\n".
 										"「{$oldlicense->getFullName()}」 => 「{$newlicense->getFullName()}」\n".
-										"§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n".
+										"{$costtext}".
 										"§f有効期限: §7{$oldlicense->getValidTimeText()} => {$newlicense->getValidTimeText()}\n".
 										"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
 										"\n".
@@ -225,6 +212,7 @@ class LicenseForm extends Form {
 				}else{
 					$newlicense = clone $oldlicense;
 					$newlicense->upgrade();
+					$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 					$data = [
 						'type'    => "modal",
 						'title'   => "ライセンス > {$oldlicense->getName()} > ランクダウン (確認)",
@@ -232,7 +220,7 @@ class LicenseForm extends Form {
 									"※一度ランクダウンすると、再びランクアップしたい場合にはμが必要になります。\n".
 									"\n".
 									"§f「{$oldlicense->getFullName()}」 => 「{$newlicense->getFullName()}」\n".
-									"§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n".
+									"{$costtext}".
 									"§f有効期限: §7変化なし\n".
 									"§f所持金: §7変化なし\n".
 									"\n".
@@ -377,7 +365,7 @@ class LicenseForm extends Form {
 							$this->senInternalErrorModal("FormId 10\nerror", 2);// でるはずがない 購入時にはコスト0だから でたらおかしい
 						}else{
 							$pay = $license->getPrice();
-							if(!Government::receiveMeu($playerData, $pay, "政府: ライセンス 新規購入 {$license->getName()}")){
+							if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} 新規購入")){
 								// 9でチェックとってるからでないはずだけど一応
 								if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
 								$this->senInternalErrorModal("FormId 10\n政府への支払いに失敗したため、新規購入 できませんでした。", 2);								
@@ -400,7 +388,7 @@ class LicenseForm extends Form {
 					$newlicense = clone $license;
 					$canUpgrade = $newlicense->upgrade();
 					$pay = $newlicense->getPrice();
-					if(!Government::receiveMeu($playerData, $pay, "政府: ライセンス ランクアップ {$license->getName()}")){
+					if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} ランクアップ")){
 						if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
 						$this->senInternalErrorModal("FormId 11\n政府への支払いに失敗したため、ランクアップできませんでした。", 2);
 					}else{
@@ -466,7 +454,7 @@ class LicenseForm extends Form {
 								"{$title}のための所持金が足りません。".abs($leftmeu)."μ不足しています。", $lastid
 							);
 						}else{
-
+							$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 							$data = [
 								'type'    => "modal",
 								'title'   => "{$realtitle} (確認)",
@@ -474,7 +462,7 @@ class LicenseForm extends Form {
 											"手数料として{$price}μを支払います。有効期限を{$data[2]}{$suffix}します。\n".
 											"\n".
 											"§f「{$oldlicense->getFullName()}」\n".
-											"§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n".
+											"{$costtext}".
 											"§f有効期限: §7{$oldlicense->getValidTimeText()} => {$newlicense->getValidTimeText()}\n".
 											"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
 											"\n".
@@ -511,7 +499,7 @@ class LicenseForm extends Form {
 								case 14: $title = "有効化"; break;
 							}
 							$pay = $license->getUpdatePrice() * $data[0] * $data[1];
-							if(!Government::receiveMeu($playerData, $pay, "政府: ライセンス {$title} {$license->getName()}")){
+							if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} {$title}")){
 								if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
 								$this->senInternalErrorModal("FormId 15\n政府への支払いに失敗したため、{$title}できませんでした。", 2);
 							}else{
@@ -525,13 +513,12 @@ class LicenseForm extends Form {
 			break;
 		}
 		
+		// みせる
 		if($cache){
 			// sendErrorMoralのときとかは動かないように
 			$this->lastSendData = $data;
 			$this->cache = $cache;
 			$this->Show($playerData, $id, $data);
-		}else{
-			echo "formIdが1000と表示されていれば送信済み\nでもそれいがいならcacheが設定されていないので送られてない\n";
 		}
 	}
 

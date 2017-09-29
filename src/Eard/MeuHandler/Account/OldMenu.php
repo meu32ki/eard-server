@@ -632,7 +632,7 @@ class Ticker extends PluginTask{
 		$this->menu = $menu;
 	}
 
-	public function onRun($tick){
+	public function onRun(int $tick){
 		$this->menu->sendMenu();
 	}
 }

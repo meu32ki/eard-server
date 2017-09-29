@@ -4,12 +4,6 @@ namespace Eard\MeuHandler\Account\License;
 
 class Residence extends License {
 
-	/*
-		1 => 低レベル
-		2 => ふつう。
-		3 => 家があって稼ぎもそこそこ？
-	*/
-
 	public function getLicenseNo(){
 		return self::RESIDENCE;
 	}
@@ -43,23 +37,25 @@ class Residence extends License {
 	}
 
 	public function getPrice(){
-		switch($this->getCost()){
+		switch($this->getRank()){
 			case 1: $price = 0; break;
 			case 2: $price = 1000; break;
 			case 3: $price = 4000; break;
 			case 4: $price = 9000; break;
 			case 5: $price = 16000; break;
 		}
+		return $price;
 	}
 
 	public function getUpdatePrice(){
-		switch($this->getCost()){
+		switch($this->getRank()){
 			case 1: $price = 0; break;
 			case 2: $price = 50; break;
 			case 3: $price = 200; break;
 			case 4: $price = 400; break;
 			case 5: $price = 800; break;
 		}
+		return $price;
 	}
 
 	public function getImgPath(){

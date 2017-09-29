@@ -11,7 +11,6 @@ use pocketmine\utils\MainLogger;
 use Eard\DBCommunication\DB;
 use Eard\Event\ChatManager;
 use Eard\Form\Form;
-use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
 use Eard\MeuHandler\Account\License\License;
@@ -71,37 +70,33 @@ class Account implements MeuHandler {
     	return self::$accounts[$name];
     }
 
-    /**
-    *	名前から、上記のオブジェクトを取得する。
-    *	@param String | name
-    *	@return Account or null
-    */
+	/**
+	*	名前から、上記のオブジェクトを取得する。
+	*	@param String | name
+	*	@return Account or null
+	*/
 	public static function getByName($name){
 		$name = strtolower($name);
-	    	if(!isset(self::$accounts[$name])){
-    			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
-	    		$account = new Account();
-	    		self::$accounts[$name] = $account;
+		if(!isset(self::$accounts[$name])){
+			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
+			$account = new Account();
+			self::$accounts[$name] = $account;
 			return $account;
-	    	}
-	    	return self::$accounts[$name];
+		}
+		return self::$accounts[$name];
 	}
 
-
-    	/*
-    	*/
-    	public static function getByUniqueNo($uniqueNo){
-    		// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
+	public static function getByUniqueNo($uniqueNo){
+		// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
 		$account = new Account();
-		$account->loadData();
-		self::$accounts[$name] = $account;
-    		/*
-    		foreach(self::$accounts as $playerData){
-    			if($playerData->getUniqueNo() === $uniqueNo) return $playerData;
-    		}
-    		*/
-    		return $account;
-    	}
+		$account->data[0] = $uniqueNo;
+
+		$name = strtolower($name);
+		if(!isset(self::$accounts[$name])){
+			self::$accounts[$name] = $account;
+		}
+		return self::$accounts[$name];
+	}
 
 /* Player
 */
@@ -148,23 +143,6 @@ class Account implements MeuHandler {
 		return $this->sentBlock;
 	}
 	private $sentBlock = [];
-
-
-
-/* Menu
-*/
-	/**
-	*	webからはつかわないっしょ
-	*	プレイヤーがいつも手に持っている「砂糖」。いつでも展開することができる。
-	*	呼び出しタイミング: ログイン時あたり？
-	*/
-	public function initMenu(){
-		$this->menu = new Menu($this);
-	}
-	public function getMenu(){
-		return $this->menu;
-	}
-	private $menu;
 
 
 /* ItemBox
@@ -283,7 +261,7 @@ class Account implements MeuHandler {
 	public function getFormObject(){
 		return $this->formObj;
 	}
-	private function removeFormObject(){
+	public function removeFormObject(){
 		$this->formObj = null;
 		return true;
 	}
@@ -504,22 +482,6 @@ class Account implements MeuHandler {
 		public function getTotalLoginDay(){
 			return $this->data[2][3];
 		}
-		public static function calculateTime($sec){
-			$s_sec = $sec % 60;
-			$s_min = floor($sec / 60);
-			if(60 <= $s_min){
-				$s_hour = floor($s_min / 60);
-				$s_min = $s_min % 60;
-				$out = "{$s_hour}時間{$s_min}分";
-			}else{
-				if($s_min < 1){
-					$out = "{$s_sec}秒";
-				}elseif($s_min < 60){
-					$out = "{$s_min}分{$s_sec}秒";
-				}
-			}
-			return $out;
-		}
 		private $inTime = 0;
 
 	/**
@@ -628,6 +590,9 @@ class Account implements MeuHandler {
 		$this->data[8][] = $newdata;
 	}
 
+	public function getAllHistory(){
+		return $this->data[8];
+	}
 	
 
 	private $data = [];
@@ -652,13 +617,18 @@ class Account implements MeuHandler {
 
 	/**
 	*	データを、DBから取得し,newされたこのclassにセットする。
-	*	@param string | 新たに読むプレイヤーの名前 or すでにclass::Playerがセットしてあるのであればそのプレイヤーのデータを読む
+	*	@param bool webからならtrue
 	*	@return bool でーたがあったかどうか
 	*/
-    public function loadData($name = "", $isfromweb = false){
-    	if(!$name) $name = strtolower($this->player->getName());
-
-		$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
+	public function loadData($isfromweb = false){
+		if($this->player instanceof Player){
+			$name = strtolower($this->player->getName());
+			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
+		}elseif(isset($this->data[0])){
+			$no = $this->data[0];
+			$sql = "SELECT * FROM data WHERE `no` = '{$no}';";
+		}
+		
 		$db = DB::get();
 		if($db){
 			$result = $db->query($sql);
