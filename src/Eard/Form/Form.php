@@ -137,10 +137,13 @@ class Form {
 	*/
 	public function Receive($id, $data){
 		# echo "Receive {$id} {$data}\n";
-		if($data === null){	// [x]ボタンを押して閉じたとき
+		if($data === "null\n" or $data === null){	// [x]ボタンを押して閉じたとき
+			// echo "null sent\n";
 			$this->close();
 			return false;
 		}
+		$data = (int) $data;
+		//echo $data."\n";
 
 		// ほけん
 		/*

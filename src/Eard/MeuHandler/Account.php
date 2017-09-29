@@ -11,7 +11,6 @@ use pocketmine\utils\MainLogger;
 use Eard\DBCommunication\DB;
 use Eard\Event\ChatManager;
 use Eard\Form\Form;
-use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\itemBox;
 use Eard\MeuHandler\Account\License\License;
@@ -144,23 +143,6 @@ class Account implements MeuHandler {
 		return $this->sentBlock;
 	}
 	private $sentBlock = [];
-
-
-
-/* Menu
-*/
-	/**
-	*	webからはつかわないっしょ
-	*	プレイヤーがいつも手に持っている「砂糖」。いつでも展開することができる。
-	*	呼び出しタイミング: ログイン時あたり？
-	*/
-	public function initMenu(){
-		$this->menu = new Menu($this);
-	}
-	public function getMenu(){
-		return $this->menu;
-	}
-	private $menu;
 
 
 /* ItemBox

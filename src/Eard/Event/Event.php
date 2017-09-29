@@ -38,6 +38,7 @@ use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
 use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
+use Eard\Form\MenuForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -78,7 +79,6 @@ class Event implements Listener{
 		//playerData関連の準備
 		$playerData->setPlayer($player);//	touitusuruna
 		$playerData->loadData();
-		$playerData->initMenu();
 		$playerData->initItemBox();
 		$playerData->onLoadTime();
 
@@ -164,18 +164,6 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$name = $player->getName();
 		switch($packet::NETWORK_ID){
-			/*case ProtocolInfo::USE_ITEM_PACKET:
-				// Menu::染料タップ
-				$itemId = $packet->item->getId();
-				if($itemId === Menu::$selectItem || $itemId === Menu::$menuItem){
-					$playerData = Account::get($player);
-					if($itemId === Menu::$selectItem){
-						$playerData->getMenu()->useSelect($packet->item->getDamage());
-					}else{
-						$playerData->getMenu()->useMenu();
-					}
-				}
-			break; エラー吐く*/
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				//壊し始めたとき
 				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
@@ -192,7 +180,7 @@ class Event implements Listener{
 			case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
 
 				$id = $packet->formId;
-				$data = (int) $packet->formData;
+				$data = $packet->formData;
 
 				// オブジェクトがあればそっち優先
 				$playerData = Account::get($player);
@@ -201,9 +189,10 @@ class Event implements Listener{
 				}
 
 				// なければクエストのほうにパケット分岐
-				if($packet->formData === "null\n"){
+				if($data === "null\n"){
 					;
 				}else{
+					$data = (int) $data;
 					if($id === 1000){
 						QuestManager::addQuestsForm($player, $data+1);
 					}else if($id > 1000 && $id < 1500){
@@ -341,6 +330,9 @@ class Event implements Listener{
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
 							}
+						break;
+						case 416: // うまよろい
+							new MenuForm($playerData);
 						break;
 					}
 				break;
