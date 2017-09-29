@@ -247,7 +247,8 @@ class HaneAri extends Humanoid implements Enemy{
 		$source->setKnockBack(0.2);
 		if(!$victim->isSneaking()) $source->setKnockBack(0.4);
 		$pk = new AnimatePacket();
-		$pk->eid = $this->getId();
+		//$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->action = 1;//ArmSwing
 		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
 	}

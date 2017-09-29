@@ -234,7 +234,8 @@ class Kabuto extends Humanoid implements Enemy{
 		$victim = $source->getEntity();
 		if(!$victim->isSneaking()) $source->setKnockBack(1);
 		$pk = new AnimatePacket();
-		$pk->eid = $this->getId();
+		//$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->action = 1;//ArmSwing
 		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
 	}
