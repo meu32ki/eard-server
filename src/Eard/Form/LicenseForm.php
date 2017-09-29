@@ -10,20 +10,6 @@ use Eard\MeuHandler\Account\License\Costable;
 
 
 class LicenseForm extends Form {
-	
-	/*
-		$this->lastsend と $this->cache は Send() でのみ
-		$this->lastjob は Receive() でのみ
-
-		cache は form のとき n番目のボタンが押されたらFormIdがmのものを送る、と指定するためのもの
-				modalのとき 上のボタンが押されたら n[0] 番のFormIdを持つものを送る、
-
-		正直Receiveでの分岐にFormIdいらなくね？formIdでの分岐はしないように作るべし(?)
-
-		send() のなかで modal送るのと sendModal() を使うのとでは差はないが、コードが長くなりそうならsend()にかいて、短く簡潔にまとめたい時はsendModal() 使ってる
-
-		20170922
-	*/
 
 	/*
 		選択 = form
@@ -530,8 +516,6 @@ class LicenseForm extends Form {
 			$this->lastSendData = $data;
 			$this->cache = $cache;
 			$this->Show($playerData, $id, $data);
-		}else{
-			echo "formIdが1000と表示されていれば送信済み\nでもそれいがいならcacheが設定されていないので送られてない\n";
 		}
 	}
 

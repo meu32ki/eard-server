@@ -190,8 +190,17 @@ class Event implements Listener{
 				$x = $packet->x; $y = $packet->y; $z = $packet->z;
 			break;
 			case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
+
 				$id = $packet->formId;
 				$data = (int) $packet->formData;
+
+				// オブジェクトがあればそっち優先
+				$playerData = Account::get($player);
+				if($obj = $playerData->getFormObject()){
+					$obj->Receive($id, $data);
+				}
+
+				// なければクエストのほうにパケット分岐
 				if($packet->formData === "null\n"){
 					;
 				}else{
@@ -543,18 +552,17 @@ class Event implements Listener{
 	}
 
 
+/*
 	public function D(DataPacketReceiveEvent $e){
 		$pk = $e->getPacket();
-/*
 		if($pk instanceof ModalFormResponsePacket){
 			$playerData = Account::get($e->getPlayer());
 			if($obj = $playerData->getFormObject()){
 				$obj->Receive($pk->formId, $pk->data);
 			}
 		}
-*/
 	}
-
+*/
 
 /*
 	// for debug
