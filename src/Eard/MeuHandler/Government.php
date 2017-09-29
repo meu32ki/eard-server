@@ -54,7 +54,7 @@ class Government implements MeuHandler {
 			return false;
 		}
 
-		self::$CentralBankMeu　= Meu::get($newLeft, 100000, self::getInstance());
+		self::$CentralBankMeu　= Meu::get($newLeft, self::getInstance());
 		self::$CentralBankFirst = $amount;
 		return true;
 	}
@@ -154,12 +154,12 @@ class Government implements MeuHandler {
 		$data = DataIO::loadFromDB('Government');
 		if($data){
 			self::$CentralBankFirst = $data[0];
-			self::$CentralBankMeu = Meu::get($data[1], self::getInstance()); //100000は政府のUniqueNo
+			self::$CentralBankMeu = Meu::get($data[1], self::getInstance());
 			MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
 		}else{
 			//初回用
 			self::$CentralBankFirst = 1000 * 10000;
-			self::$CentralBankMeu = Meu::get(1000 * 10000, self::getInstance()); //100000は政府のUniqueNo
+			self::$CentralBankMeu = Meu::get(1000 * 10000, self::getInstance());
 			MainLogger::getLogger()->notice("§eGovernment: No data found. Set the amount of Meu");
 		}
 	}

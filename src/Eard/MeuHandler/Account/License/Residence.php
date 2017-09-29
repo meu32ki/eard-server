@@ -4,12 +4,6 @@ namespace Eard\MeuHandler\Account\License;
 
 class Residence extends License {
 
-	/*
-		1 => 低レベル
-		2 => ふつう。
-		3 => 家があって稼ぎもそこそこ？
-	*/
-
 	public function getLicenseNo(){
 		return self::RESIDENCE;
 	}
