@@ -2,10 +2,12 @@
 namespace Eard\Quests;
 
 use pocketmine\event\server\DataPacketReceiveEvent;
-//use pocketmine\network\protocol\ModalFormResponsePacket;
-//use pocketmine\network\protocol\ModalFormRequestPacket;
+use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\Player;
 
+use Eard\Enemys\EnemyRegister;
+use Eard\Utils\ItemName;
 # Quests
 use Eard\Quests\Level1\Level1;
 
@@ -18,8 +20,8 @@ class QuestManager{
 	const LEVELS = 1;
 
 	public static function init(){
-		for($i = 0; $i < self::LEVELS; $i++){
-			$lv = "Level$stage";
+		for($i = 1; $i <= self::LEVELS; $i++){
+			$lv = "Eard\Quests\Level$i\Level$i";
 			$lv::registerQuests();
 		}
 	}
@@ -33,7 +35,7 @@ class QuestManager{
 					'content' => '受注するクエストレベルを選んでください。',
 					'buttons' => [],
 				];
-				for($i = 0; $i < self::LEVELS; $i++){
+				for($i = 1; $i <= self::LEVELS; $i++){
 					$data['buttons'][] = ['text' => "レベル$i"];
 				}
 				$id = 1000;
@@ -41,14 +43,25 @@ class QuestManager{
 			default:
 				$data = [
 					'type'    => 'form',
-					'title'   => 'クエストリスト - レベル$stage',
+					'title'   => "クエストリスト - レベル$stage",
 					'content' => '受注するクエストを選んでください。',
 					'buttons' => [],
 				];
-				$list = "Level$stage";
+				$list = "Eard\Quests\Level$stage\Level$stage";
 				$quests = $list::getQuests();
 				foreach($quests as $questId => $questClass){
-					$data['buttons'][] = ['text' => $questClass::getName()."\n".$questClass::getDescription()];
+					$text = "【".$questClass::getName()."】\n目的 : ";
+					switch($questClass::getQuestType()){
+						case Quest::TYPE_SUBJUGATION:
+							$ec = EnemyRegister::getClass($questClass::getTarget());
+							$text .= $ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
+						break;
+						case Quest::TYPE_DELIVERY:
+							$ec = $questClass::getTarget();
+							$text .= ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
+						break;
+					}
+					$data['buttons'][] = ['text' => $text];
 				}
 				$id = 1000+$stage;
 			break;
@@ -59,18 +72,33 @@ class QuestManager{
 
 	public static function sendQuest(Player $player, int $questId){
 		$quest = Quest::get($questId);
+		$text = "【".$quest::getName()."】\n目的 : ";
+		switch($quest::getQuestType()){
+			case Quest::TYPE_SUBJUGATION:
+				$ec = EnemyRegister::getClass($quest::getTarget());
+				$text .= $ec::getEnemyName()."を".$quest::getNorm()."体討伐する";
+			break;
+			case Quest::TYPE_DELIVERY:
+				$ec = $quest::getTarget();
+				$text .= ItemName::getNameOf($ec[0], $ec[1])."を".$quest::getNorm()."個納品する";
+			break;
+		}
 		$data = [
 			'type'    => 'modal',
 			'title'   => "以下のクエストを開始します。よろしいですか？",
-			'content' => $quest::getName()."\n".$quest::getDescription(),
+			'content' => $text."\n\n".$quest::getDescription(),
 			'button1' => "はい",
 			'button2' => "いいえ",
 		];
 		self::createWindow($player, $data, 1500+$questId);
 	}
 
+	public static function Responce(){
+
+	}
+
 	public static function createWindow(Player $player, $data, int $id){
-		$pk = /*new ModalFormRequestPacket()*/null;
+		$pk = new ModalFormRequestPacket();
 		$pk->formId = $id;
 		$pk->formData = json_encode(
 			$data,

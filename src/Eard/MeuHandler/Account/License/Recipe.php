@@ -1,7 +1,7 @@
 <?php
 namespace Eard\MeuHandler\Account\License;
 
-use pocketmine\network\protocol\CraftingDataPacket;
+use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Player;
 use pocketmine\entity\FishingHook;
 use pocketmine\item\Item;

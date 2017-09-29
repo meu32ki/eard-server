@@ -37,6 +37,8 @@ use Eard\Enemys\Spawn;
 use Eard\Enemys\NPC;
 use Eard\MeuHandler\Account\License\Recipe;
 
+# Quests
+use Eard\Quests\QuestManager;
 /***
 *
 *	コマンド関係のみ
@@ -64,6 +66,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		Recipe::addOriginalRecipe();//オリジナルレシピ追加
 		// 20170928 1.2のため無効化
 		// FishingHook::setPower(4);
+
+		# クエスト登録
+		QuestManager::init();
 	}
 
 	public function reconnect(){

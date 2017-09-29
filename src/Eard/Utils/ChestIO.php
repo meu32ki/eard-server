@@ -3,15 +3,15 @@ namespace Eard\Utils;
 
 use pocketmine\Player;
 use pocketmine\item\Item;
-use pocketmine\inventory\InventoryType;
+//use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\BaseInventory;
 
-use pocketmine\network\protocol\UpdateBlockPacket;
-use pocketmine\network\protocol\ContainerClosePacket;
-use pocketmine\network\protocol\ContainerOpenPacket;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 
 use pocketmine\nbt\NBT;
-use pocketmine\network\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
@@ -35,8 +35,11 @@ class ChestIO extends BaseInventory {
 	public function __construct($player){
 		$this->maxStack = 27;
 
-		$inventoryType = InventoryType::get(InventoryType::CHEST);
-		parent::__construct($player, $inventoryType, [], $this->maxStack, "ChestIO"); //BaseInventoryにメソッド
+		//$inventoryType = InventoryType::get(InventoryType::CHEST);
+		//parent::__construct($player, $inventoryType, [], $this->maxStack, "ChestIO"); //BaseInventoryにメソッド
+
+		parent::__construct($player, [], $this->maxStack, "ChestIO"); //v1.2
+
 		//Holderに当たる部分は、InventoryHolderをimplementsしてるclassである必要がある→playerでおｋ
 
 		// holderはなんでもいい？ entityなんとかchangeeventで使われるだけっぽい 雑な調べなのであてにしないで
@@ -44,6 +47,9 @@ class ChestIO extends BaseInventory {
 		// 継承先で setItemArrayしてね！
 	}
 
+	public function getDefaultSize() : int{
+		return 27;
+	}
 
 	public function getItemArray(){
 		// Items[] を $itemArrayに

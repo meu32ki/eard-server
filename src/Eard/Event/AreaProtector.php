@@ -7,7 +7,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\item\Item;
 use pocketmine\utils\MainLogger;
-use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 
 
 # Eard

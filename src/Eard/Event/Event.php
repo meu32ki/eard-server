@@ -29,8 +29,8 @@ use pocketmine\event\block\BlockPlaceEvent;
 # NetWork
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 
 # Eard
 use Eard\Main;
@@ -52,6 +52,10 @@ use Eard\Enemys\NPC;
 use Eard\Enemys\Unagi;
 use Eard\Enemys\Umimedama;
 use Eard\Enemys\AI;
+
+# Quest
+use Eard\Quests\QuestManager;
+use Eard\Quests\Quest;
 
 /***
 *
@@ -160,7 +164,7 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$name = $player->getName();
 		switch($packet::NETWORK_ID){
-			case ProtocolInfo::USE_ITEM_PACKET:
+			/*case ProtocolInfo::USE_ITEM_PACKET:
 				// Menu::染料タップ
 				$itemId = $packet->item->getId();
 				if($itemId === Menu::$selectItem || $itemId === Menu::$menuItem){
@@ -171,7 +175,7 @@ class Event implements Listener{
 						$playerData->getMenu()->useMenu();
 					}
 				}
-			break;
+			break; エラー吐く*/
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				//壊し始めたとき
 				if($packet->action === PlayerActionPacket::ACTION_START_BREAK){
@@ -185,6 +189,28 @@ class Event implements Listener{
 				}
 				$x = $packet->x; $y = $packet->y; $z = $packet->z;
 			break;
+			case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
+				$id = $packet->formId;
+				$data = (int) $packet->formData;
+				if($packet->formData === "null\n"){
+					;
+				}else{
+					if($id === 1000){
+						QuestManager::addQuestsForm($player, $data+1);
+					}else if($id > 1000 && $id < 1500){
+						$qid = $id - 1000;
+						$class = "Eard\Quests\Level$qid\Level$qid";
+						$q = $class::getIndex()[$data];
+						QuestManager::sendQuest($player, $q::QUESTID);
+					}else if($id > 1500 && $id < 2000){
+						if($packet->formData === "true\n"){
+							$player->sendMessage(Chat::SystemToPlayer("クエストを開始します"));
+						}else{
+							QuestManager::addQuestsForm($player, 0);
+						}
+					}
+				}
+			break;
 		}
 	}
 
@@ -193,15 +219,13 @@ class Event implements Listener{
 		$pk = $e->getPacket();
 		$player = $e->getPlayer();
 		switch($pk::NETWORK_ID){
-			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
-				/*
+			/*case ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
 					Note: Menuは、偽のインベントリで動いている。
 					時々偽のインベントリチェックがはいるため、メニュー使用時はそれを無効にする。
-				*/
 				if(Account::get($player)->getMenu()->isActive()){
 					$e->setCancelled(true);
 				}
-			break;
+			break; エラー吐く*/
 			# クラフトレシピ削除
 			case ProtocolInfo::CRAFTING_DATA_PACKET:
 				//$pk->clean();
@@ -288,6 +312,10 @@ class Event implements Listener{
 				case 130: // エンダーチェスト
 					$inv = $playerData->getItemBox();
 					$player->addWindow($inv);
+					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+				break;
+				case 116: // エンチャントテーブル(クエストカウンター)
+					QuestManager::addQuestsForm($player, 0);
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
 				default:

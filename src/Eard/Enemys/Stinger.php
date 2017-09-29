@@ -9,9 +9,9 @@ use pocketmine\Server;
 
 use pocketmine\block\Block;
 
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
 
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -21,7 +21,7 @@ use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\SpellParticle;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -312,12 +312,12 @@ class Stinger extends Humanoid implements Enemy{
 				$this->yaw = mt_rand(1, 360);
 			}
 		}		//AI::walkFront($this, 0.08);
-		parent::onUpdate($tick);
+		return parent::onUpdate($tick);
 	}
 
 		public function attack(EntityDamageEvent $source){
-		$damage = $cource->getDamage();// 20170928 src変更による書き換え
-		parent::attack($damage, $source);
+		$damage = $source->getDamage();// 20170928 src変更による書き換え
+		parent::attack($source);
 		if($source instanceof EntityDamageByEntityEvent){
 			$damager = $source->getDamager();
 			$this->target = $damager;
@@ -334,7 +334,7 @@ class Stinger extends Humanoid implements Enemy{
 
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return self::getEnemyName();
 	}
 }

@@ -208,15 +208,15 @@ class Deffenian extends Humanoid implements Enemy{
 			AI::setRate($this, 40);
 		}
 		AI::walkFront($this);
-		parent::onUpdate($tick);
+		return parent::onUpdate($tick);
 	}
 
 		public function attack(EntityDamageEvent $source){
-		$damage = $cource->getDamage();// 20170928 src変更による書き換え
-		parent::attack($damage, $source);
+		$damage = $source->getDamage();// 20170928 src変更による書き換え
+		parent::attack($source);
 	}
 	
-	public function getName(){
+	public function getName() : string{
 		return self::getEnemyName();
 	}
 }

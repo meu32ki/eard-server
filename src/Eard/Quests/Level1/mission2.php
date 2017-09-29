@@ -2,23 +2,23 @@
 namespace Eard\Quests\Level1;
 
 use Eard\Quests\Quest;
-use Eard\Enemys\EnemyRegister;
+use pocketmine\item\Item;
 
-class mission1 extends Quest{
-	const QUESTID = 1;
-	const NORM = 3;
+class mission2 extends Quest{
+	const QUESTID = 2;
+	const NORM = 5;
 	public $achievement = 0;
 
 	public static function getName(){
-		return "蝗の一跳ね";
+		return "撒かない種に芽は出ない";
 	}
 
 	public static function getDescription(){
-		return "最近バッタが増えてきてうるさいんだよね～\n退治してくれないかな？";
+		return "うちの土地が悪いのか小麦が育たなくてさ...\n代わりに持ってきてくれないかい？";
 	}
 
 	public static function getQuestType(){
-		return self::TYPE_SUBJUGATION;
+		return self::TYPE_DELIVERY;
 	}
 
 	public static function getNorm(){
@@ -26,7 +26,7 @@ class mission1 extends Quest{
 	}
 
 	public static function getTarget(){
-		return EnemyRegister::TYPE_HOPPER;
+		return [Item::WHEAT, 0];
 	}
 
 	/*目的達成するたびに+1

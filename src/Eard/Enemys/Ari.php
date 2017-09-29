@@ -7,9 +7,9 @@ use Eard\Main;
 use pocketmine\Player;
 use pocketmine\Server;
 
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
 
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -17,7 +17,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Explosion;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\format\FullChunk;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -223,7 +223,7 @@ class Ari extends Humanoid implements Enemy{
 		if(!$can){
 			AI::jump($this);
 		}
-		parent::onUpdate($tick);
+		return parent::onUpdate($tick);
 	}
 
 	public function attackTo(EntityDamageEvent $source){
@@ -231,17 +231,18 @@ class Ari extends Humanoid implements Enemy{
 		$source->setKnockBack(0.2);
 		if(!$victim->isSneaking()) $source->setKnockBack(0.4);
 		$pk = new AnimatePacket();
-		$pk->eid = $this->getId();
+		//$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->action = 1;//ArmSwing
 		Server::getInstance()->broadcastPacket($this->getViewers(), $pk);
 	}
 
 		public function attack(EntityDamageEvent $source){
-		$damage = $cource->getDamage();// 20170928 src変更による書き換え
-		parent::attack($damage, $source);
+		$damage = $source->getDamage();// 20170928 src変更による書き換え
+		parent::attack($source);
 	}
 	
-	public function getName(){
+	public function getName() : string{
 		return self::getEnemyName();
 	}
 }
