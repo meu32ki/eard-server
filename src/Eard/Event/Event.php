@@ -53,6 +53,10 @@ use Eard\Enemys\Unagi;
 use Eard\Enemys\Umimedama;
 use Eard\Enemys\AI;
 
+# Quest
+use Eard\Quests\QuestManager;
+use Eard\Quests\Quest;
+
 /***
 *
 *	言わずもがな。
@@ -185,6 +189,28 @@ class Event implements Listener{
 				}
 				$x = $packet->x; $y = $packet->y; $z = $packet->z;
 			break;
+			case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
+				$id = $packet->formId;
+				$data = (int) $packet->formData;
+				if($packet->formData === "null\n"){
+					;
+				}else{
+					if($id === 1000){
+						QuestManager::addQuestsForm($player, $data+1);
+					}else if($id > 1000 && $id < 1500){
+						$qid = $id - 1000;
+						$class = "Eard\Quests\Level$qid\Level$qid";
+						$q = $class::getIndex()[$data];
+						QuestManager::sendQuest($player, $q::QUESTID);
+					}else if($id > 1500 && $id < 2000){
+						if($packet->formData === "true\n"){
+							$player->sendMessage(Chat::SystemToPlayer("クエストを開始します"));
+						}else{
+							QuestManager::addQuestsForm($player, 0);
+						}
+					}
+				}
+			break;
 		}
 	}
 
@@ -286,6 +312,10 @@ class Event implements Listener{
 				case 130: // エンダーチェスト
 					$inv = $playerData->getItemBox();
 					$player->addWindow($inv);
+					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+				break;
+				case 116: // エンチャントテーブル(クエストカウンター)
+					QuestManager::addQuestsForm($player, 0);
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
 				default:

@@ -17,12 +17,18 @@ class Quest{
 		return self::$allQuests;
 	}
 
-	public static function get(int $id){
+	public static function get(int $id, int $achievement = 0){
 		if(isset(self::$allQuests[$id])){
 			$class = self::$allQuests[$id];
-			return new $class();
+			$quest = new $class(); 
+			$quest->achievement = $achievement;
+			return $quest;
 		}
 		return null;
+	}
+
+	public function getQuestId(){
+		return self::QUESTID;
 	}
 
 	/*目的達成するたびに+1

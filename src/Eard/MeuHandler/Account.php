@@ -18,7 +18,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
-
+use Eard\Quests\Quest;
 
 /***
 *
@@ -30,6 +30,20 @@ class Account implements MeuHandler {
 	//よくあるシングルトン
 	public static $accounts = null;
 	private function __construct(){}
+
+	//ぱっと見で何番使うか見るために移動(2017/09/29)
+	private static $newdata = [
+		0, // 0 no 二回目の入室以降から使える
+		0, // 1 所持する金
+		[0,0,0,0], // 2 [初回ログイン,最終ログイン,ログイン累計時間,日数]
+		[], // 3 じゅうしょ 例 [12, 13]　みたいな
+		[], // 4 所持するせくしょんず
+		[], // 5 らいせんす
+		[], // 6 土地の共有設定
+		[ [0,0,0] ], // 7 ItemBoxのアイテムの中身
+		[], // 8 支払い履歴
+		[ [], [] ], // 9 クエストデータ
+	];
 
 	/*
 		class Account (static)
@@ -169,6 +183,51 @@ class Account implements MeuHandler {
 	}
 	private $itemBox = null;
 
+
+/* Quest
+*/
+	/**
+	* クエストの受注状況やクリア状況を保存しておくためのもの
+	* $data[9] = [
+	*		[nowid, achievement],
+	*		[
+	*			id1 => true,
+	*			id2 => true,...
+	*		]
+	*	]
+	*/
+
+	public function loadNowQuest(){
+
+	}
+	public function getNowQuest(){
+		return $this->nowQuest;
+	}
+	public function setNowQuest(Quest $quest){
+		$this->nowQuest = $quest;
+		$this->data[9][0] = [$quest->getQuestId(), $quest->getAchievement()];
+	}
+	public function addClearQuest(int $id){
+		if($this->isClearedQuest($id)){
+			return false;
+		}
+		$this->data[9][1][$id] = true;
+		return true;
+	}
+	public function isClearedQuest(int $id){
+		if(!isset($this->data[9][1])){
+			return false;
+		}
+		$q = $this->data[9][1];
+		return isset($q[$id]);
+	}
+	public function setQuestData($array){
+		$this->data[9] = $array;
+	}
+	public function getQuestData(){
+		return $this->data[9];
+	}
+	private $nowQuest = null;
 
 /* Chat
 */
@@ -557,18 +616,6 @@ class Account implements MeuHandler {
 	
 
 	private $data = [];
-	private static $newdata = [
-		0, // 0 no 二回目の入室以降から使える
-		0, // 1 所持する金
-		[0,0,0,0], // 2 [初回ログイン,最終ログイン,ログイン累計時間,日数]
-		[], // 3 じゅうしょ 例 [12, 13]　みたいな
-		[], // 4 所持するせくしょんず
-		[], // 5 らいせんす
-		[], // 6 土地の共有設定
-		[ [0,0,0] ], // 7 ItemBoxのアイテムの中身
-		[], // 8 支払い履歴
-	];
-
 
 /* 転送
 */
@@ -701,6 +748,11 @@ class Account implements MeuHandler {
 		// itemBoxがつかわれていたようであればセーブ
 		if( $itemBox = $this->getItemBox()){// itemBoxは必ず展開されているわけではないから
 			$this->setItemArray($itemBox->getItemArray());
+		}
+
+		// questDataがつかわれていたようであればセーブ
+		if( $quest = $this->getNowQuest()){// itemBoxは必ず展開されているわけではないから
+			$this->setQuestData($quest);
 		}
 
 		// ライセンス
