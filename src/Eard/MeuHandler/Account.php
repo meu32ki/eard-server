@@ -246,7 +246,7 @@ class Account implements MeuHandler {
 	public function getFormObject(){
 		return $this->formObj;
 	}
-	private function removeFormObject(){
+	public function removeFormObject(){
 		$this->formObj = null;
 		return true;
 	}
