@@ -47,18 +47,21 @@ class LicenseForm extends Form {
 						if($license = $playerData->getLicense($lNo) ){
 							if($lNo === 1){
 								// 生活の場合はちょっと表示形式変える
-								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e".$license->getValidTimeText() : "§c".$license->getValidTimeText() ) : "無効";
+								// $status = $license->isValidTime() ? ($license->isExpireing() ? "§e".$license->getValidTimeText() : "§c".$license->getValidTimeText() ) : "無効";
+								$color = $license->isValidTime() ? ($license->isExpireing() ? "§e§l" : "§c§l") : "§2§l";
+								$text = $license->getFullName()."\n{$color}".$license->getValidTimeText();
 							}else{
-								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l有効" : "§c§l有効") : "§2§l無効";
+								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l残2時間未満" : "§c§l有効") : "§2§l無効";
+								$text = $license->getName()." ". $status;
 							}
 							$url = $license->getImgPath();
 						}else{
-							$status = "未所持";
+							$text = $l->getFullName()." 未所持";
 							$url = $l->getImgPath();
 						}
 
 						$buttons[] = [
-							'text' => $l->getFullName()." ". $status,
+							'text' => $text,
 							'image' => [
 								'type' => 'url',
 								'data' => $url
@@ -183,21 +186,21 @@ class LicenseForm extends Form {
 							"ランクアップのための所持金が足りません。".abs($leftmeu)."μ不足しています。", 2
 						);
 					}else{
-						$dis = $newlicense->isExpireing() ? "有効期限に変化はありません。" : "有効期限が時間§7(無効化操作と同じ)になります。";
+						$dis = $newlicense->isExpireing() ? "有効期限に変化はありません。" : "有効期限が2時間§f(無効化操作と同じ)§cになります。";
 						$newlicense->expire(); // このあとにisExpireingいれてもぜったいexpireingでtrueが帰ってきてしまうから
 						$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 						$data = [
 							'type'    => "modal",
 							'title'   => "ライセンス > {$oldlicense->getName()} > ランクアップ 確認",
 							'content' => "§fランクアップをします。\n".
-										"§c手数料として{$price}μを支払います。また、2{$dis}n".
+										"§c手数料として{$price}μを支払います。また、{$dis}\n".
 										"\n".
-										"「{$oldlicense->getFullName()}」 => 「{$newlicense->getFullName()}」\n".
+										"§f「{$oldlicense->getFullName()}」 => 「{$newlicense->getFullName()}」\n".
 										"{$costtext}".
 										"§f有効期限: §7{$oldlicense->getValidTimeText()} => {$newlicense->getValidTimeText()}\n".
 										"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
 										"\n".
-										"よろしいですか？",
+										"§fよろしいですか？",
 							'button1' => "はい",
 							'button2' => "いいえ",
 						];
@@ -225,7 +228,7 @@ class LicenseForm extends Form {
 									"§f有効期限: §7変化なし\n".
 									"§f所持金: §7変化なし\n".
 									"\n".
-									"よろしいですか？",
+									"§fよろしいですか？",
 						'button1' => "はい",
 						'button2' => "いいえ",
 					];
@@ -301,7 +304,7 @@ class LicenseForm extends Form {
 							'content' => "§f無効化をします。\n".
 										"§c※操作後すぐに無効化されるわけではありません。実際に無効化されるまでには2時間かかり、その間は、ライセンスは有効な状態です。\n".
 										"\n".
-										"よろしいですか？",
+										"§fよろしいですか？",
 							'button1' => "はい",
 							'button2' => "いいえ",
 						];
@@ -340,7 +343,7 @@ class LicenseForm extends Form {
 										"\n".
 										"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
 										"\n".
-										"よろしいですか？",
+										"§fよろしいですか？",
 							'button1' => "はい",
 							'button2' => "いいえ",
 						];
@@ -468,7 +471,7 @@ class LicenseForm extends Form {
 											"§f有効期限: §7{$oldlicense->getValidTimeText()} => {$newlicense->getValidTimeText()}\n".
 											"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
 											"\n".
-											"よろしいですか？",
+											"§fよろしいですか？",
 								'button1' => "はい",
 								'button2' => "いいえ",
 							];
