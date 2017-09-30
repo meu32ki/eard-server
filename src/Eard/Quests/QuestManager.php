@@ -8,6 +8,8 @@ use pocketmine\Player;
 
 use Eard\Enemys\EnemyRegister;
 use Eard\Utils\ItemName;
+use Eard\MeuHandler\Account;
+
 # Quests
 use Eard\Quests\Level1\Level1;
 
@@ -50,7 +52,13 @@ class QuestManager{
 				$list = "Eard\Quests\Level$stage\Level$stage";
 				$quests = $list::getQuests();
 				foreach($quests as $questId => $questClass){
-					$text = "【".$questClass::getName()."】\n目的 : ";
+
+					if(Account::get($player)->isClearedQuest($questClass::QUESTID)){
+						$text = "§l§2[CLEAR]§r§8【";
+					}else{
+						$text = "§8【";
+					}
+					$text .= $questClass::getName()."】\n目的 : ";
 					switch($questClass::getQuestType()){
 						case Quest::TYPE_SUBJUGATION:
 							$ec = EnemyRegister::getClass($questClass::getTarget());

@@ -25,6 +25,10 @@ class mission1 extends Quest{
 		return self::NORM;
 	}
 
+	public function getNormI(){
+		return self::NORM;
+	}
+	
 	public static function getTarget(){
 		return EnemyRegister::TYPE_HOPPER;
 	}
@@ -32,6 +36,6 @@ class mission1 extends Quest{
 	/*目的達成するたびに+1
 	*/
 	public function addAchievement(){
-		$result = parent::addAchievement();
+		return parent::addAchievement();
 	}
 }

@@ -202,7 +202,8 @@ class Event implements Listener{
 						QuestManager::sendQuest($player, $q::QUESTID);
 					}else if($id > 1500 && $id < 2000){
 						if($packet->formData === "true\n"){
-							$player->sendMessage(Chat::SystemToPlayer("クエストを開始します"));
+							$player->sendMessage(Chat::SystemToPlayer("クエストを開始しました"));
+							Account::get($player)->setNowQuest(Quest::get($id - 1500));
 						}else{
 							QuestManager::addQuestsForm($player, 0);
 						}
