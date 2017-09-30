@@ -575,7 +575,7 @@ class AreaProtector{
 		$secZ = self::calculateSectionNo($z);*/
 		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getSectionArray());
 		$mag = 1 + log10($count)*2;
-		return ($price*$mag);
+		return round($price*$mag);
 	}
 
 	public static function getHome($playerData){
