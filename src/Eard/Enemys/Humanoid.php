@@ -40,7 +40,7 @@ use Eard\Quests\Quest;
 
 class Humanoid extends Human{
 
-	protected $gravity = 0.14;
+	protected $gravity = 0.025;
 	public $attackingTick = 0;
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
 	public $isDrown = true;//継承先でfalseにすると水没にダメージを受けない

@@ -225,7 +225,7 @@ class Hopper extends Humanoid implements Enemy{
 					AI::lookAt($this, $this->target);
 				}
 				AI::setRate($this, 20);
-				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.2);
+				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*3);
 				AI::rangeAttack($this, 2.5, 3);
 				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
 				$this->charge = false;

@@ -274,9 +274,9 @@ class Layzer extends Humanoid implements Enemy{
 
 		}
 		if($this->walk){
-			AI::walkFront($this, 0.1);
-		}else{
 			AI::walkFront($this, 0.05);
+		}else{
+			AI::walkFront($this, 0.025);
 		}
 		return parent::onUpdate($tick);
 	}

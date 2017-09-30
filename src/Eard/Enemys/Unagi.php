@@ -43,7 +43,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 class Unagi extends Humanoid implements Enemy{
 
-	protected $gravity = 0.025;
+	protected $gravity = 0.008;
 	public $attackingTick = 0;
 	public $rainDamage = false;
 	public $isDrown = false;

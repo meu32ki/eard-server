@@ -252,7 +252,7 @@ class Jooubati extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 1.8;
+						$this->walkSpeed = 0.45;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -264,7 +264,7 @@ class Jooubati extends Humanoid implements Enemy{
 						AI::setRate($this, 20);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.8;
+						$this->walkSpeed = 0.2;
 						$this->float = mt_rand(0, 1);
 						$this->charge = 0;
 					break;
@@ -279,7 +279,7 @@ class Jooubati extends Humanoid implements Enemy{
 				$this->target = false;
 				$this->yaw += mt_rand(-40, 40);
 				$this->walk = true;
-				$this->walkSpeed = 0.8;
+				$this->walkSpeed = 0.2;
 				$this->float = mt_rand(0, 1);
 				$this->pitch = 0;
 				$this->charge = 0;		
