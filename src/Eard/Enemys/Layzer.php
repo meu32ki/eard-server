@@ -80,7 +80,7 @@ class Layzer extends Humanoid implements Enemy{
 			[100, 2,
 				[
 					[Item::RAW_MUTTON, 0, 1],
-					[Item::FEATHER, 15, 1],//骨粉
+					[Item::FEATHER, 0, 1],//骨粉
 				],
 			],
 			[75, 1,

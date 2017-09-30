@@ -234,17 +234,19 @@ class Humanoid extends Human{
 				$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
 				$player->sendMessage(Chat::SystemToPlayer($str));
 				$account = Account::get($player);
-				if($account->getNowQuest() !== null && $account->getNowQuest()->getQuestType() === Quest::TYPE_SUBJUGATION && $account->getNowQuest()->getTarget() === static::getEnemyType()){
-					$result = $account->getNowQuest()->addAchievement();
+				$nq = $account->getNowQuest();
+				if($nq !== null && $nq->getQuestType() === Quest::TYPE_SUBJUGATION && $nq->getTarget() === static::getEnemyType()){
+					$result = $nq->addAchievement();
 					if($result){
 						$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
 						//ここで報酬を送り付ける
-						if($account->addClearQuest($account->getNowQuest()->getQuestId())){
+						$nq->sendReward($player);
+						if($account->addClearQuest($nq->getQuestId())){
 							$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
 						}
 						$account->resetQuest();
 					}else{
-						$player->sendMessage(Chat::SystemToPlayer("あと".($account->getNowQuest()->getNormI()-$account->getNowQuest()->getAchievement())."体です"));
+						$player->sendMessage(Chat::SystemToPlayer("あと".($nq->getNormI()-$nq->getAchievement())."体です"));
 					}
 				}
 			}
