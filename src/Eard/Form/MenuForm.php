@@ -98,12 +98,19 @@ class MenuForm extends Form {
 
 				// ボタン作る
 				if(!$ownerNo){
+					// 所有者がいない
 					$buttons[] = ['text' => "この土地を買う"];
-					$cache[] = 10;
+					$cache[] = 7;
 				}
 				if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
+					// 所有者がいない 政府のライセンスを持っている
 					$buttons[] = ['text' => "この土地を政府が買う"];
-					$cache[] = 40;
+					$cache[] = 8;
+				}
+				if($ownerNo && $ownerNo == $playerData->getUniqueNo()){
+					// そいつの土地
+					$buttons[] = ['text' => "土地編集設定"];
+					$cache[] = 11;
 				}
 				$buttons[] = ['text' => "戻る"];
 				$cache[] = 1;
@@ -167,8 +174,55 @@ class MenuForm extends Form {
 				// ライセンスへ移動
 				new LicenseForm($playerData);
 			break;
+			case 7:
+			case 8:
+				// 土地購入 確認
+				$x = round($player->x); $z = round($player->z);
+				$sectionNoX = AreaProtector::calculateSectionNo($x);
+				$sectionNoZ = AreaProtector::calculateSectionNo($z);
+				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
+				$price = AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+				$c = $id == 7 ? "土地購入をしあなたを所有者として登録します。" : "土地購入をし§c政府を所有者として§f登録します。";
+				$data = [
+					'type'    => "modal",
+					'title'   => "メニュー > GPS (座標情報) > 土地購入 確認",
+					'content' => "§f{$c}\n".
+								"土地代として{$price}μを支払います。\n".
+								"\n".
+								"§f購入土地住所: §7{$address}\n".
+								"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
+								"\n".
+								"よろしいですか？",
+					'button1' => "はい",
+					'button2' => "いいえ",
+				];
+				$cache = [$id == 7 ? 9 : 10, 4];
+			break;
+			case 9:
+			case 10:
+				// 土地購入 実行
+				$sectionNoX = AreaProtector::calculateSectionNo($x);
+				$sectionNoZ = AreaProtector::calculateSectionNo($z);
+				if($id == 9){
+					$result = AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
+					$who = "あなた";
+				}else{
+					$result = AreaProtector::registerSectionAsGovernment($player, $sectionNoX, $sectionNoZ);
+					$who = "政府";
+				}
+
+				if($result){
+					$this->sendSuccessModal("メニュー > GPS (座標情報) > 土地購入", "購入完了しました。\n購入した土地は{$who}が自由に編集できます。", 4, 1);
+				}else{
+					$this->sendSuccessModal("メニュー > GPS (座標情報) > 土地購入", "購入できませんでした。", 4);
+				}
+			break;
+			case 11:
+				// 土地編集設定
+			break;
 		}
-		
+
+
 		// btarとcontentをつかった簡略表記の場合
 		if(isset($btar)){
 			foreach($btar as $d){
