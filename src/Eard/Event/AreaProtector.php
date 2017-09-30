@@ -474,7 +474,7 @@ class AreaProtector{
 		}else{
 			if( $playerData->isOnline() ){
 				//新規セクションデーター
-				$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
+				$sectionData = self::getNewSectionData($uniqueNo, $playerData->getPlayer()->getY());
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 				//残りの数を減らす 販売数
