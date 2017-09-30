@@ -94,7 +94,11 @@ class Form {
 	*	@param Int [$b1jump]		プレイヤーがエラー内容を了承し、ボタンのどちらかをきちんと押したときの挙動
 	*/
 	public function sendErrorModal($title, $content, $b1jump){
-		$this->sendModal($title, $content, "OK", $b1jump);
+		$this->sendModal($title." §cエラー", $content, "OK", $b1jump);
+	}
+
+	public function sendSuccessModal($title, $content, $b1jump, $b2jump){
+		$this->sendModal($title." §a完了", $content, "戻る", $b1jump, "トップへ戻る", $b2jump);
 	}
 
 	/**

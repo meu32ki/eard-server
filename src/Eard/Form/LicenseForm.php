@@ -29,7 +29,8 @@ class LicenseForm extends Form {
 		12 実行 親5 ランクダウン
 		13 確認 親6 期限延長
 		14 確認 親7 有効化
-		15 実行 親13/14 
+		15 実行 親13/14
+		16 実行 親8 無効化
 	*/
 
 	public function send(int $id){
@@ -46,9 +47,9 @@ class LicenseForm extends Form {
 						if($license = $playerData->getLicense($lNo) ){
 							if($lNo === 1){
 								// 生活の場合はちょっと表示形式変える
-								$status = $license->isValidTime() ? $license->getValidTimeText() : "無効";
+								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e".$license->getValidTimeText() : "§c".$license->getValidTimeText() ) : "無効";
 							}else{
-								$status = $license->isValidTime() ? "§c§l有効" : "無効";
+								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l有効" : "§c§l有効") : "§2§l無効";
 							}
 							$url = $license->getImgPath();
 						}else{
@@ -138,7 +139,7 @@ class LicenseForm extends Form {
 					$license = License::get($slno, null, 1); // 購入予定のライセンス、今所持しているものではない
 
 					if(!($license instanceof License)){
-						$this->senInternalErrorModal("FormId 2\n0番のライセンスを参照するな", 1);
+						$this->sendInternalErrorModal("FormId 2\n0番のライセンスを参照するな", 1);
 					}else{
 						$buttons[] = ['text' => "購入"];
 						$cache[] = 9;
@@ -169,7 +170,7 @@ class LicenseForm extends Form {
 				// らんくあっぷ
 				$oldlicense = $playerData->getLicense($this->selectedLicenseNo);
 				if(!($oldlicense instanceof license)){
-					$this->senInternalErrorModal("FormId 4\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 4\nライセンスを所持していないか、内部エラー", 1);
 				}else{
 					$newlicense = clone $oldlicense;
 					$newlicense->upgrade();
@@ -178,7 +179,7 @@ class LicenseForm extends Form {
 					$leftmeu = $havemeu - $price;
 					if($leftmeu <= 0){
 						$this->sendErrorModal(
-							"ライセンス > {$oldlicense->getName()} > ランクアップ §cエラー",
+							"ライセンス > {$oldlicense->getName()} > ランクアップ",
 							"ランクアップのための所持金が足りません。".abs($leftmeu)."μ不足しています。", 2
 						);
 					}else{
@@ -187,7 +188,7 @@ class LicenseForm extends Form {
 						$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 						$data = [
 							'type'    => "modal",
-							'title'   => "ライセンス > {$oldlicense->getName()} > ランクアップ (確認)",
+							'title'   => "ライセンス > {$oldlicense->getName()} > ランクアップ 確認",
 							'content' => "§fランクアップをします。\n".
 										"§c手数料として{$price}μを支払います。また、2{$dis}n".
 										"\n".
@@ -208,14 +209,14 @@ class LicenseForm extends Form {
 				// らんくだうん
 				$oldlicense = $playerData->getLicense($this->selectedLicenseNo);
 				if(!($oldlicense instanceof license)){
-					$this->senInternalErrorModal("FormId 5\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 5\nライセンスを所持していないか、内部エラー", 1);
 				}else{
 					$newlicense = clone $oldlicense;
 					$newlicense->upgrade();
 					$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 					$data = [
 						'type'    => "modal",
-						'title'   => "ライセンス > {$oldlicense->getName()} > ランクダウン (確認)",
+						'title'   => "ライセンス > {$oldlicense->getName()} > ランクダウン 確認",
 						'content' => "§fランクダウンをします。\n".
 									"※一度ランクダウンすると、再びランクアップしたい場合にはμが必要になります。\n".
 									"\n".
@@ -274,29 +275,29 @@ class LicenseForm extends Form {
 					}else{
 						// 有効期限が直近で切れた場合もこちら
 						$this->sendErrorModal(
-							"ライセンス > {$newlicense->getName()} > {$title} §cエラー",
+							"ライセンス > {$newlicense->getName()} > {$title}",
 							"現在、ライセンスを有効化した際のコストが足らないため、有効化できないようです。\nこのライセンスを有効化したい場合、他のライセンスの無効化や、ランクダウンをして、コストが足りるように調整する必要があります。", 2
 						);
 					}
 				}else{
-					$this->senInternalErrorModal("FormId 6 or 7\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 6 or 7\nライセンスを所持していないか、内部エラー", 1);
 				}
 			break;
 			case 8:
 				// 無効化する
 				$license = $playerData->getLicense($this->selectedLicenseNo);
 				if(!($license instanceof license)){
-					$this->senInternalErrorModal("FormId 8\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 8\nライセンスを所持していないか、内部エラー", 1);
 				}else{
 					if($license->isExpireing()){
 						$this->sendErrorModal(
-							"ライセンス > {$license->getName()} > 無効化 §cエラー",
+							"ライセンス > {$license->getName()} > 無効化",
 							"すでに無効化されています", 2
 						);
 					}else{
 						$data = [
 							'type'    => "modal",
-							'title'   => "ライセンス > {$license->getName()} > 無効化 (確認)",
+							'title'   => "ライセンス > {$license->getName()} > 無効化 確認",
 							'content' => "§f無効化をします。\n".
 										"§c※操作後すぐに無効化されるわけではありません。実際に無効化されるまでには2時間かかり、その間は、ライセンスは有効な状態です。\n".
 										"\n".
@@ -304,7 +305,7 @@ class LicenseForm extends Form {
 							'button1' => "はい",
 							'button2' => "いいえ",
 						];
-						// $cache = [11];
+						$cache = [16];
 					}
 				}
 			break;
@@ -315,7 +316,7 @@ class LicenseForm extends Form {
 
 					$realtitle = "ライセンス > {$license->getName()} > 新規購入";
 					$this->sendErrorModal(
-						"{$realtitle} §cエラー",
+						"{$realtitle}",
 						"すでにライセンス持っています。", 2
 					);
 				}else{
@@ -327,13 +328,13 @@ class LicenseForm extends Form {
 					$leftmeu = $havemeu - $price;
 					if($leftmeu <= 0){
 						$this->sendErrorModal(
-							"{$realtitle} §cエラー",
+							"{$realtitle}",
 							"新規購入のための所持金が足りません。".abs($leftmeu)."μ不足しています。", 2
 						);
 					}else{
 						$data = [
 							'type'    => "modal",
-							'title'   => "{$realtitle} (確認)",
+							'title'   => "{$realtitle} 確認",
 							'content' => "新規購入をします。\n".
 										"新規ライセンス発行料として{$price}μを支払います。\n".
 										"\n".
@@ -353,26 +354,26 @@ class LicenseForm extends Form {
 				if($license instanceof license){
 					$realtitle = "ライセンス > {$license->getName()} > 新規購入";
 					$this->sendErrorModal(
-						"{$realtitle} §cエラー",
+						"{$realtitle}",
 						"すでにライセンス「{$licensename}」を持っています。", 2
 					);
 				}else{
 					$license = License::get($this->selectedLicenseNo); // 追加したいライセンス
 					if(!($license instanceof license)){
-						$this->senInternalErrorModal("FormId 10\n内部エラー", 1);
+						$this->sendInternalErrorModal("FormId 10\n内部エラー", 1);
 					}else{
 						if(!$playerData->canAddNewLicense($license)){
-							$this->senInternalErrorModal("FormId 10\nerror", 2);// でるはずがない 購入時にはコスト0だから でたらおかしい
+							$this->sendInternalErrorModal("FormId 10\nerror", 2);// でるはずがない 購入時にはコスト0だから でたらおかしい
 						}else{
 							$pay = $license->getPrice();
 							if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} 新規購入")){
 								// 9でチェックとってるからでないはずだけど一応
 								if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
-								$this->senInternalErrorModal("FormId 10\n政府への支払いに失敗したため、新規購入 できませんでした。", 2);								
+								$this->sendInternalErrorModal("FormId 10\n政府への支払いに失敗したため、新規購入 できませんでした。", 2);								
 							}else{
 								$realtitle = "ライセンス > {$license->getName()} > 新規購入";
 								$playerData->addLicense($license);
-								$this->sendModal($realtitle, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+								$this->sendSuccessModal($realtitle, "完了しました。", "確認する", 2, "トップへ戻る", 1);
 							}
 						}
 					}
@@ -382,7 +383,7 @@ class LicenseForm extends Form {
 				// 実行 ランクアップ
 				$license = $playerData->getLicense($this->selectedLicenseNo);
 				if(!($license instanceof license)){
-					$this->senInternalErrorModal("FormId 11\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 11\nライセンスを所持していないか、内部エラー", 1);
 				}else{
 					// 念には念を入れて、仮のランクアップ試してから実行に移す
 					$newlicense = clone $license;
@@ -390,15 +391,15 @@ class LicenseForm extends Form {
 					$pay = $newlicense->getPrice();
 					if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} ランクアップ")){
 						if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
-						$this->senInternalErrorModal("FormId 11\n政府への支払いに失敗したため、ランクアップできませんでした。", 2);
+						$this->sendInternalErrorModal("FormId 11\n政府への支払いに失敗したため、ランクアップできませんでした。", 2);
 					}else{
 						if(!$canUpgrade){
-							$this->senInternalErrorModal("FormId 11\nランクアップに失敗しました。", 2);
+							$this->sendInternalErrorModal("FormId 11\nランクアップに失敗しました。", 2);
 						}else{
 							$license->upgrade(); // trueであることが保証されている
 							$license->expire(); // trueでもfalseでも関係ない
-							$title = "ライセンス > {$license->getName()} > ランクアップ 完了";
-							$this->sendModal($title, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+							$title = "ライセンス > {$license->getName()} > ランクアップ";
+							$this->sendSuccessModal($title, "完了しました。", "確認する", 2, "トップへ戻る", 1);
 						}
 					}
 				}
@@ -407,13 +408,13 @@ class LicenseForm extends Form {
 				// 実行 ランクダウン
 				$license = $playerData->getLicense($this->selectedLicenseNo);
 				if(!($license instanceof license)){
-					$this->senInternalErrorModal("FormId 11\nライセンスを所持していないか、内部エラー", 1);
+					$this->sendInternalErrorModal("FormId 11\nライセンスを所持していないか、内部エラー", 1);
 				}else{
-					$title = "ライセンス > {$license->getName()} > ランクダウン 完了";
+					$title = "ライセンス > {$license->getName()} > ランクダウン";
 					if(!$license->downgrade()){
 						$this->sendErrorModal($title, "ランクダウンできませんでした。", 2);					
 					}else{
-						$this->sendModal($title, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+						$this->sendSuccessModal($title, "ランクダウンが完了しました。", "確認する", 2, "トップへ戻る", 1);
 					}
 				}
 			break;
@@ -421,7 +422,7 @@ class LicenseForm extends Form {
 				// 確認 期間延長/有効化
 				$lastid = $this->lastFormId;
 				if($lastid !== 6 and $lastid !== 7){
-					$this->senInternalErrorModal("FormId 13/14\nlastIdは6か7であるべき 現在 {$lastid}", 1);
+					$this->sendInternalErrorModal("FormId 13/14\nlastIdは6か7であるべき 現在 {$lastid}", 1);
 				}else{
 					switch($id){
 						case 13: $title = "有効期限延長"; $suffix = "延長"; break;
@@ -429,7 +430,7 @@ class LicenseForm extends Form {
 					}
 					$oldlicense = $playerData->getLicense($this->selectedLicenseNo);
 					if(!$oldlicense){
-						$this->senInternalErrorModal("FormId 13\nライセンスを所持していないか、内部エラー", 1);
+						$this->sendInternalErrorModal("FormId 13\nライセンスを所持していないか、内部エラー", 1);
 					}else{
 						$ar = [
 							[1, 1.1, "1日"],
@@ -438,6 +439,7 @@ class LicenseForm extends Form {
 							[21, 0.8, "3週間"],
 						];
 						$data = $ar[$this->lastData];
+						$timetext = $data[2];
 
 						// 値はこれ以上回せないので、グローバルに格納
 						$this->selectedExtendDate = $this->lastData;
@@ -450,16 +452,16 @@ class LicenseForm extends Form {
 						$realtitle = "ライセンス > {$oldlicense->getName()} > {$title}";
 						if($leftmeu <= 0){
 							$this->sendErrorModal(
-								"{$realtitle} §cエラー",
+								"{$realtitle}",
 								"{$title}のための所持金が足りません。".abs($leftmeu)."μ不足しています。", $lastid
 							);
 						}else{
 							$costtext = $oldlicense instanceof Costable ? "§fコスト: §7{$oldlicense->getRealCost()} => {$newlicense->getRealCost()}\n" : "";
 							$data = [
 								'type'    => "modal",
-								'title'   => "{$realtitle} (確認)",
+								'title'   => "{$realtitle} 確認",
 								'content' => "§f{$title}をします。\n".
-											"手数料として{$price}μを支払います。有効期限を{$data[2]}{$suffix}します。\n".
+											"手数料として{$price}μを支払います。有効期限を{$timetext}{$suffix}します。\n".
 											"\n".
 											"§f「{$oldlicense->getFullName()}」\n".
 											"{$costtext}".
@@ -479,11 +481,11 @@ class LicenseForm extends Form {
 				// 実行 期間延長/有効化
 				$lastid = $this->lastFormId;
 				if($lastid !== 13 and $lastid !== 14){
-					$this->senInternalErrorModal("FormId 15\nlastIdは13か14であるべき 現在 {$lastid}", 1);
+					$this->sendInternalErrorModal("FormId 15\nlastIdは13か14であるべき 現在 {$lastid}", 1);
 				}else{
 					$license = $playerData->getLicense($this->selectedLicenseNo);
 					if(!$license){
-						$this->senInternalErrorModal("FormId 15\nライセンスを所持していないか、内部エラー", 1);
+						$this->sendInternalErrorModal("FormId 15\nライセンスを所持していないか、内部エラー", 1);
 					}else{
 						// 期間をゲットする
 						$ar = [
@@ -492,7 +494,7 @@ class LicenseForm extends Form {
 						$data = isset($ar[$this->selectedExtendDate]) ? $ar[$this->selectedExtendDate] : [];
 
 						if($this->selectedExtendDate === null or !$data){
-							$this->senInternalErrorModal("FormId 15\n日付未指定", $lastid);
+							$this->sendInternalErrorModal("FormId 15\n日付未指定", $lastid);
 						}else{
 							switch($lastid){
 								case 13: $title = "有効期限延長"; break;
@@ -500,12 +502,11 @@ class LicenseForm extends Form {
 							}
 							$pay = $license->getUpdatePrice() * $data[0] * $data[1];
 							if($pay && !Government::receiveMeu($playerData, $pay, "政府: ライセンス {$license->getName()} {$title}")){
-								if($player) $player->sendMessage(Chat::Format("§7政府", "§6個人", "§cエラー。§7お金が足りません。"));
-								$this->senInternalErrorModal("FormId 15\n政府への支払いに失敗したため、{$title}できませんでした。", 2);
+								$this->sendInternalErrorModal("FormId 15\n政府への支払いに失敗したため、{$title}できませんでした。", 2);
 							}else{
 								$license->update($data[0] * 86400);
-								$title = "ライセンス > {$license->getName()} > ランクダウン 完了";
-								$this->sendModal($title, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+								$title = "ライセンス > {$license->getName()} > {$title}";
+								$this->sendSuccessModal($title, "{$title}が完了しました。", "確認する", 2, "トップへ戻る", 1);
 							}
 						}
 					}
