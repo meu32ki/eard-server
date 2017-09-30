@@ -28,6 +28,25 @@ class AreaProtector{
 	//true = プロテクトに関係なく壊せるように
 	public static $allowBreakAnywhere = true;
 
+
+	/**
+	*	資源において、設置できるか 設置できる場合はtrue
+	*	@param int ItemId
+	*	@return bool
+	*/
+	public static function canPlaceInResource($id){
+		switch($id){
+			case Item::FURNACE:
+			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
+				return false;
+			break;
+			default:
+				return true;
+			break;
+		}
+	}
+
 	/**
 	*	資源区域において、タップして起動できるか
 	*	@param int BlockId
@@ -57,29 +76,18 @@ class AreaProtector{
 		switch($id){
 			case Item::CHEST:
 			case Item::FURNACE:
-				return false;
-			break;
 			case Item::BED_BLOCK:
-			case Item::WORKBENCH:
-			case Item::SHULKER_BOX:
-			default:
-				return true;
-			break;
-		}
-	}
-
-	/**
-	*	資源において、設置できるか 設置できる場合はtrue
-	*	@param int ItemId
-	*	@return bool
-	*/
-	public static function canPlaceInResource($id){
-		switch($id){
-			case Item::FURNACE:
-			case Item::WORKBENCH:
-			case Item::SHULKER_BOX:
+			case Item::OAK_DOOR_BLOCK:
+			case Item::SPRUCE_DOOR_BLOCK:
+			case Item::BIRCH_DOOR_BLOCK:
+			case Item::JUNGLE_DOOR_BLOCK:
+			case Item::ACACIA_DOOR_BLOCK:
+			case Item::DARK_OAK_DOOR_BLOCK:
+			case Item::TRAPDOOR:
 				return false;
 			break;
+			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
 			default:
 				return true;
 			break;
@@ -550,7 +558,7 @@ class AreaProtector{
 		$percentage = (self::$affordableSection - self::$leftSection) / self::$affordableSection; // 残っている土地の数によって価格が変わるよ
 		$taxChangeable = $taxBase * $percentage * 40; // かかくは、初期 = $taxbase, 最後 = $taxbase * 40;
 
-		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getSectionArray()); //すでに購入してる人は高くなるよ
+		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getAllSection()); //すでに購入してる人は高くなるよ
 
         if($pofs == -1){
             //誰も持っていない土地
@@ -573,7 +581,7 @@ class AreaProtector{
 		/* 引数変更で削除
 		$secX = self::calculateSectionNo($x);
 		$secZ = self::calculateSectionNo($z);*/
-		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getSectionArray());
+		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getAllSection());
 		$mag = 1 + log10($count)*2;
 		return round($price*$mag);
 	}

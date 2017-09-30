@@ -481,34 +481,6 @@ class Account implements MeuHandler {
 		return $this->data[3];
 	}
 
-
-	/**
-	*	所持しているセクションを追加する。
-	*	※処理は、AreaProtectorからのみ行うこと。 20170701
-	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるxの値
-	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
-	*	@param int | その土地に設定する権限レベル。詳しくはAddSharePlayerの候にて。
-	*	@return bool
-	*/
-	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
-		if($this->data[4] === []){
-			//住所登録
-			$this->setAddress($sectionNoX, $sectionNoZ);
-		}
-		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = $authority;
-		return true;
-	}
-
-	/**
-	*	所持しているセクションをすべて返す。
-	*	@return array
-	*/
-	public function getSectionArray(){
-		return $this->data[4];
-	}
-
-
-
 	/*
 		authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
 		authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
@@ -523,14 +495,40 @@ class Account implements MeuHandler {
 	*/
 
 	/**
-	*	他プレイヤーが自分の土地を壊せるようになる。土地共有。
-	*	@param int | 対象プレイヤーの、AccountのgetUniqueNo()でえられる値
-	*	@param int | 権限レベル
+	*	所持しているセクションを追加する。
+	*	※処理は、AreaProtectorからのみ行うこと。 20170701
+	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるxの値
+	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
+	*	@param int | その土地に設定する権限レベル。詳しくはAddSharePlayerの候にて。
 	*	@return bool
 	*/
-	public function addSharePlayer($uniqueNo, $authority = 4){
+	public function addSection($sectionNoX, $sectionNoZ, $editAuth = 4, $exeAuth = 4){
+		if($this->data[4] === []){
+			//住所登録
+			$this->setAddress($sectionNoX, $sectionNoZ);
+		}
+		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = [$editAuth, $exeAuth];
+		return true;
+	}
+
+	/**
+	*	所持しているセクションをすべて返す。
+	*	@return array
+	*/
+	public function getAllSection(){
+		return $this->data[4];
+	}
+
+	/**
+	*	他プレイヤーが自分の土地を壊せるようになる。土地共有。
+	*	@param int | 対象プレイヤーの、AccountのgetUniqueNo()でえられる値
+	*	@param int | 編集 権限レベル
+	*	@param int | 実行 権限レベル
+	*	@return bool
+	*/
+	public function setSharePlayer($uniqueNo, $editAuth = 1, $exeAuth = 1){
 		if($uniqueNo){
-			$this->data[6][$uniqueNo] = $authority;
+			$this->data[6][$uniqueNo] = [$editAuth, $exeAuth];
 			return true;
 		}
 		return false; 
@@ -542,9 +540,16 @@ class Account implements MeuHandler {
 	*	@param int | 破壊対象の座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
 	*	@return bool | こわせるならtrue
 	*/
-	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
+	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ): bool{
 		if($uniqueNo && isset($this->data[6][$uniqueNo])){
-			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] <= $this->data[6][$uniqueNo];
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][0] <= $this->data[6][$uniqueNo][0];
+		}
+		return false;
+	}
+
+	public function allowUse($uniqueNo, $sectionNoX, $sectionNoZ): bool{
+		if($uniqueNo && isset($this->data[6][$uniqueNo])){
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][1] <= $this->data[6][$uniqueNo][1];
 		}
 		return false;
 	}
@@ -663,6 +668,17 @@ class Account implements MeuHandler {
 						}
 					}
 
+					// 旧形式からの移行用
+					if($data = $this->getAddress()){
+						$sectionNoX = $data[0];
+						$sectionNoZ = $data[1];
+						if(isset($this->data[4]["{$sectionNoX}:{$sectionNoZ}"]) && !is_array($this->data[4]["{$sectionNoX}:{$sectionNoZ}"])){
+							$newdata = [];
+							foreach($this->data[4] as $index => $data){
+								$newdata[$index] = [$data, 4]; // 実行は4に
+							}
+						}
+					}
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 					return true;
