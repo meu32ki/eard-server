@@ -5,6 +5,7 @@ namespace Eard\Form;
 # Eard
 use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
+use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Time;
 
 
@@ -117,12 +118,38 @@ class MenuForm extends Form {
 				];
 			break;
 			case 5:
-				// 所持金の使用履歴
+				// 所持金の使用履歴 確認
+				$history = $playerData->getAllHistory();
+				if($this->lastFormId === 5){
+					// 同じからきている = ページ送り
+					$new = $this->data + 1;
+					$islast = isset($history[$new * 10]) ? false : true; // このページに内容がない
+					$this->data = $islast ? 0 : $new;
+				}elseif($this->lastFormId === 3){
+					// 最初から来たのでリセット
+					$this->data = 0;
+				}
+
+				// ぶん回してリスト作る
 				$content = "";
-				foreach($playerData->getAllHistory() as $d){
+				$ar = array_slice($history, $this->data * 10, ($this->data + 1) * 10);
+				foreach($ar as $d){
 					$timetext = date("m/d H:i", $d[2]);
 					$meutext = $d[0] < 0 ? "§c" .$d[0] : "§a" .$d[0];
 					$content .= "§7{$timetext} {$meutext} §f{$d[1]}\n";
+				}
+				// あきを埋める
+				if(0 < 10 - count($ar)){
+					$content .= str_repeat("\n", 10 - count($ar));
+				}
+
+				// 次ページへ行けるかどうかのボタン
+				if(isset($history[$this->data + 1 * 10])){
+					$buttons[] = ['text' => "次ページへ"];
+					$cache[] = 5;
+				}elseif($this->data !== 0){
+					$buttons[] = ['text' => "最初のページへ"];
+					$cache[] = 5;
 				}
 
 				$buttons[] = ['text' => "戻る"];
@@ -134,8 +161,10 @@ class MenuForm extends Form {
 					'content' => $content,
 					'buttons' => $buttons
 				];
+				//$this->sendModal("メニュー > ステータス確認 > 所持金使用履歴", $content, "戻る", 3);
 			break;
 			case 6:
+				// ライセンスへ移動
 				new LicenseForm($playerData);
 			break;
 		}
@@ -163,7 +192,7 @@ class MenuForm extends Form {
 			$this->cache = $cache;
 			$this->Show($playerData, $id, $data);
 		}else{
-			// echo "formIdが1000と表示されていれば送信済み\nでもそれいがいならcacheが設定されていないので送られてない\n";
+			// echo "formIdが1000と表示されていれば送信済みでもそれいがいならcacheが設定されていないので送られてない\n";
 		}
 	}
 
