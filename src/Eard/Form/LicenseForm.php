@@ -305,7 +305,7 @@ class LicenseForm extends Form {
 							'button1' => "はい",
 							'button2' => "いいえ",
 						];
-						$cache = [16];
+						$cache = [16, 2];
 					}
 				}
 			break;
@@ -373,7 +373,7 @@ class LicenseForm extends Form {
 							}else{
 								$realtitle = "ライセンス > {$license->getName()} > 新規購入";
 								$playerData->addLicense($license);
-								$this->sendSuccessModal($realtitle, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+								$this->sendSuccessModal($realtitle, "完了しました。", 2, 1);
 							}
 						}
 					}
@@ -399,7 +399,7 @@ class LicenseForm extends Form {
 							$license->upgrade(); // trueであることが保証されている
 							$license->expire(); // trueでもfalseでも関係ない
 							$title = "ライセンス > {$license->getName()} > ランクアップ";
-							$this->sendSuccessModal($title, "完了しました。", "確認する", 2, "トップへ戻る", 1);
+							$this->sendSuccessModal($title, "完了しました。", 2, 1);
 						}
 					}
 				}
@@ -414,7 +414,7 @@ class LicenseForm extends Form {
 					if(!$license->downgrade()){
 						$this->sendErrorModal($title, "ランクダウンできませんでした。", 2);					
 					}else{
-						$this->sendSuccessModal($title, "ランクダウンが完了しました。", "確認する", 2, "トップへ戻る", 1);
+						$this->sendSuccessModal($title, "ランクダウンが完了しました。", 2, 1);
 					}
 				}
 			break;
@@ -506,9 +506,24 @@ class LicenseForm extends Form {
 							}else{
 								$license->update($data[0] * 86400);
 								$title = "ライセンス > {$license->getName()} > {$title}";
-								$this->sendSuccessModal($title, "{$title}が完了しました。", "確認する", 2, "トップへ戻る", 1);
+								$this->sendSuccessModal($title, "{$title}が完了しました。", 2, 1);
 							}
 						}
+					}
+				}
+			break;
+			case 16:
+				// 無効化 実行
+				$license = $playerData->getLicense($this->selectedLicenseNo);
+				if(!($license instanceof license)){
+					$this->sendInternalErrorModal("FormId 16\nライセンスを所持していないか、内部エラー", 1);
+				}else{
+					$result = $license->expire();
+					$title = "ライセンス > {$license->getName()} > 無効化";
+					if($result){
+						$this->sendSuccessModal($title, "完全に無効化されるまであと2時間かかります。", 2, 1);
+					}else{
+						$this->sendErrorModal($title, "すでに無効化されています。", 2);						
 					}
 				}
 			break;
