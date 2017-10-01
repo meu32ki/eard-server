@@ -65,17 +65,16 @@ class QuestManager{
 					}else{
 						$text = "{$color}【";
 					}*/
-
-					$text = "【".$questClass::getName()."】";
+					$text = "{$color}【".$questClass::getName()."】\n§8";
 					switch($questClass::getQuestType()){
 						case Quest::TYPE_SUBJUGATION:
 							$ec = EnemyRegister::getClass($questClass::getTarget());
-							$text .= "\n目的 : ".$ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
+							$text .= "目的 : ".$ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
 							$icon = "http://eard.space/images/quest/subjugation{$stat}.png";
 						break;
 						case Quest::TYPE_DELIVERY:
 							$ec = $questClass::getTarget();
-							$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
+							$text .= "目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
 							$icon = "http://eard.space/images/quest/delivery{$stat}.png";
 						break;
 					}
@@ -87,7 +86,7 @@ class QuestManager{
 						]
 					];
 				}
-				$id = 1000+$stage;
+				$id = 1000 + $stage;
 			break;
 		}
 		self::createWindow($player, $data, $id);
