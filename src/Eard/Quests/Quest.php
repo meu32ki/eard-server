@@ -61,7 +61,38 @@ class Quest{
 		$player->sendMessage(Chat::SystemToPlayer("§e報酬金 {$amount}μ 獲得しました"));
 	}
 
+	public function checkDelivery($player){
+		$inv = $player->getInventory();
+		$delitem = static::getTarget();
+		$delid = $delitem[0];
+		$deldamage = $delitem[1];
+		$delamount = static::getNorm();
+		$contents = $inv->getContents();
+		$sendc = $contents;
+		foreach ($contents as $index => $item) {
+			if($item->getId() === $delid && $item->getDamage() === $deldamage){
+				if($delamount >= $item->getCount()){
+					unset($sendc[$index]);
+					$delamount -= $item->getCount();
+				}else{
+					$sendc[$index] = $item->setCount($item->getCount() - $delamount);
+					$delamount = 0;
+				}
+				if($delamount === 0){
+					break;
+				}
+			}
+		}
+		if($delamount === 0){
+			$inv->setContents(array_values($sendc));
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	public function sendRewardItem($player, $item){
 		//アイテム送信処理
+		$player->sendMessage(Chat::SystemToPlayer("§6報酬アイテム送信チェック"));
 	}
 }

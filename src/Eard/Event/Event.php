@@ -310,10 +310,27 @@ class Event implements Listener{
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
 				case 116: // エンチャントテーブル(クエストカウンター)
-					if($playerData->getNowQuest() === null){
+					$nq = $playerData->getNowQuest();
+					if($nq === null){
 						QuestManager::addQuestsForm($player, 0);
 					}else{
-						QuestManager::sendCanselForm($player);
+						if($nq->getQuestType() === Quest::TYPE_DELIVERY){
+							if($nq->checkDelivery($player)){
+								$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
+								//ここで報酬を送り付ける
+								$nq->sendReward($player);
+								if($playerData->addClearQuest($nq->getQuestId())){
+									$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
+								}
+								$playerData->resetQuest();
+							}else{
+								QuestManager::sendCanselForm($player);
+							}							
+						}else{
+							QuestManager::sendCanselForm($player);
+						}
+
+
 					}
 					$e->setCancelled(true); // 実際のエンチャントテーブルの効果は使わせない
 				break;
