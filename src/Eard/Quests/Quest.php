@@ -3,6 +3,8 @@ namespace Eard\Quests;
 
 use Eard\Utils\Chat;
 use Eard\Utils\ChestIO;
+use Eard\MeuHandler\Government;
+use Eard\MeuHandler\Account;
 
 class Quest{
 	public static $allQuests = [];
@@ -36,6 +38,14 @@ class Quest{
 		return static::QUESTID;
 	}
 
+	public static function getNorm(){
+		return static::NORM;
+	}
+
+	public function getNormI(){
+		return static::NORM;
+	}
+
 	/*目的達成するたびに+1
 	*/
 	public function addAchievement(){
@@ -60,6 +70,7 @@ class Quest{
 	public function sendRewardMeu($player, $amount){
 		//Meu送金処理
 		$player->sendMessage(Chat::SystemToPlayer("§e報酬金 {$amount}μ 獲得しました"));
+		Government::giveMeu(Account::get($player), $amount, "Quest: クリア報酬 {$amount}μ");
 	}
 
 	public function checkDelivery($player){
