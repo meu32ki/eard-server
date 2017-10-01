@@ -247,7 +247,7 @@ class Mangler extends Humanoid implements Enemy{
 						AI::setRate($this, 40);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = -0.025;
+						$this->walkSpeed = -0.008;
 						$this->float = -1;
 						$this->charge = 1;
 					break;
@@ -255,7 +255,7 @@ class Mangler extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.5;
+						$this->walkSpeed = 0.125;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -267,7 +267,7 @@ class Mangler extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.2;
+						$this->walkSpeed = 0.05;
 						$this->float = mt_rand(0, 1);
 						$this->charge = 0;
 					break;
@@ -282,7 +282,7 @@ class Mangler extends Humanoid implements Enemy{
 				$this->target = false;
 				$this->yaw += mt_rand(-40, 40);
 				$this->walk = true;
-				$this->walkSpeed = 0.2;
+				$this->walkSpeed = 0.05;
 				$this->float = mt_rand(0, 1);
 				$this->pitch = 0;
 				$this->charge = 0;		
@@ -304,9 +304,9 @@ class Mangler extends Humanoid implements Enemy{
 
 		if($this->float !== -1){
 			if($this->float && 100 > $this->y){
-				$this->motionY = ($this->motionY+0.2)/2;
+				$this->motionY = ($this->motionY+0.2)/6;
 			}else{
-				$this->motionY = ($this->motionY-0.2)/2;
+				$this->motionY = ($this->motionY-0.2)/6;
 			}
 		}
 

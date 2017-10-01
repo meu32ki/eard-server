@@ -1,20 +1,20 @@
 <?php
-namespace Eard\Quests\Level1;
+namespace Eard\Quests\Level3;
 
 use Eard\Quests\Quest;
 use Eard\Enemys\EnemyRegister;
 
-class mission1 extends Quest{
-	const QUESTID = 1;
-	const NORM = 3;
+class mission10 extends Quest{
+	const QUESTID = 10;
+	const NORM = 12;
 	public $achievement = 0;
 
 	public static function getName(){
-		return "蝗の一跳ね";
+		return "跳ねる大淘汰戦";
 	}
 
 	public static function getDescription(){
-		return "最近バッタが増えてきてうるさいんだよね～\n退治してくれないかな？";
+		return "バッタが大量発生したようです。\n周辺に被害が出る前に掃討してください。";
 	}
 
 	public static function getQuestType(){
@@ -34,7 +34,7 @@ class mission1 extends Quest{
 	}
 
 	public static function getReward(){
-		return 300;
+		return 1500;
 	}
 
 	public function sendReward($player){

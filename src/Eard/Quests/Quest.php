@@ -1,9 +1,13 @@
 <?php
 namespace Eard\Quests;
 
+use Eard\Utils\Chat;
+
 class Quest{
 	public static $allQuests = [];
 
+	const TYPE_MEU = 0;
+	const TYPE_ITEM = 1;
 
 	const QUESTID = 0;
 	const NORM = 0;
@@ -50,5 +54,14 @@ class Quest{
 
 	public function checkAchievement(){
 		return (static::NORM <= $this->achievement);
+	}
+
+	public function sendRewardMeu($player, $amount){
+		//Meu送金処理
+		$player->sendMessage(Chat::SystemToPlayer("§e報酬金 {$amount}μ 獲得しました"));
+	}
+
+	public function sendRewardItem($player, $item){
+		//アイテム送信処理
 	}
 }

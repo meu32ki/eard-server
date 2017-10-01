@@ -1,20 +1,20 @@
 <?php
-namespace Eard\Quests\Level1;
+namespace Eard\Quests\Level2;
 
 use Eard\Quests\Quest;
 use Eard\Enemys\EnemyRegister;
 
-class mission1 extends Quest{
-	const QUESTID = 1;
-	const NORM = 3;
+class mission5 extends Quest{
+	const QUESTID = 5;
+	const NORM = 1;
 	public $achievement = 0;
 
 	public static function getName(){
-		return "蝗の一跳ね";
+		return "フィッシングルッキング";
 	}
 
 	public static function getDescription(){
-		return "最近バッタが増えてきてうるさいんだよね～\n退治してくれないかな？";
+		return "生活区域の釣り人から、明らかに魚ではないものが釣れるとの報告がありました。\n調査にご協力をお願いします。";
 	}
 
 	public static function getQuestType(){
@@ -30,11 +30,11 @@ class mission1 extends Quest{
 	}
 	
 	public static function getTarget(){
-		return EnemyRegister::TYPE_HOPPER;
+		return EnemyRegister::TYPE_UMIMEDAMA;
 	}
 
 	public static function getReward(){
-		return 300;
+		return 500;
 	}
 
 	public function sendReward($player){

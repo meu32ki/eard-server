@@ -80,37 +80,37 @@ class Buriki extends Humanoid implements Enemy{
 			[100, 4,
 				[
 					[Item::SAND, 1, 1],//赤砂
-					[Item::BRICK, 1, 1],//レンガ
+					[Item::BRICK, 0, 1],//レンガ
 				],
 			],
 			[85, 3,
 				[
-					[Item::BRICK, 1, 1],//レンガ
+					[Item::BRICK, 0, 1],//レンガ
 					[Item::SAND, 1, 1],//赤砂
 				],
 			],
 			[50, 3,
 				[
 					[Item::SAND, 1, 2],//赤砂
-					[Item::BRICK, 1, 2],//レンガ
+					[Item::BRICK, 0, 2],//レンガ
 				],
 			],
 			[25, 3,
 				[
 					[Item::SAND, 1, 2],//赤砂
-					[Item::BRICK, 1, 2],//レンガ
+					[Item::BRICK, 0, 2],//レンガ
 				],
 			],
 			[5, 3,
 				[
 					[Item::SAND, 1, 4],//赤砂
-					[Item::BRICK, 1, 4],//レンガ
+					[Item::BRICK, 0, 4],//レンガ
 				],
 			],
 			[3, 3,
 				[
 					[Item::SAND, 1, 5],//赤砂
-					[Item::BRICK, 1, 5],//レンガ
+					[Item::BRICK, 0, 5],//レンガ
 				],
 			],
 			[2, 1,
@@ -125,7 +125,7 @@ class Buriki extends Humanoid implements Enemy{
 		return [100, 1,
 			[
 				[Item::SAND, 1, 3],//赤砂
-				[Item::BRICK, 1, 3],//レンガ
+				[Item::BRICK, 0, 3],//レンガ
 			]
 		];
 	}

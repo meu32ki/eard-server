@@ -33,6 +33,14 @@ class mission2 extends Quest{
 		return [Item::WHEAT, 0];
 	}
 
+	public static function getReward(){
+		return Item::get(Item::GLASS, 1);
+	}
+
+	public function sendReward($player){
+		self::sendRewardItem($player, $this->getReward());
+	}
+
 	/*目的達成するたびに+1
 	*/
 	public function addAchievement(){

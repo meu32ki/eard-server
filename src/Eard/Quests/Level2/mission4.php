@@ -1,20 +1,20 @@
 <?php
-namespace Eard\Quests\Level1;
+namespace Eard\Quests\Level2;
 
 use Eard\Quests\Quest;
 use Eard\Enemys\EnemyRegister;
 
-class mission1 extends Quest{
-	const QUESTID = 1;
+class mission4 extends Quest{
+	const QUESTID = 4;
 	const NORM = 3;
 	public $achievement = 0;
 
 	public static function getName(){
-		return "蝗の一跳ね";
+		return "打ち上げ鋏";
 	}
 
 	public static function getDescription(){
-		return "最近バッタが増えてきてうるさいんだよね～\n退治してくれないかな？";
+		return "森林を探索中、「クワガタ」と呼ばれるウィットに遭遇しました。\n危険なウィットのため、排除を依頼します。";
 	}
 
 	public static function getQuestType(){
@@ -30,11 +30,11 @@ class mission1 extends Quest{
 	}
 	
 	public static function getTarget(){
-		return EnemyRegister::TYPE_HOPPER;
+		return EnemyRegister::TYPE_CROSSER;
 	}
 
 	public static function getReward(){
-		return 300;
+		return 500;
 	}
 
 	public function sendReward($player){

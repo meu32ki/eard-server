@@ -12,14 +12,15 @@ use Eard\MeuHandler\Account;
 
 # Quests
 use Eard\Quests\Level1\Level1;
-
+use Eard\Quests\Level1\Level2;
+use Eard\Quests\Level1\Level3;
 /***
 *
 *	クエスト管理するやつ
 */
 class QuestManager{
 
-	const LEVELS = 1;
+	const LEVELS = 3;
 
 	public static function init(){
 		for($i = 1; $i <= self::LEVELS; $i++){
@@ -52,21 +53,21 @@ class QuestManager{
 				$list = "Eard\Quests\Level$stage\Level$stage";
 				$quests = $list::getQuests();
 				foreach($quests as $questId => $questClass){
-
+					$color = self::getColor($questClass::getQuestType());
 					if(Account::get($player)->isClearedQuest($questClass::QUESTID)){
-						$text = "§l§2[CLEAR]§r§8【";
+						$text = "§l§2[CLEAR]§r{$color}【";
 					}else{
-						$text = "§8【";
+						$text = "{$color}【";
 					}
-					$text .= $questClass::getName()."】\n目的 : ";
+					$text .= $questClass::getName()."】§8";
 					switch($questClass::getQuestType()){
 						case Quest::TYPE_SUBJUGATION:
 							$ec = EnemyRegister::getClass($questClass::getTarget());
-							$text .= $ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
+							$text .= "\n目的 : ".$ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
 						break;
 						case Quest::TYPE_DELIVERY:
 							$ec = $questClass::getTarget();
-							$text .= ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
+							$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
 						break;
 					}
 					$data['buttons'][] = ['text' => $text];
@@ -80,15 +81,19 @@ class QuestManager{
 
 	public static function sendQuest(Player $player, int $questId){
 		$quest = Quest::get($questId);
-		$text = "【".$quest::getName()."】\n目的 : ";
+		$color = self::getColor($quest::getQuestType());
+		$text = "{$color}【".$quest::getName()."】§f";
 		switch($quest::getQuestType()){
 			case Quest::TYPE_SUBJUGATION:
 				$ec = EnemyRegister::getClass($quest::getTarget());
-				$text .= $ec::getEnemyName()."を".$quest::getNorm()."体討伐する";
+				$text .= "\n目的 : ".$ec::getEnemyName()."を".$quest::getNorm()."体討伐する";
+				$text .= "\n報酬 : ".$quest::getReward()."μ";
 			break;
 			case Quest::TYPE_DELIVERY:
 				$ec = $quest::getTarget();
-				$text .= ItemName::getNameOf($ec[0], $ec[1])."を".$quest::getNorm()."個納品する";
+				$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$quest::getNorm()."個納品する";
+				$reward = $quest::getReward();
+				$text .= "\n報酬 : ".$reward->getName()."×".$reward->getCount()."個";
 			break;
 		}
 		$data = [
@@ -113,5 +118,19 @@ class QuestManager{
 			JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE
 		);
 		$player->dataPacket($pk);
+	}
+
+	public static function getColor(int $type){
+		switch($type){
+			case Quest::TYPE_SUBJUGATION:
+				return "§4";
+			break;
+			case Quest::TYPE_DELIVERY:
+				return "§2";
+			break;
+			default :
+				return "§5";
+			break;
+		}
 	}
 }
