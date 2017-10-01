@@ -106,8 +106,32 @@ class QuestManager{
 		self::createWindow($player, $data, 1500+$questId);
 	}
 
-	public static function Responce(){
-
+	public static function sendCanselForm($player){
+		$quest = Account::get($player)->getNowQuest();
+		$color = self::getColor($quest::getQuestType());
+		$text = "{$color}【".$quest::getName()."】§f";
+		switch($quest::getQuestType()){
+			case Quest::TYPE_SUBJUGATION:
+				$ec = EnemyRegister::getClass($quest::getTarget());
+				$text .= "\n目的 : ".$ec::getEnemyName()."を".$quest::getNorm()."体討伐する";
+				$text .= "\n報酬 : ".$quest::getReward()."μ";
+				$text .= "\n達成度 : ".$quest->getAchievement()."/".$quest::getNorm();
+			break;
+			case Quest::TYPE_DELIVERY:
+				$ec = $quest::getTarget();
+				$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$quest::getNorm()."個納品する";
+				$reward = $quest::getReward();
+				$text .= "\n報酬 : ".$reward->getName()."×".$reward->getCount()."個";
+			break;
+		}
+		$data = [
+			'type'    => 'modal',
+			'title'   => "以下のクエストを受注しています。取り消しますか？",
+			'content' => $text,
+			'button1' => "はい",
+			'button2' => "いいえ",
+		];
+		self::createWindow($player, $data, 2000);
 	}
 
 	public static function createWindow(Player $player, $data, int $id){

@@ -205,10 +205,13 @@ class Event implements Listener{
 					}else if($id > 1500 && $id < 2000){
 						if($packet->formData === "true\n"){
 							$player->sendMessage(Chat::SystemToPlayer("クエストを開始しました"));
-							Account::get($player)->setNowQuest(Quest::get($id - 1500));
+							$playerData->setNowQuest(Quest::get($id - 1500));
 						}else{
 							QuestManager::addQuestsForm($player, 0);
 						}
+					}else if($id === 2000 && $packet->formData === "true\n"){
+						$playerData->resetQuest();
+						$player->sendMessage(Chat::SystemToPlayer("クエストを取り消しました"));	
 					}
 				}
 			break;
@@ -307,8 +310,12 @@ class Event implements Listener{
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
 				case 116: // エンチャントテーブル(クエストカウンター)
-					QuestManager::addQuestsForm($player, 0);
-					$e->setCancelled(true); // 実際のエンチャテーブルの効果は使わせない
+					if($playerData->getNowQuest() === null){
+						QuestManager::addQuestsForm($player, 0);
+					}else{
+						QuestManager::sendCanselForm($player);
+					}
+					$e->setCancelled(true); // 実際のエンチャントテーブルの効果は使わせない
 				break;
 				default:
 					// 手持ちアイテム

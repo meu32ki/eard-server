@@ -96,6 +96,7 @@ class Humanoid extends Human{
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		AI::setSize($this, static::getSize());
+		$this->setNameTag("");
 		$this->spawnTime = microtime(true);
 	}
 
