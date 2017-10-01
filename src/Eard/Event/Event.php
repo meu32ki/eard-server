@@ -411,9 +411,10 @@ class Event implements Listener{
 		$playerData = Account::get($player);
 		
 		// メニューを見ていたら、消す
+		/*
 		if($playerData->getMenu()->isActive()){
 			$playerData->getMenu()->close();
-		}
+		}*/
 
 		// 死んだときのメッセージ
 		$cause = $player->getLastDamageCause();
