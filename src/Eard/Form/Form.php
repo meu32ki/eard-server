@@ -146,8 +146,6 @@ class Form {
 			$this->close();
 			return false;
 		}
-		$data = (int) $data;
-		//echo $data."\n";
 
 		// ほけん
 		/*
@@ -168,16 +166,16 @@ class Form {
 
 		switch($this->lastSendData['type']){
 			case 'form':
-				$buttonNo = $data;
+				$buttonNo = (int) $data;
 				$formid = isset($this->cache[$buttonNo]) ? $this->cache[$buttonNo] : $this->cache[0];
 				$this->lastMode = self::TYPE_FORM;
-				$this->lastData = $data;
+				$this->lastData = (int) $data;
 				$this->Send($formid);
 				# echo "form send {$formid}\n";
 			break;
 			case 'modal':
 				$this->lastMode = self::TYPE_MODAL;
-				switch($data){
+				switch((int) $data){
 					case "true\n":
 					case 0:
 						$this->lastData = 0;
@@ -196,7 +194,8 @@ class Form {
 				}
 			break;
 			case 'custom_form':
-				$this->lastMode = self::TYPE_MODAL;
+				$this->lastMode = self::TYPE_CUSTOM_FORM;
+				echo $data."\n";
 				$this->lastData = json_decode($data, true);
 				$this->Send($this->cache[0]);
 			break;
