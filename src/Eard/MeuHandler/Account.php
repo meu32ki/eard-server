@@ -564,6 +564,11 @@ class Account implements MeuHandler {
 		return false; 
 	}
 
+	public function removeAuth($name): bool{
+		unset($this->data[6][$name]);
+		return true; 
+	}
+
 	/**
 	*	与えていいる編集権限をすべて返す。
 	*	@return array
@@ -579,14 +584,14 @@ class Account implements MeuHandler {
 	*	@return bool | こわせるならtrue つかえるならtrue
 	*/
 	public function allowEdit($name, $sectionNoX, $sectionNoZ): bool{
-		if($name && isset($this->data[6][$uniqueNo])){
+		if($name && isset($this->data[6][$name])){
 			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][0] <= $this->data[6][strtolower($name)];
 		}
 		return false;
 	}
 
 	public function allowUse($name, $sectionNoX, $sectionNoZ): bool{
-		if($name && isset($this->data[6][$uniqueNo])){
+		if($name && isset($this->data[6][$name])){
 			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][1] <= $this->data[6][strtolower($name)];
 		}
 		return false;
