@@ -175,21 +175,19 @@ class Form {
 			break;
 			case 'modal':
 				$this->lastMode = self::TYPE_MODAL;
-				switch((int) $data){
-					case "true\n":
-					case 0:
+				switch($data){
+					case "false\n":
+						$this->lastData = 1;
+						$formid = isset($this->cache[1]) ? $this->cache[1] : $this->cache[0];
+						$this->Send($formid);
+						# echo "false send {$formid}\n";
+					break;
+					case "true\n":					
 						$this->lastData = 0;
 						$this->Send($this->cache[0]);
 						# echo "true send "; 
 						# echo $this->cache[0];
 						# echo "\n";
-					break;
-					case "false\n":
-					case 1:
-						$this->lastData = 1;
-						$formid = isset($this->cache[1]) ? $this->cache[1] : $this->cache[0];
-						$this->Send($formid);
-						# echo "false send {$formid}\n";
 					break;
 				}
 			break;

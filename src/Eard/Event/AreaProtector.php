@@ -16,6 +16,7 @@ use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\DataIO;
+use Eard\Utils\ItemName;
 
 
 /***
@@ -318,9 +319,11 @@ class AreaProtector{
 
 					}else{
 						//所有者本人でない。権限が、所有者から与えられているか。
-						if($owner = Account::getByUniqueNo($ownerNo)){
-							if(!$owner->allowEdit($playerData->getName(), $sectionNoX, $sectionNoZ)){
-								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));							
+						if($ownerData = Account::getByUniqueNo($ownerNo)){
+							$playerName = $playerData->getName();
+							if(!$ownerData->allowEdit($playerName, $sectionNoX, $sectionNoZ)){
+								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));
+								$player->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName)." 土地の編集権限 ".$ownerData->getSectionEdit($sectionNoX, $sectionNoZ).""));	
 								return false;
 							}
 						}
@@ -329,7 +332,7 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));							
+					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));						
 					return false;
 				}
 			}
@@ -345,13 +348,15 @@ class AreaProtector{
 			// 使用できないブロックの場合
 			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) ){
 				// その土地の所有者を確認し
-				if($owner = Account::getByUniqueNo($ownerNo)){
+				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
 					$sectionNoX = self::calculateSectionNo($x);
 					$sectionNoZ = self::calculateSectionNo($z);
-					if(!$owner->allowUse($playerData->getName(), $sectionNoX, $sectionNoZ)){
-						$blockname = ItemName::getNameOf($blockId, $blockMeta);
-						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));		
+					$playerName = $playerData->getName();
+					if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
+						$blockname = ItemName::getNameOf($blockId);
+						$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
+						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
 						return false;
 					}
 				}

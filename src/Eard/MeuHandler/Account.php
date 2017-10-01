@@ -90,20 +90,30 @@ class Account implements MeuHandler {
 		return null;
 	}
 
+	// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
 	public static function getByUniqueNo($uniqueNo){
-		// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
-		$account = new Account();
-		$account->data[0] = $uniqueNo;
-
-		$account->loadData();
-		if($name = $account->getName()){
-			$name = strtolower($name);
-			if(!isset(self::$accounts[$name])){
-				self::$accounts[$name] = $account;
+		// インデックスに入ってたらそっちからgetByNameする
+		if(isset(self::$index[$uniqueNo])){
+			$name = self::$index[$uniqueNo];
+			if(isset(self::$accounts[$name])){
+				return self::$accounts[$name];
 			}
-			return self::$accounts[$name];
+			return null;
+		}else{
+			$account = new Account();
+			$account->data[0] = $uniqueNo;
+			$account->loadData();
+			if($name = $account->getName()){
+				$name = strtolower($name);
+				self::$index[$uniqueNo] = $name;
+				if(!isset(self::$accounts[$name])){
+					// 新しく読み込んだデータ格納
+					self::$accounts[$name] = $account;
+				}
+				return self::$accounts[$name];
+			}
+			return null;
 		}
-		return null;
 	}
 
 /* Player
@@ -535,18 +545,28 @@ class Account implements MeuHandler {
 	}
 
 	/**
+	*	@return array
+	*/
+	public function getSection($sectionNoX, $sectionNoZ): array{
+		return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] ?? [];
+	}
+
+	public function getSectionEdit($sectionNoX, $sectionNoZ): int{
+		$data = $this->getSection($sectionNoX, $sectionNoZ);
+		return $data ? $data[0] : 0;
+	}
+
+	public function getSectionUse($sectionNoX, $sectionNoZ): int{
+		$data = $this->getSection($sectionNoX, $sectionNoZ);
+		return $data ? $data[1] : 0;
+	}
+
+	/**
 	*	所持しているセクションをすべて返す。
 	*	@return array
 	*/
 	public function getAllSection(): array{
 		return $this->data[4];
-	}
-
-	/**
-	*	@return array
-	*/
-	public function getSection($sectionNoX, $sectionNoZ): array{
-		return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] ?? [];
 	}
 
 	/**
@@ -569,6 +589,10 @@ class Account implements MeuHandler {
 		return true; 
 	}
 
+	public function getAuth($name): int{
+		return $this->data[6][$name] ?? 0;
+	}
+
 	/**
 	*	与えていいる編集権限をすべて返す。
 	*	@return array
@@ -584,15 +608,19 @@ class Account implements MeuHandler {
 	*	@return bool | こわせるならtrue つかえるならtrue
 	*/
 	public function allowEdit($name, $sectionNoX, $sectionNoZ): bool{
-		if($name && isset($this->data[6][$name])){
-			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][0] <= $this->data[6][strtolower($name)];
+		$name = strtolower($name);
+		if($name){
+			$auth = isset($this->data[6][$name]) ? $this->data[6][$name] : 0;
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][0] <= $auth;
 		}
 		return false;
 	}
 
 	public function allowUse($name, $sectionNoX, $sectionNoZ): bool{
-		if($name && isset($this->data[6][$name])){
-			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][1] <= $this->data[6][strtolower($name)];
+		$name = strtolower($name);
+		if($name){
+			$auth = isset($this->data[6][$name]) ? $this->data[6][$name] : 0;
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][1] <= $auth;
 		}
 		return false;
 	}
@@ -751,17 +779,22 @@ class Account implements MeuHandler {
 	*	@param bool
 	*/
 	public function saveData($isfrompmmp = false){
-		$name = $this->getPlayer()->getName();
-		$data = serialize(self::$newdata);
-		$txtdata = base64_encode($data);
-    	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
-    	DB::get()->query($sql);
-		MainLogger::getLogger()->notice("§aAccount: {$name} data saved　- first time");
+		$player = $this->getPlayer();
+		if($player instanceof Player){
+			$name = $player->getName();
+			$data = serialize(self::$newdata);
+			$txtdata = base64_encode($data);
+	    	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
+	    	DB::get()->query($sql);
+			MainLogger::getLogger()->notice("§aAccount: {$name} data saved　- first time");
 
-		$this->data = self::$newdata;//初回データを読み込む
+			$this->data = self::$newdata;//初回データを読み込む
 
-		//meuは展開する
-		$this->meu = Meu::get($this->data[1], $this);
+			//meuは展開する
+			$this->meu = Meu::get($this->data[1], $this);
+		}else{
+			echo "Account: error!\n";
+		}
     }
 
     /**
@@ -842,20 +875,6 @@ class Account implements MeuHandler {
     }
 */
 
-
-	/*
-	*	オフライン用
-	*	このclass::Accountで使っている変数を保存
-	*/
-
-	public static function load(){
-		$data = DataIO::load('Account');
-		if($data){
-			self::$namelist = $data;
-			MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
-		}
-	}
-
 	public static function save(){
 		//全員分のデータセーブ
 		if(self::$accounts){
@@ -872,13 +891,12 @@ class Account implements MeuHandler {
 			}
 		}
 
-		//記録データセーブ
-		$data = DataIO::save('Account', self::$namelist);
-		if($data){
-			MainLogger::getLogger()->notice("§aAccount: offline list has saved");
+		//uniqueNoとnameの紐づけ解除
+		if(isset(self::$index)){
+			self::$index = [];
 		}
 	}
 
-	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
+	public static $index = []; //uniqueNoとnameをふすびつけるもの
 
 }
