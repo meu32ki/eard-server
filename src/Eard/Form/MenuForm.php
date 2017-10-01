@@ -325,9 +325,10 @@ class MenuForm extends Form {
 					$playerData->addSection($sectionNoX, $sectionNoZ, $editAuth, $exeAuth);
 					$realtitle = $lastid === 4 ? "GPS (座標情報)" : "セクション権限設定";
 					$title = "セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]);
+					$authlist = ["§70 §b全員", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3", "§74 §c自分のみ"];
 					$this->sendSuccessModal(
 						"セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]),
-						"完了しました。この土地の編集は「{$editAuth}」、実行は「{$exeAuth}」以上の権限を持っているプレイヤーが、できるようになりました。", $lastid, 1
+						"完了しました。この土地の編集は「".$authlist[$editAuth]."」、実行は「".$authlist[$exeAuth]."」以上の権限を持っているプレイヤーが、できるようになりました。", $lastid, 1
 					);
 				}
 			break;
@@ -336,7 +337,7 @@ class MenuForm extends Form {
 				$buttons[] = ['text' => "新規追加"];
 				$cache[] = 16;
 
-				$authlist = ["0(§b権限なし§7)", "1(§a権限1§7)", "2(§e権限2§7)", "3(§6権限3§7)"];
+				$authlist = ["§70 §b権限なし", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3"];
 				foreach($playerData->getAllAuth() as $name => $auth){
 					$buttons[] = ['text' => "§8{$name} ".$authlist[$auth]];
 					$cache[] = 16;
@@ -389,7 +390,7 @@ class MenuForm extends Form {
 						[
 							'type' => "step_slider",
 							'text' => "実行/編集権限",
-							'steps' => ["0(§b権限なし§7)", "1(§a権限1§7)", "2(§e権限2§7)", "3(§6権限3§7)"],
+							'steps' => ["§70 §b権限なし", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3"],
 							'default' => $auth,
 						],
 					]
@@ -406,10 +407,15 @@ class MenuForm extends Form {
 					$title = "新規追加";
 				}
 				$auth = $this->lastData[1];
-				$playerData->setAuth($name, $auth);
+				if($auth){
+					$playerData->setAuth($name, $auth);
+				}else{
+					$playerData->removeAuth($name);
+				}
+				$authlist = ["0 §b権限なし", "1 §a権限1", "2 §e権限2", "3 §6権限3"];
 				$this->sendSuccessModal(
 					"セクション権限設定 > プレイヤー権限 > {$title}",
-					"完了しました。\n{$name}の権限を{$auth}にしました。", 15, 1
+					"完了しました。\n{$name}の権限を「".$authlist[$auth]."」にしました。", 15, 1
 				);
 			break;
 		}

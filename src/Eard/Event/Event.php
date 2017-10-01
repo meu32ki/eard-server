@@ -433,11 +433,6 @@ class Event implements Listener{
 	public function Death(PlayerDeathEvent $e){
 		$player = $e->getEntity();
 		$playerData = Account::get($player);
-		
-		// メニューを見ていたら、消す
-		if($playerData->getMenu()->isActive()){
-			$playerData->getMenu()->close();
-		}
 
 		// 死んだときのメッセージ
 		$cause = $player->getLastDamageCause();
