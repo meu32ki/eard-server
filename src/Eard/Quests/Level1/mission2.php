@@ -21,14 +21,6 @@ class mission2 extends Quest{
 		return self::TYPE_DELIVERY;
 	}
 
-	public static function getNorm(){
-		return self::NORM;
-	}
-
-	public function getNormI(){
-		return self::NORM;
-	}
-
 	public static function getTarget(){
 		return [Item::WHEAT, 0];
 	}

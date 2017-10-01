@@ -38,6 +38,14 @@ class Quest{
 		return static::QUESTID;
 	}
 
+	public static function getNorm(){
+		return static::NORM;
+	}
+
+	public function getNormI(){
+		return static::NORM;
+	}
+
 	/*目的達成するたびに+1
 	*/
 	public function addAchievement(){

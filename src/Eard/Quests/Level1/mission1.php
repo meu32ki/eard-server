@@ -21,14 +21,6 @@ class mission1 extends Quest{
 		return self::TYPE_SUBJUGATION;
 	}
 
-	public static function getNorm(){
-		return self::NORM;
-	}
-
-	public function getNormI(){
-		return self::NORM;
-	}
-	
 	public static function getTarget(){
 		return EnemyRegister::TYPE_HOPPER;
 	}
