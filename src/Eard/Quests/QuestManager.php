@@ -93,7 +93,7 @@ class QuestManager{
 				$ec = $quest::getTarget();
 				$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$quest::getNorm()."個納品する";
 				$reward = $quest::getReward();
-				$text .= "\n報酬 : ".$reward->getName()."×".$reward->getCount()."個";
+				$text .= "\n報酬 : ".ItemName::getNameOf($reward->getId(), $reward->getDamage())."×".$reward->getCount()."個";
 			break;
 		}
 		$data = [

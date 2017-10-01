@@ -34,7 +34,7 @@ class mission2 extends Quest{
 	}
 
 	public static function getReward(){
-		return Item::get(Item::GLASS, 1);
+		return Item::get(Item::GLASS, 0, 1);
 	}
 
 	public function sendReward($player){
