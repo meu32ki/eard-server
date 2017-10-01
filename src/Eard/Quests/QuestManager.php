@@ -54,23 +54,35 @@ class QuestManager{
 				$quests = $list::getQuests();
 				foreach($quests as $questId => $questClass){
 					$color = self::getColor($questClass::getQuestType());
+
+					$stat = Account::get($player)->isClearedQuest($questClass::QUESTID) ? "_clear" : "";
+					/*
 					if(Account::get($player)->isClearedQuest($questClass::QUESTID)){
 						$text = "§l§2[CLEAR]§r{$color}【";
 					}else{
 						$text = "{$color}【";
-					}
-					$text .= $questClass::getName()."】§8";
+					}*/
+
+					$text = "【".$questClass::getName()."】";
 					switch($questClass::getQuestType()){
 						case Quest::TYPE_SUBJUGATION:
 							$ec = EnemyRegister::getClass($questClass::getTarget());
 							$text .= "\n目的 : ".$ec::getEnemyName()."を".$questClass::getNorm()."体討伐する";
+							$icon = "http://eard.space/images/quest/subjugation{$stat}.png";
 						break;
 						case Quest::TYPE_DELIVERY:
 							$ec = $questClass::getTarget();
 							$text .= "\n目的 : ".ItemName::getNameOf($ec[0], $ec[1])."を".$questClass::getNorm()."個納品する";
+							$icon = "http://eard.space/images/quest/delivery{$stat}.png";
 						break;
 					}
-					$data['buttons'][] = ['text' => $text];
+					$data['buttons'][] = [
+						'text' => $text,
+						'image' => [
+							'type' => 'url',
+							'data' => $icon
+						]
+					];
 				}
 				$id = 1000+$stage;
 			break;
