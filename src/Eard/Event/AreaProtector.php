@@ -24,6 +24,9 @@ use Eard\Utils\DataIO;
 */
 class AreaProtector{
 
+	/*
+		todo: $x, $y なのか sectionX,sectionYなのか どういう基準で場合分けしてるのかがわからないので
+	*/
 
 	//true = プロテクトに関係なく壊せるように
 	public static $allowBreakAnywhere = true;
@@ -214,6 +217,15 @@ class AreaProtector{
 		$sectionA = strrev($out);
 		return "{$minus}{$sectionA}{$sectionNoZ}";
 	}
+
+
+	public static function getSectionCodeFromCoordinate($x, $z){
+		$sectionNoX = self::calculateSectionNo(round($x));
+		$sectionNoZ = self::calculateSectionNo(round($z));
+		return self::getSectionCode($sectionNoX, $sectionNoZ);
+	}
+
+	
 	
 	// return int (or -1) | ownerNo
 	public static function getOwnerFromCoordinate($x, $z){
@@ -261,15 +273,14 @@ class AreaProtector{
 		}
 	}
 	
-	//そこで設置破壊できるか
-	//return bool
+
 	/**
-	*	@param bool $noMessage ポップアップを表示させるか デフォルトではさせる (Interactのときにつかう)
+	*	生活区域 その「場所」で設置破壊ができるか
 	*/
-	public static function Edit(Player $player, $x, $y, $z, $nomessage = false){
-		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
+	public static function Edit(Player $player, $x, $y, $z){
+		if( ($ownerNo = self::getOwnerFromCoordinate($x, $z)) < 0 ){
 			// -1 … グリッド上
-			if(!$nomessage) $player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
+			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
 
@@ -279,23 +290,22 @@ class AreaProtector{
 			$sectionNoX = self::calculateSectionNo($x);
 			$sectionNoZ = self::calculateSectionNo($z);
 			if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-				if(!$nomessage) $player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
+				$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
 				return false;
 			}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-				if(!$nomessage) $player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
+				$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
 				return false;
 			}
 
 
 			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
 			$playerData = Account::get($player);
-			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
 			if($ownerNo === 100000){
 				// 政府の土地
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
 					return true;
 				}else{
-					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊は許可されていません。"));
+					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊はできません。"));
 					return false;					
 				}
 			}else{
@@ -308,10 +318,9 @@ class AreaProtector{
 
 					}else{
 						//所有者本人でない。権限が、所有者から与えられているか。
-						$ownerName = self::getNameFromOwnerNo($ownerNo);
-						if($owner = Account::getByName($ownerName)){
-							if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
-								if(!$nomessage) $player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+						if($owner = Account::getByUniqueNo($ownerNo)){
+							if(!$owner->allowEdit($playerData->getName(), $sectionNoX, $sectionNoZ)){
+								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));							
 								return false;
 							}
 						}
@@ -320,13 +329,35 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
+					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));							
 					return false;
 				}
 			}
 		}
+	}
 
-		return false;
+	/**
+	*	使用できないやつをはじく
+	*	@return bool つかえるならtrue
+	*/
+	public static function Use(Account $playerData, $x, $y, $z, $blockId){
+		if(!self::canActivateInLivingProtected($blockId)){
+			// 使用できないブロックの場合
+			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) ){
+				// その土地の所有者を確認し
+				if($owner = Account::getByUniqueNo($ownerNo)){
+					// 所有者のデータを手に入れる
+					$sectionNoX = self::calculateSectionNo($x);
+					$sectionNoZ = self::calculateSectionNo($z);
+					if(!$owner->allowUse($playerData->getName(), $sectionNoX, $sectionNoZ)){
+						$blockname = ItemName::getNameOf($blockId, $blockMeta);
+						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));		
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	public static function makeWarning($txt){
@@ -514,26 +545,6 @@ class AreaProtector{
 		$msg = Chat::Format("政府", "§6個人", "{$player->getName()} が政府として {$address} を押さえました。");
 		MainLogger::getLogger()->info($msg);
 		return true;
-	}
-
-	/**
-	*	いちいちDBのデータを読み込むまでもないとき、owneerNoから、持ち主の名前をだす。
-	*	DBのいんでっくすみたいなもん？
-	*	@param int | ownerNo
-	*	@return string | プレイヤーのname
-	*/
-	public static function getNameFromOwnerNo($no){
-		if($no === -1){
-			return "グリッド上";
-		}else{
-			if(isset(Account::$namelist[$no])){
-				return Account::$namelist[$no];
-			}else{
-				//echo "ERROR: ".$no;
-				//空き地が出るようにしているが、、。
-				return "空き地";
-			}
-		}
 	}
 
 /*
