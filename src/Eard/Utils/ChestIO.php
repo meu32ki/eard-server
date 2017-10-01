@@ -9,6 +9,7 @@ use pocketmine\inventory\BaseInventory;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 use pocketmine\nbt\NBT;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -100,9 +101,9 @@ class ChestIO extends BaseInventory {
 
 		// ダミーチェスト送る
 		$pk = new UpdateBlockPacket();
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
+		$pk->x = (int) $x;
+		$pk->y = (int) $y;
+		$pk->z = (int) $z;
 		$pk->blockId = $id;
 		$pk->blockData = $meta;
 		$pk->flags = UpdateBlockPacket::FLAG_NONE;//読み込まれていないチャンクに送り付ける時は注意が必要
@@ -120,9 +121,9 @@ class ChestIO extends BaseInventory {
 			]);
 			$nbt->setData($c);
 			$pk = new BlockEntityDataPacket();
-			$pk->x = $x;
-			$pk->y = $y;
-			$pk->z = $z;
+			$pk->x = (int) $x;
+			$pk->y = (int) $y;
+			$pk->z = (int) $z;
 			$pk->namedtag = $nbt->write(true);
 			$who->dataPacket($pk);
 		}
@@ -130,11 +131,11 @@ class ChestIO extends BaseInventory {
 		// コンテナあける
 		parent::onOpen($who);
 		$pk = new ContainerOpenPacket();
-		$pk->windowid = $who->getWindowId($this);
-		$pk->type = $this->getType()->getNetworkType();
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
+		$pk->windowId = $who->getWindowId($this);
+		$pk->type = WindowTypes::CONTAINER;
+		$pk->x = (int) $x;
+		$pk->y = (int) $y;
+		$pk->z = (int) $z;
 		$who->dataPacket($pk);
 		//echo "ItemBox: open {$pk->windowid}\n";
 
@@ -152,7 +153,7 @@ class ChestIO extends BaseInventory {
 
 		// コンテナ閉じる
 		$pk = new ContainerClosePacket();
-		$pk->windowid = $who->getWindowId($this);
+		$pk->windowId = $who->getWindowId($this);
 		$who->dataPacket($pk);
 		parent::onClose($who);
 		//echo "ItemBox: close {$pk->windowid}\n";

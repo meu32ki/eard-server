@@ -2,6 +2,7 @@
 namespace Eard\Quests;
 
 use Eard\Utils\Chat;
+use Eard\Utils\ChestIO;
 
 class Quest{
 	public static $allQuests = [];
@@ -93,6 +94,9 @@ class Quest{
 
 	public function sendRewardItem($player, $item){
 		//アイテム送信処理
-		$player->sendMessage(Chat::SystemToPlayer("§6報酬アイテム送信チェック"));
+		$this->inventory = new ChestIO($player);
+		$this->inventory->additem($item);
+		$this->inventory->setName("報酬ボックス(閉じると中のアイテムは消滅します)");
+		$player->addWindow($this->inventory);
 	}
 }
