@@ -177,33 +177,45 @@ class MenuForm extends Form {
 			case 7:
 			case 8:
 				// 土地購入 確認
+				$player = $playerData->getPlayer();
 				$x = round($player->x); $z = round($player->z);
 				$sectionNoX = AreaProtector::calculateSectionNo($x);
 				$sectionNoZ = AreaProtector::calculateSectionNo($z);
 				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
 				$price = AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
-				$c = $id == 7 ? "土地購入をしあなたを所有者として登録します。" : "土地購入をし§c政府を所有者として§f登録します。";
-				$data = [
-					'type'    => "modal",
-					'title'   => "メニュー > GPS (座標情報) > 土地購入 確認",
-					'content' => "§f{$c}\n".
-								"土地代として{$price}μを支払います。\n".
-								"\n".
-								"§f購入土地住所: §7{$address}\n".
-								"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
-								"\n".
-								"よろしいですか？",
-					'button1' => "はい",
-					'button2' => "いいえ",
-				];
-				$cache = [$id == 7 ? 9 : 10, 4];
+				$havemeu = $playerData->getMeu()->getAmount();
+				$leftmeu = $havemeu - $price;
+				if($leftmeu <= 0){
+					$this->sendErrorModal(
+						"メニュー > GPS (座標情報) > 土地購入",
+						"土地購入のための所持金が足りません。".abs($leftmeu)."μ不足しています。", 1
+					);
+				}else{
+					$c = $id == 7 ? "土地購入をしあなたを所有者として登録します。" : "土地購入をし§c政府を所有者として§f登録します。";
+					$data = [
+						'type'    => "modal",
+						'title'   => "メニュー > GPS (座標情報) > 土地購入 確認",
+						'content' => "§f{$c}\n".
+									"土地代として{$price}μを支払います。\n".
+									"\n".
+									"§f購入土地住所: §7{$address}\n".
+									"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
+									"\n".
+									"よろしいですか？",
+						'button1' => "はい",
+						'button2' => "いいえ",
+					];
+					$cache = [$id == 7 ? 9 : 10, 4];
+				}
 			break;
 			case 9:
 			case 10:
 				// 土地購入 実行
+				$player = $playerData->getPlayer();
+				$x = round($player->x); $z = round($player->z);
 				$sectionNoX = AreaProtector::calculateSectionNo($x);
 				$sectionNoZ = AreaProtector::calculateSectionNo($z);
-				if($id == 9){
+				if($id === 9){
 					$result = AreaProtector::registerSection($player, $sectionNoX, $sectionNoZ);
 					$who = "あなた";
 				}else{
@@ -262,6 +274,7 @@ class MenuForm extends Form {
 				// 土地編集設定
 				if($this->lastFormId === 4){ // GPSから来たら
 					// 今いる場所を当該セクションとして
+					$player = $playerData->getPlayer();
 					$x = round($player->x); $z = round($player->z);
 					$sectionNoX = AreaProtector::calculateSectionNo($x);
 					$sectionNoZ = AreaProtector::calculateSectionNo($z);
@@ -325,10 +338,10 @@ class MenuForm extends Form {
 					$playerData->addSection($sectionNoX, $sectionNoZ, $editAuth, $exeAuth);
 					$realtitle = $lastid === 4 ? "GPS (座標情報)" : "セクション権限設定";
 					$title = "セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]);
-					$authlist = ["§70 §b全員", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3", "§74 §c自分のみ"];
+					$authlist = ["0 §b全員", "1 §a権限1", "2 §e権限2", "3 §6権限3", "4 §c自分のみ"];
 					$this->sendSuccessModal(
 						"セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]),
-						"完了しました。この土地の編集は「".$authlist[$editAuth]."」、実行は「".$authlist[$exeAuth]."」以上の権限を持っているプレイヤーが、できるようになりました。", $lastid, 1
+						"§f完了しました。\nこの土地の編集は「§7".$authlist[$editAuth]."§f」、実行は「§7".$authlist[$exeAuth]."§f」以上の権限を持っているプレイヤーが、できるようになりました。", $lastid, 1
 					);
 				}
 			break;
@@ -415,7 +428,7 @@ class MenuForm extends Form {
 				$authlist = ["0 §b権限なし", "1 §a権限1", "2 §e権限2", "3 §6権限3"];
 				$this->sendSuccessModal(
 					"セクション権限設定 > プレイヤー権限 > {$title}",
-					"完了しました。\n{$name}の権限を「".$authlist[$auth]."」にしました。", 15, 1
+					"§f完了しました。\n{$name}の権限を「§7".$authlist[$auth]."§f」にしました。", 15, 1
 				);
 			break;
 		}
