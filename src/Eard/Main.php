@@ -82,7 +82,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# Eard関連
 		AreaProtector::load();
-		Account::load();
 		BlockObjectManager::load();
 		Government::load();
 		new EnemyRegister();
