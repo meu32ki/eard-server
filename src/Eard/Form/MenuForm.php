@@ -5,6 +5,7 @@ namespace Eard\Form;
 # Eard
 use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
+use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Time;
 
@@ -14,9 +15,7 @@ class MenuForm extends Form {
 	public function close(){
 		// 他のクラスに残るものは削除しておかないと
 
-		if( $this->lastFormId === 4 ){ // gpsからの帰還であれば
-			AreaProtector::viewSectionCancel($playerData);
-		}
+		AreaProtector::viewSectionCancel($this->playerData);
 		parent::close();
 	}
 
@@ -45,6 +44,7 @@ class MenuForm extends Form {
 						["ステータス照会",3],
 						["GPS (座標情報)",4],
 						["ライセンス",6],
+						["土地編集権限設定",11],
 						//["チャットモード変更",20],
 						//["エリア転送",30],
 						//["μを送る", 45],
@@ -89,12 +89,12 @@ class MenuForm extends Form {
 				AreaProtector::viewSection($playerData); //セクション可視化
 				$player = $playerData->getPlayer();
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
-				$sectionNoX = AreaProtector::calculateSectionNo($x);
-				$sectionNoZ = AreaProtector::calculateSectionNo($z);
-				$address = AreaProtector::getSectionCode($sectionNoX, $sectionNoZ);
-				$ownerNo = AreaProtector::getOwnerFromCoordinate($x,$z);
-				$owner = AreaProtector::getNameFromOwnerNo($ownerNo);
-				$posprice = $ownerNo ? " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ) : "";
+				$address = AreaProtector::getSectionCodeFromCoordinate($x, $z);
+				$ownerNo = AreaProtector::getOwnerFromCoordinate($x, $z);
+				$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
+				$sectionNoX = AreaProtector::calculateSectionNo(round($x));
+				$sectionNoZ = AreaProtector::calculateSectionNo(round($z));
+				$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
 
 				// ボタン作る
 				if(!$ownerNo){
@@ -107,10 +107,10 @@ class MenuForm extends Form {
 					$buttons[] = ['text' => "この土地を政府が買う"];
 					$cache[] = 8;
 				}
-				if($ownerNo && $ownerNo == $playerData->getUniqueNo()){
+				if($ownerNo && $ownerNo === $playerData->getUniqueNo()){
 					// そいつの土地
-					$buttons[] = ['text' => "土地編集設定"];
-					$cache[] = 11;
+					$buttons[] = ['text' => "セクション権限設定 土地権限へ"];
+					$cache[] = 13;
 				}
 				$buttons[] = ['text' => "戻る"];
 				$cache[] = 1;
@@ -119,8 +119,8 @@ class MenuForm extends Form {
 				$data = [
 					'type'    => "form",
 					'title'   => "メニュー > GPS (座標情報)",
-					'content' => "§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z} §7(住所 {$address})\n".
-								"§f所有者: §7{$owner}{$posprice}\n",
+					'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
+								"§f所有者: §7{$ownerName}{$posprice}\n",
 					'buttons' => $buttons
 				];
 			break;
@@ -218,7 +218,199 @@ class MenuForm extends Form {
 				}
 			break;
 			case 11:
+				// 権限メニュー
+				$data = [
+					'type'    => "form",
+					'title'   => "メニュー > セクション権限設定",
+					'content' => "自分の購入した土地(セクション)のどこで誰が編集できるか設定できます。",
+					'buttons' => [
+						['text' => "土地権限"],
+						['text' => "プレイヤー権限"],
+						['text' => "戻る"],
+					]
+				];
+				$cache = [12, 15, 1];
+			break;
+			case 12:
+				// 所持している土地一覧 編集設定
+				$sections = $playerData->getAllSection();
+				$title = "メニュー > セクション権限設定 > 土地権限";
+				if(!$sections){
+					$this->sendErrorModal($title, "あなたの土地がありません");
+				}else{
+					$buttons = [];
+					foreach($sections as $index => $d){
+						$ar = explode(":", $index);
+						$address = AreaProtector::getSectionCode((int) $ar[0], (int) $ar[1]);
+						$buttons[] = ['text' => "§l{$address} §r§7(編集".$d[0].",実行".$d[1].")"];
+						$cache[] = 13;
+					}
+
+					$buttons[] = ['text' => "戻る"];
+					$cache[] = 11;
+
+					// print_r($sections);
+					$data = [
+						'type'    => "form",
+						'title'   => $title,
+						'content' => "権限を変更したいセクションを選んでください。",
+						'buttons' => $buttons
+					];
+				}
+			break;
+			case 13:
 				// 土地編集設定
+				if($this->lastFormId === 4){ // GPSから来たら
+					// 今いる場所を当該セクションとして
+					$x = round($player->x); $z = round($player->z);
+					$sectionNoX = AreaProtector::calculateSectionNo($x);
+					$sectionNoZ = AreaProtector::calculateSectionNo($z);
+					$this->data = [$sectionNoX, $sectionNoZ, 4];
+				}elseif($this->lastFormId === 12){ // 一覧から来たら
+					// セクションを示しているのははいれつの「インデックス」なので、ポインタを進めてキーを得る
+					$sections = $playerData->getAllSection();
+					$pointor = $this->lastData; // 最後に押されたボタンの位置
+					// echo $pointor;
+					reset($sections);
+					for($i = 0; $i < $pointor; ++$i){
+						next($sections);
+					}
+					$key = key($sections);
+					$ar = explode(":", $key);
+					$this->data = [(int) $ar[0], (int) $ar[1], 12];
+				}
+				$sdata = $this->data;
+
+				if(! ($data = $playerData->getSection($sdata[0], $sdata[1])) ){
+					$this->data = [];
+					$this->sendInternalErrorModal("FormId 11\nセクション情報取得不可、たぶん所持してない", $sdata[2]);
+				}else{
+					$realtitle = $sdata[2] === 4 ? "GPS (座標情報)" : "セクション権限設定";
+					$title = "{$realtitle} > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]);
+					$content = [
+						[
+							'type' => "step_slider",
+							'text' => "編集 (ブロックの設置破壊)",
+							'steps' => ["§70 §b全員", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3", "§74 §c自分のみ"],
+							'default' => $data[0],
+						],
+						[
+							'type' => "step_slider",
+							'text' => "実行 (チェスト開閉/かまど使用/ドア開閉等)",
+							'steps' => ["§70 §b全員", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3", "§74 §c自分のみ"],
+							'default' => $data[1],
+						],
+					];
+					$data = [
+						'type'    => "custom_form",
+						'title'   => $title,
+						'content' => $content,
+					];
+					$cache = [14];
+				}
+			break;
+			case 14:
+				// 実行
+				$sdata = $this->data;
+				if(!$sdata or !is_array($sdata)){
+					$this->sendInternalErrorModal("FormId 14\nなにかのえらー", 1);
+				}else{
+					$sectionNoX = $sdata[0];
+					$sectionNoZ = $sdata[1];
+					$lastid = $sdata[2];
+					$formdata = $this->lastData;
+					//print_r($formdata);
+					$editAuth = $formdata[0];
+					$exeAuth = $formdata[1];
+					$playerData->addSection($sectionNoX, $sectionNoZ, $editAuth, $exeAuth);
+					$realtitle = $lastid === 4 ? "GPS (座標情報)" : "セクション権限設定";
+					$title = "セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]);
+					$this->sendSuccessModal(
+						"セクション権限設定 > 土地権限 > ".AreaProtector::getSectionCode($sdata[0], $sdata[1]),
+						"完了しました。この土地の編集は「{$editAuth}」、実行は「{$exeAuth}」以上の権限を持っているプレイヤーが、できるようになりました。", $lastid, 1
+					);
+				}
+			break;
+			case 15:
+				// プレイヤーリスト
+				$buttons[] = ['text' => "新規追加"];
+				$cache[] = 16;
+
+				$authlist = ["0(§b権限なし§7)", "1(§a権限1§7)", "2(§e権限2§7)", "3(§6権限3§7)"];
+				foreach($playerData->getAllAuth() as $name => $auth){
+					$buttons[] = ['text' => "§8{$name} ".$authlist[$auth]];
+					$cache[] = 16;
+				}
+
+				$buttons[] = ['text' => "戻る"];
+				$cache[] = 11;
+
+				$title = "セクション権限設定 > プレイヤー権限";
+				$data = [
+					'type'    => "form",
+					'title'   => $title,
+					'content' => "権限を与えるプレイヤーを追加、もしくは選択してください。",
+					'buttons' => $buttons
+				];
+			break;
+			case 16;
+				// 権限あげる
+				$this->data = "";
+				if($this->lastData){ // 最後に押されたボタンの位置
+					$pointor = $this->lastData - 1;//「新規追加」のボタンが含まれているから1ひいて正しいインデックス値に
+					$authlist = $playerData->getAllAuth();
+					reset($authlist);
+					for($i = 0; $i < $pointor; ++$i){
+						next($authlist);
+					}
+					$name = key($authlist);
+					$auth = current($authlist);
+					$title = "セクション権限設定 > プレイヤー権限 > {$name}";
+					$custom = [
+						'type' => "label",
+						'text' => $name
+					];
+					$this->data = $name;
+				}else{
+					$name = "";
+					$auth = 1;
+					$title = "セクション権限設定 > プレイヤー権限 > 新規追加";
+					$custom = [
+						'type' => "input",
+						'text' => "",
+						'placeholder' => "プレイヤー名(半角英数字)"
+					];
+				}
+				$data = [
+					'type'    => "custom_form",
+					'title'   => $title,
+					'content' => [
+						$custom,
+						[
+							'type' => "step_slider",
+							'text' => "実行/編集権限",
+							'steps' => ["0(§b権限なし§7)", "1(§a権限1§7)", "2(§e権限2§7)", "3(§6権限3§7)"],
+							'default' => $auth,
+						],
+					]
+				];
+				$cache = [17];
+			break;
+			case 17:
+				// 実行 権限上げる
+				if($this->data){
+					$name = $this->data;
+					$title = $name;
+				}else{
+					$name = $this->lastData[0];
+					$title = "新規追加";
+				}
+				$auth = $this->lastData[1];
+				$playerData->setAuth($name, $auth);
+				$this->sendSuccessModal(
+					"セクション権限設定 > プレイヤー権限 > {$title}",
+					"完了しました。\n{$name}の権限を{$auth}にしました。", 15, 1
+				);
 			break;
 		}
 
@@ -231,6 +423,10 @@ class MenuForm extends Form {
 			}
 
 			$content = isset($content) ? date("G:i")."\n".$content : date("G:i");
+			$player = $playerData->getPlayer();
+			$x = round($player->x); $y = round($player->y); $z = round($player->z);
+			$address = AreaProtector::getSectionCodeFromCoordinate($x, $z);
+			$content .= "  §7{$address} (§8x§7{$x} §8y§7{$y} §8z§7{$z})";
 			$data = [
 				'type'    => "form",
 				'title'   => $title,
@@ -250,8 +446,5 @@ class MenuForm extends Form {
 		}
 	}
 
-	public $selectedLicenseNo = 0; // int
-	protected $costableLicenseNos = [];
-
-	protected $selectedExtendDate = null; // null or int インデックス
+	public $data = null;
 }

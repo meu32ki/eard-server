@@ -48,15 +48,15 @@ class LicenseForm extends Form {
 							if($lNo === 1){
 								// 生活の場合はちょっと表示形式変える
 								// $status = $license->isValidTime() ? ($license->isExpireing() ? "§e".$license->getValidTimeText() : "§c".$license->getValidTimeText() ) : "無効";
-								$color = $license->isValidTime() ? ($license->isExpireing() ? "§e§l" : "§c§l") : "§2§l";
+								$color = $license->isValidTime() ? ($license->isExpireing() ? "§e§l" : "§2§l") : "§7§l";
 								$text = $license->getFullName()."\n{$color}".$license->getValidTimeText();
 							}else{
-								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l残2時間未満" : "§c§l有効") : "§2§l無効";
+								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l残2時間未満" : "§2§l有効") : "§7§l無効";
 								$text = $license->getName()." ". $status;
 							}
 							$url = $license->getImgPath();
 						}else{
-							$text = $l->getFullName()." 未所持";
+							$text = "§7".$l->getFullName()." 未所持";
 							$url = $l->getImgPath();
 						}
 

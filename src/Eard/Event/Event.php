@@ -115,12 +115,14 @@ class Event implements Listener{
 	public function Q(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
 		if($player->spawned){ //whitelistでひっかかっていなかったら
-
-			// Menuが開いていたら閉じる処理
 			$playerData = Account::get($player);
-			if($playerData->getMenu()->isActive()){
-				$playerData->getMenu()->close();
+
+			// 必ずしも閉じる必要あるかな？
+			/*
+			if($playerData->getFormObject() instanceof Form){
+				$playerData->getFormObject()->close();
 			}
+			*/
 
 			//　オンラインテーブルから記録消す
 			Connection::getPlace()->recordLogout($player->getName());
@@ -257,18 +259,9 @@ class Event implements Listener{
 			/*	生活区域
 			*/
 			if(Connection::getPlace()->isLivingArea()){
-				// editができるか？
 				// できないばあい
-				if(!AreaProtector::Edit($player, $x, $y, $z, true)){
-					if(!AreaProtector::canActivateInLivingProtected($blockId)){
-						$blockname = ItemName::getNameOf($blockId, $blockMeta);
-						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
-						$e->setCancelled(true);
-					}else{
-						$r = BlockObjectManager::tap($block, $player);
-						$e->setCancelled( $r );
-					}
-
+				if(!AreaProtector::Use($playerData, $x, $y, $z, $blockId)){
+					$e->setCancelled(true);
 				// できるばあい
 				}else{
 					$r = BlockObjectManager::tap($block, $player);
