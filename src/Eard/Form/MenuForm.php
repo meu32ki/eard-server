@@ -91,38 +91,42 @@ class MenuForm extends Form {
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
 				$address = AreaProtector::getSectionCodeFromCoordinate($x, $z);
 				$ownerNo = AreaProtector::getOwnerFromCoordinate($x, $z);
-				$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
-				$sectionNoX = AreaProtector::calculateSectionNo(round($x));
-				$sectionNoZ = AreaProtector::calculateSectionNo(round($z));
-				$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+				if(!$ownerNo || !(Account::getByUniqueNo($ownerNo) instanceof Account) ){
+					$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+				}else{
+					$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
+					$sectionNoX = AreaProtector::calculateSectionNo(round($x));
+					$sectionNoZ = AreaProtector::calculateSectionNo(round($z));
+					$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
 
-				// ボタン作る
-				if(!$ownerNo){
-					// 所有者がいない
-					$buttons[] = ['text' => "この土地を買う"];
-					$cache[] = 7;
-				}
-				if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
-					// 所有者がいない 政府のライセンスを持っている
-					$buttons[] = ['text' => "この土地を政府が買う"];
-					$cache[] = 8;
-				}
-				if($ownerNo && $ownerNo === $playerData->getUniqueNo()){
-					// そいつの土地
-					$buttons[] = ['text' => "セクション権限設定 土地権限へ"];
-					$cache[] = 13;
-				}
-				$buttons[] = ['text' => "戻る"];
-				$cache[] = 1;
+					// ボタン作る
+					if(!$ownerNo){
+						// 所有者がいない
+						$buttons[] = ['text' => "この土地を買う"];
+						$cache[] = 7;
+					}
+					if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
+						// 所有者がいない 政府のライセンスを持っている
+						$buttons[] = ['text' => "この土地を政府が買う"];
+						$cache[] = 8;
+					}
+					if($ownerNo && $ownerNo === $playerData->getUniqueNo()){
+						// そいつの土地
+						$buttons[] = ['text' => "セクション権限設定 土地権限へ"];
+						$cache[] = 13;
+					}
+					$buttons[] = ['text' => "戻る"];
+					$cache[] = 1;
 
-				// 必要データ
-				$data = [
-					'type'    => "form",
-					'title'   => "メニュー > GPS (座標情報)",
-					'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
-								"§f所有者: §7{$ownerName}{$posprice}\n",
-					'buttons' => $buttons
-				];
+					// 必要データ
+					$data = [
+						'type'    => "form",
+						'title'   => "メニュー > GPS (座標情報)",
+						'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
+									"§f所有者: §7{$ownerName}{$posprice}\n",
+						'buttons' => $buttons
+					];
+				}
 			break;
 			case 5:
 				// 所持金の使用履歴 確認
@@ -135,6 +139,9 @@ class MenuForm extends Form {
 				}elseif($this->lastFormId === 3){
 					// 最初から来たのでリセット
 					$this->data = 0;
+				}else{
+					$this->sendInternalErrorModal("FormId 5\ndataの値がおかしいまま、リセットされていない", 1);
+					return false;
 				}
 
 				// ぶん回してリスト作る
