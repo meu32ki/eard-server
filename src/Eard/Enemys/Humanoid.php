@@ -200,6 +200,7 @@ class Humanoid extends Human{
 		}
 		parent::attack($source);
 		if(!$source->isCancelled() && $source instanceof EntityDamageByEntityEvent){
+			$source->setKnockBack($source->getKnockBack()/2);
 			$attacker = $source->getDamager();
 			if($attacker instanceof Player){
 				$name = $attacker->getName();
