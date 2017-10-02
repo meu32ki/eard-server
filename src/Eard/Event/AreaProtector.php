@@ -350,14 +350,16 @@ class AreaProtector{
 				// その土地の所有者を確認し
 				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
-					$sectionNoX = self::calculateSectionNo($x);
-					$sectionNoZ = self::calculateSectionNo($z);
-					$playerName = $playerData->getName();
-					if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
-						$blockname = ItemName::getNameOf($blockId);
-						$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
-						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
-						return false;
+					if($ownerData !== $playerData){
+						$sectionNoX = self::calculateSectionNo($x);
+						$sectionNoZ = self::calculateSectionNo($z);
+						$playerName = $playerData->getName();
+						if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
+							$blockname = ItemName::getNameOf($blockId);
+							$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
+							$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
+							return false;
+						}
 					}
 				}
 			}
