@@ -31,7 +31,6 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 
 # Eard
 use Eard\Main;
@@ -40,7 +39,6 @@ use Eard\Event\AreaProtector;
 use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
-use Eard\Form\SettingForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -216,9 +214,6 @@ class Event implements Listener{
 					}
 				}
 			break;
-			case ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET:
-				SettingForm::sendSetting($player,4000);
-			break;
 		}
 	}
 
@@ -251,12 +246,17 @@ class Event implements Listener{
 		$blockMeta = $block->getDamage();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 
+		if($e->getItem()->getId() == 0){ #memo
+			$pos = $player->getPosition()->add(AI::getFrontVector($player))->floor();
+			$pos->y = $player->getLevel()->getHighestBlockAt($pos->x, $pos->z);
+			$player->teleport($pos->add(0.5, 1, 0.5));
+		}
+
 		// 長押し
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
-
 		// 普通にタップ
 		}else{
 
