@@ -4,6 +4,7 @@ namespace Eard\Form;
 
 # Eard
 use Eard\DBCommunication\Connection;
+use Eard\DBCommunication\Place;
 use Eard\Event\AreaProtector;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
@@ -32,21 +33,21 @@ class MenuForm extends Form {
 				if( Connection::getPlace()->isResourceArea() ){
 					$btar = [
 						["アイテムボックス",2],
+						["エリア転送",18],
 						["ステータス照会",3],
 						["ライセンス",6],
 						//["チャットモード変更",20],
-						//["エリア転送",30],
 						//["μを送る", 45],
 					];
 				}else{
 					$btar = [
 						["アイテムボックス",2],
+						["エリア転送",18],
 						["ステータス照会",3],
-						["GPS (座標情報)",4],
 						["ライセンス",6],
+						["GPS (座標情報)",4],
 						["土地編集権限設定",11],
 						//["チャットモード変更",20],
-						//["エリア転送",30],
 						//["μを送る", 45],
 					];	
 				}
@@ -431,6 +432,46 @@ class MenuForm extends Form {
 					$playerData->setAuth($name, $auth);
 				}else{
 					$playerData->removeAuth($name);
+			case 18:
+				// 転送先選択 実行
+				// エリアが2つの時だけしか使えなさそう
+
+				// くそこーど
+				$thisplace = Connection::getPlace();
+				if( Connection::getPlaceByNo(1) !== $thisplace){
+					$p = Connection::getPlaceByNo(1);
+				}
+				if( Connection::getPlaceByNo(2) !== $thisplace){
+					$p = Connection::getPlaceByNo(2);
+				}
+
+				$buttons = [];
+				$title = "メニュー > エリア転送";
+				if(!isset($p) or !$p){
+					$this->sendErrorModal($title,"現在、転送機器の整備中(準備中)です。対象エリアへ行けるようになるまで、時間がかかります。", 1);
+				}else{
+					if(!($p->getStatus() == Place::STAT_ONLINE)){
+						$this->sendErrorModal($title,"現在、エーテル波の乱れにより、対象のエリアには転送できないようです。", 1);
+					}else{
+						if($this->lastFormId === 18){
+							$result = Connection::Transfer($playerData, $p);
+							if(!$result){
+								$this->close(); // エラーメッセージがチャットに出るカラーと思って
+							}
+							return false;
+						}else{
+							$data = [
+								'type'    => "modal",
+								'title'   => $title,
+								'content' => "「{$p->getName()}」へ行きます。".
+											"\n".
+											"§fよろしいですか？",
+								'button1' => "やめる",
+								'button2' => "行く",
+							];
+							$cache = [1, 18];
+						}
+					}
 				}
 				$authlist = ["0 §b権限なし", "1 §a権限1", "2 §e権限2", "3 §6権限3"];
 				$this->sendSuccessModal(
