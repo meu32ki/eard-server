@@ -29,7 +29,7 @@ class QuestManager{
 		}
 	}
 
-	public static function addQuestsForm(Player $player, int $stage){
+	public static function addQuestsForm(Player $player, int $stage = 0){
 		switch($stage){
 			case 0://最初の受注画面
 				$data = [
