@@ -316,7 +316,7 @@ class Event implements Listener{
 				case 116: // エンチャントテーブル(クエストカウンター)
 					$nq = $playerData->getNowQuest();
 					if($nq === null){
-						QuestManager::addQuestsForm($player, 0);
+						QuestManager::addQuestsForm($player);
 					}else{
 						if($nq->getQuestType() === Quest::TYPE_DELIVERY){
 							if($nq->checkDelivery($player)){
