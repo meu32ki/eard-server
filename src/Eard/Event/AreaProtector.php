@@ -60,7 +60,7 @@ class AreaProtector{
 		switch($id){
 			case Item::FURNACE:
 			case Item::CHEST:
-			case Item::WORKBENCH:
+			//case Item::WORKBENCH:
 				return false;
 			break;
 			case Item::BED_BLOCK:
