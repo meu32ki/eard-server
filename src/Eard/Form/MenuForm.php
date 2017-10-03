@@ -31,7 +31,7 @@ class MenuForm extends Form {
 				// メニュー一覧
 				if( Connection::getPlace()->isResourceArea() ){
 					$btar = [
-						//["アイテムボックス",2],
+						["アイテムボックス",2],
 						["ステータス照会",3],
 						["ライセンス",6],
 						//["チャットモード変更",20],
@@ -40,7 +40,7 @@ class MenuForm extends Form {
 					];
 				}else{
 					$btar = [
-						//["アイテムボックス",2],
+						["アイテムボックス",2],
 						["ステータス照会",3],
 						["GPS (座標情報)",4],
 						["ライセンス",6],
