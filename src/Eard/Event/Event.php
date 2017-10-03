@@ -137,8 +137,8 @@ class Event implements Listener{
 		}
 	}
 
-/*
-	// 20170928 1.2対応のためいったん無効
+
+	// 20170928 1.2対応のためいったん無効 20171003 対応させたので復活
 	public function F(PlayerFishEvent $e){
 		$item = $e->getItem();
 		$hook = $e->getHook();
@@ -159,7 +159,6 @@ class Event implements Listener{
 			break;
 		}
 	}
-*/
 
 	public function PacketReceive(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();
@@ -380,7 +379,7 @@ class Event implements Listener{
 		}else{
 			$item = $e->getItem();
 			$itemId = $item->getId();
-			if( !AreaProtector::canPlaceInResource($itemId) ){
+			if( !AreaProtector::canPlaceInResource($itemId) && $player->isSurvival()){
 				$e->setCancelled(true);
 			}else{
 				$r = BlockObjectManager::place($block, $player);
