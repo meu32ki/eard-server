@@ -2,6 +2,9 @@
 namespace Eard\Form;
 
 
+# basic
+use pocketmine\Server;
+
 # Eard
 use Eard\DBCommunication\Connection;
 use Eard\DBCommunication\Place;
@@ -378,9 +381,11 @@ class MenuForm extends Form {
 			case 16;
 				// 権限あげる
 				$this->data = "";
+				$custom = [];
 				if($this->lastData){ // 最後に押されたボタンの位置
 					$pointor = $this->lastData - 1;//「新規追加」のボタンが含まれているから1ひいて正しいインデックス値に
 					$authlist = $playerData->getAllAuth();
+					print_r($authlist);
 					reset($authlist);
 					for($i = 0; $i < $pointor; ++$i){
 						next($authlist);
@@ -388,33 +393,50 @@ class MenuForm extends Form {
 					$name = key($authlist);
 					$auth = current($authlist);
 					$title = "セクション権限設定 > プレイヤー権限 > {$name}";
-					$custom = [
+					$custom[] = [
 						'type' => "label",
-						'text' => $name
+						'text' => (string) $name
 					];
 					$this->data = $name;
 				}else{
+					// 入力して追加する系
 					$name = "";
 					$auth = 1;
 					$title = "セクション権限設定 > プレイヤー権限 > 新規追加";
-					$custom = [
+					$custom[] = [
+						'type' => "label",
+						'text' => "プレイヤー名を入力するか、ドロップダウンリストから選択してプレイヤーを指定し、与える土地編集/実行権限を選択してください。"
+					];
+					$custom[] = [
 						'type' => "input",
 						'text' => "",
 						'placeholder' => "プレイヤー名(半角英数字)"
 					];
+					// オンラインリストから選択系
+					$list = ["(選択なし)"];
+					$this->onlinelist = [];
+					$cnt = 1;
+					foreach(Server::getInstance()->getOnlinePlayers() as $player){
+						$list[] = $player->getName();
+						$this->onlinelist[$cnt] = $player->getName();
+						++$cnt;
+					}
+					$custom[] = [
+						'type' => "dropdown",
+						'text' => "",
+						'options' => $list
+					];
 				}
+				$custom[] = [
+					'type' => "step_slider",
+					'text' => "\n実行/編集権限",
+					'steps' => ["§70 §b権限なし", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3"],
+					'default' => $auth,
+				];
 				$data = [
 					'type'    => "custom_form",
 					'title'   => $title,
-					'content' => [
-						$custom,
-						[
-							'type' => "step_slider",
-							'text' => "実行/編集権限",
-							'steps' => ["§70 §b権限なし", "§71 §a権限1", "§72 §e権限2", "§73 §6権限3"],
-							'default' => $auth,
-						],
-					]
+					'content' => $custom
 				];
 				$cache = [17];
 			break;
@@ -423,15 +445,41 @@ class MenuForm extends Form {
 				if($this->data){
 					$name = $this->data;
 					$title = $name;
+					$auth = $this->lastData[1];
 				}else{
-					$name = $this->lastData[0];
+					// 新規追加、であれば
+					if(isset($this->lastData[2])){ //ドロップダウンの中身確認
+						if(!$this->lastData[2]){
+							$name = $this->lastData[1] ?? "";
+						}else{
+							$name = $this->onlinelist[$this->lastData[2]];
+						}
+					}else{
+						$name = $this->lastData[1] ?? "";
+					}
+					$auth = $this->lastData[3];
 					$title = "新規追加";
+					$this->onlinelist = [];
 				}
-				$auth = $this->lastData[1];
-				if($auth){
-					$playerData->setAuth($name, $auth);
+
+				if(!$name){
+					$this->sendErrorModal(
+						"セクション権限設定 > プレイヤー権限 > {$title}",
+						"プレイヤーを入力/選択してください", 16
+					);
 				}else{
-					$playerData->removeAuth($name);
+					if($auth){
+						$playerData->setAuth($name, $auth);
+					}else{
+						$playerData->removeAuth($name);
+					}
+					$authlist = ["0 §b権限なし", "1 §a権限1", "2 §e権限2", "3 §6権限3"];
+					$this->sendSuccessModal(
+						"セクション権限設定 > プレイヤー権限 > {$title}",
+						"§f完了しました。\n{$name}の権限を「§7".$authlist[$auth]."§f」にしました。", 15, 1
+					);
+				}
+			break;
 			case 18:
 				// 転送先選択 実行
 				// エリアが2つの時だけしか使えなさそう
@@ -473,11 +521,6 @@ class MenuForm extends Form {
 						}
 					}
 				}
-				$authlist = ["0 §b権限なし", "1 §a権限1", "2 §e権限2", "3 §6権限3"];
-				$this->sendSuccessModal(
-					"セクション権限設定 > プレイヤー権限 > {$title}",
-					"§f完了しました。\n{$name}の権限を「§7".$authlist[$auth]."§f」にしました。", 15, 1
-				);
 			break;
 		}
 
@@ -514,4 +557,6 @@ class MenuForm extends Form {
 	}
 
 	public $data = null;
+
+	public $onlinelist = []; // 一時的な保存用
 }
