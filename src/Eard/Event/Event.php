@@ -39,6 +39,7 @@ use Eard\Event\AreaProtector;
 use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
+use Eard\Form\HelpForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -246,15 +247,12 @@ class Event implements Listener{
 		$blockMeta = $block->getDamage();
 		$x = $block->x; $y = $block->y; $z = $block->z;
 
-		if($e->getItem()->getId() == 0){ #memo
-			$pos = $player->getPosition()->add(AI::getFrontVector($player))->floor();
-			$pos->y = $player->getLevel()->getHighestBlockAt($pos->x, $pos->z);
-			$player->teleport($pos->add(0.5, 1, 0.5));
-		}
-
 		// 長押し
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
+				if($e->getItem()->getId() == 0){
+					new HelpForm($playerData);
+				}
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
 		// 普通にタップ
