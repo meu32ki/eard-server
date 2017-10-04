@@ -16,9 +16,9 @@ class GovernmentWorker extends License {
 	public $ranktxt = [
 		1 => "土木技術者",
 		2 => "研修者",
-		3 => "1",
-		4 => "2",
-		5 => "3"
+		3 => "係員",
+		4 => "次官",
+		5 => "高官"
 	];
 	public $name = "政府関係者";
 
