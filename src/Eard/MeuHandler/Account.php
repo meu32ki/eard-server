@@ -802,7 +802,7 @@ class Account implements MeuHandler {
 			$txtdata = base64_encode($data);
 	    	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
 	    	DB::get()->query($sql);
-			MainLogger::getLogger()->notice("§aAccount: {$name} data saved　- first time");
+			MainLogger::getLogger()->notice("§bAccount: {$name} data saved　- first time");
 
 			$this->data = self::$newdata;//初回データを読み込む
 
