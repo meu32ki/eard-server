@@ -24,7 +24,7 @@ class License {
 	const DANGEROUS_ITEM_HANDLER = 5;
 	const MINER = 6;
 	const APPAREL_DESIGNER = 7;
-	const PROCESSOR = 7;
+	const PROCESSOR = 8;
 	const HUNTER = 9;
 	const HANDIWORKER = 10;
 
@@ -85,10 +85,18 @@ class License {
 */
 
 	/**
-	*	@return Int 	各ライセンスに割り当てられた番号
+	*	@return int 	各ライセンスに割り当てられた番号
 	*/
 	public function getLicenseNo(){
 		return $this->no;
+	}
+
+	/**
+	*	ランクまで分けて考えるときに、必要な区別番号
+	*	@return int
+	*/
+	public function getRealLicenseNo(){
+		return $this->getLicenseNo() * 10 + $this->getRank();
 	}
 
 	/**
