@@ -29,7 +29,7 @@
 - 営利目的での利用や、特許の取得は行えません。
 
 仕様ライブラリ:
-- ### twitteroauth(https://github.com/abraham/twitteroauth)
+#### twitteroauth(https://github.com/abraham/twitteroauth)
 ```
 Copyright (c) 2009 Abraham Williams - http://abrah.am - abraham@abrah.am
  
