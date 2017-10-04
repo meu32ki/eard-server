@@ -28,6 +28,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Utils\ItemName;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
+use Eard\Utils\Twitter;
 use Eard\DBCommunication\Earmazon;
 use Eard\Form\LicenseForm;
 
@@ -69,6 +70,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# クエスト登録
 		QuestManager::init();
+
+		#ツイートOAuth登録
+		Twitter::init();
 	}
 
 	public function reconnect(){
