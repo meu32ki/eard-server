@@ -22,6 +22,16 @@ class DataIO{
 	}
 
 	/**
+	*　@param String $filename  消したいファイルの名前(class名を設定しておく)
+	* @return bool
+	*/
+	public static function DeleteFromDB($filename){
+		$sql = "DELETE * FROM settings WHERE name = '{$filename}';";
+		$result = DB::get()->query($sql);
+		return $result;
+	}
+
+	/**
 	* 各オブジェクトでひつようになった設定ファイルの読み込みをDBから行う
 	*　@param String $filename  読みたいファイルの名前(class名を設定しておく)
 	* @return Array | false
@@ -52,6 +62,7 @@ class DataIO{
 		// echo $sql.": {$result}\n";
 		return $result;
 	}
+
 
 
 	/**

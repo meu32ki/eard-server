@@ -76,13 +76,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	}
 
 	public function reconnect(){
-		Connection::load();
+		// self::reset();
 
-		/*
-		Earmazon::setup();
-		AreaProtector::setup();
-		Connection::setup();
-		*/
+		Connection::load();
 
 		# Eard関連
 		AreaProtector::load();
@@ -107,6 +103,14 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# DB系
 		Connection::close();
+	}
+
+	public static function reset(){
+		Government::reset();
+		AreaProtector::reset();
+		Account::reset();
+		Earmazon::reset();
+		BlockObjectManager::reset();	
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, string $label, array $a): bool{

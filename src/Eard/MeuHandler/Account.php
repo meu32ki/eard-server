@@ -897,7 +897,6 @@ class Account implements MeuHandler {
 			foreach(self::$accounts as $name => $playerData){
 				$player = $playerData->getPlayer();
 				if($player && $player->isOnline()){
-
 					$playerData->updateData();
 				}else{
 					// echo "呼び出されただけのデータ";
@@ -911,6 +910,16 @@ class Account implements MeuHandler {
 		if(isset(self::$index)){
 			self::$index = [];
 		}
+	}
+
+	public static function reset(){
+		$dbname = DB::$name;
+		$db = DB::get();
+
+		// プレイヤーデータ削除
+		$sql = "TRUNCATE TABLE {$dbname}.data";
+		$db->query($sql);
+		MainLogger::getLogger()->info("§bAccount: Reset");
 	}
 
 	public static $index = []; //uniqueNoとnameをふすびつけるもの

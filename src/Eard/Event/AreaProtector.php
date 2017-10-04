@@ -628,7 +628,7 @@ class AreaProtector{
 
 
 	public static function load(){
-		$data = DataIO::load('AreaProtector');
+		$data = DataIO::loadFromDB('AreaProtector');
 		if($data){
 			self::$affordableSection = $data[0];
 			self::$leftSection = $data[1];
@@ -641,16 +641,25 @@ class AreaProtector{
 
 	public static function save(){
 		$data = [self::$affordableSection, self::$leftSection];
-		$result = DataIO::save('AreaProtector', $data);
+		$result = DataIO::saveIntoDB('AreaProtector', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
 		}
 	}
 
-	public static function setup(){
+	public static function reset(){
+		// いっかいさくじょ
+		DataIO::DeleteFromDB('AreaProtector');
+
+		// データディレクトリのやつ削除
+		// しゅどうで/EardData/section/の中削除して
+
+		// でーたつくる
 		self::$affordableSection = 1000;
 		self::$leftSection = 1000;
 		self::save();
+
+		MainLogger::getLogger()->notice("§bAreaProtector: Reset");
 	}
 
 	/**

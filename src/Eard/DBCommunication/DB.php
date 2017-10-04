@@ -50,14 +50,6 @@ class DB{
 		}
 	}
 
-	public static function truncate(){
-		$dbname = self::$dbname;
-		$sql = "TRUNCATE TABLE {$dbname}.data";
-		$db = self::get();
-		$db->query($sql);
-		MainLogger::getLogger()->info("§aDB: Truncate");
-	}
-
 	public static function writeAddr($addr){
 		self::$addr = $addr;
 		self::write();

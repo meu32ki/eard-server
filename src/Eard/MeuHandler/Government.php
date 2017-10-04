@@ -181,14 +181,15 @@ class Government implements MeuHandler {
 		}
 	}
 
+	public static function reset(){
+		// いっかいさくじょ
+		DataIO::DeleteFromDB('Government');
+
+		MainLogger::getLogger()->notice("§bGovernment: Reset");
+	}
 
 	private static $CentralBankFirst, $CentralBankMeu;
 	public static $instance = null;
 
-
-	/**
-	*	@param
-	*	@return
-	*/
 
 }
