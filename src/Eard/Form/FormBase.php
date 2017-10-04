@@ -24,9 +24,20 @@ class FormBase implements Form {
 		Event->PlayerData(プレイヤー単位)->getFormObject();
 		Receive()にフォームの情報が送られてくるので、情報によってsend()しろ
 
+		send()の作り方
+		$this->lastSendData; // 最後に、プレイヤーに送信したデータをそのまま
+		$this->lastMode; // Send()で使う。さっき受け取ったフォームのたいぷ($data['type'])をげとする
+		$this->lastFormId; // さっき受け取ったふぉーむのidをげとする
+		$this->lastData; // さっきうけとったフォームのデータの中身を取得。
+			modeは"form"のばあい intで帰ってくる ボタンの個数があって うえから何番目かを取得する(さいしょは0ばんめ)
+			"custom_form"のばあい arrayで帰ってくる $this->lastData[0] のようにつかう 
+			"modal"のばあい intで帰ってくる 「うえのぼたん」がおされたら0 「したのぼたん」がおされたら1
+		cache[] n番目のボタンが押されたら$cache[n]に飛ぶ
+
 		# 最終時
 		{Form}->close();
 		closeで、そのオブジェクトに関連付けられたPlayerDataを削除
+		[x]ボタンが押されると自動でcloseされるようになっている
 
 	*/
 
