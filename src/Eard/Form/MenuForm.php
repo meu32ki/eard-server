@@ -4,6 +4,7 @@ namespace Eard\Form;
 
 # basic
 use pocketmine\Server;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 
 # Eard
 use Eard\DBCommunication\Connection;
@@ -34,6 +35,7 @@ class MenuForm extends Form {
 
 				// メニュー一覧
 				if( Connection::getPlace()->isResourceArea() ){
+					// 資源でライセンス変更できるのは、向こうでライセンス変更するために所持金を持っていくかもしれないから
 					$btar = [
 						["アイテムボックス",2],
 						["エリア転送",18],
@@ -495,6 +497,7 @@ class MenuForm extends Form {
 
 				$buttons = [];
 				$title = "メニュー > エリア転送";
+				$msg = "";
 				if(!isset($p) or !$p){
 					$this->sendErrorModal($title,"現在、転送機器の整備中(準備中)です。対象エリアへ行けるようになるまで、時間がかかります。", 1);
 				}else{
@@ -504,15 +507,31 @@ class MenuForm extends Form {
 						if($this->lastFormId === 18){
 							$result = Connection::Transfer($playerData, $p);
 							if(!$result){
-								$this->close(); // エラーメッセージがチャットに出るカラーと思って
+								$this->close(); // エラーメッセージがチャットに出るかなあと思って
 							}
 							return false;
 						}else{
+							if($thisplace->isResourceArea()){
+								$player = $playerData->getPlayer();
+								$x = round($player->x);
+								$z = round($player->z);
+								$biomeId = Server::getInstance()->getDefaultLevel()->getBiomeId($x, $z);
+								if($biomeId !== Biome::PLAINS){
+									$this->sendErrorModal($title,"エーテル波が不安定なため、その場所からは「生活区域」には戻れません。平原バイオーム(転送されてきた場所)に戻ってください。", 1);
+									return false;
+								}
+							}else{
+								/*
+								if(!$playerData->getMeu()->sufficient(500)){
+									$msg = "§c※現在、あなたの所持金は500μ以下です。".
+										"最低500μ持っていれば、資源区域でアイテムの即ロストを免れることができます。\n§f";
+								}*/
+							}
 							$data = [
 								'type'    => "modal",
 								'title'   => $title,
-								'content' => "「{$p->getName()}」へ行きます。".
-											"\n".
+								'content' => "§「惑星Eard > {$p->getName()}」へ行きます。".
+											"${msg}\n".
 											"§fよろしいですか？",
 								'button1' => "やめる",
 								'button2' => "行く",
