@@ -28,7 +28,8 @@
 - eard-serverのトレードマークの使用はできません。
 - 営利目的での利用や、特許の取得は行えません。
 
-使用ライブラリ:
+## 使用ライブラリについて
+このプラグインでは以下のライブラリを使用しています。
 #### twitteroauth(https://github.com/abraham/twitteroauth)
 <details><summary>ライセンス</summary>
 Copyright (c) 2009 Abraham Williams - http://abrah.am - abraham@abrah.am
