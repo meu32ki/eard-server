@@ -42,6 +42,7 @@ class Account implements MeuHandler {
 		[ [0,0,0] ], // 7 ItemBoxのアイテムの中身
 		[], // 8 支払い履歴
 		[ [], [] ], // 9 クエストデータ
+		[], // 10 せってい
 	];
 
 	/*
@@ -655,6 +656,21 @@ class Account implements MeuHandler {
 		return $this->data[8];
 	}
 	
+
+	/**
+	*	ぷれいやーが、このプレイヤーを攻撃できるか
+	*/
+	public function setAttackSetting($flag){
+		$this->data[10][0] = (int) $flag;
+	}
+
+	/**
+	*	trueなら殴れる
+	*/
+	public function getAttackSetting(){
+		return $this->data[10][0] ?? false;
+	}
+
 
 	private $data = [];
 

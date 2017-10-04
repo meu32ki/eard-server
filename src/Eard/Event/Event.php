@@ -31,6 +31,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 
 # Eard
 use Eard\Main;
@@ -40,6 +41,7 @@ use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
 use Eard\Form\HelpForm;
+use Eard\Form\SettingsForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -214,6 +216,10 @@ class Event implements Listener{
 						$player->sendMessage(Chat::SystemToPlayer("クエストを取り消しました"));	
 					}
 				}
+			break;
+			case ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET:
+				echo "ghuee";
+				new SettingsForm(Account::get($player));
 			break;
 		}
 	}
@@ -535,9 +541,12 @@ class Event implements Listener{
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
-				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
-				MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
-				$e->setCancelled(true);
+				$damagerData = Account::get($damager);
+				if(!$damagerData->getAttackSetting()){
+					$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+					MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
+					$e->setCancelled(true);
+				}
 			}
 
 			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){
