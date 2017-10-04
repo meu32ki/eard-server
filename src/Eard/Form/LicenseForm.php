@@ -9,7 +9,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
 
 
-class LicenseForm extends Form {
+class LicenseForm extends FormBase {
 
 	/*
 		選択 = form
@@ -537,7 +537,7 @@ class LicenseForm extends Form {
 			// sendErrorMoralのときとかは動かないように
 			$this->lastSendData = $data;
 			$this->cache = $cache;
-			$this->Show($playerData, $id, $data);
+			$this->show($id, $data);
 		}
 	}
 

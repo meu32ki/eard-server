@@ -6,7 +6,7 @@ namespace Eard\Form;
 use Eard\Enemys\AI;
 
 
-class HelpForm extends Form {
+class HelpForm extends FormBase {
 
 
 	public function send(int $id){
@@ -39,7 +39,7 @@ class HelpForm extends Form {
 			// sendErrorMoralのときとかは動かないように
 			$this->lastSendData = $data;
 			$this->cache = $cache;
-			$this->Show($playerData, $id, $data);
+			$this->show($id, $data);
 		}
 	}
 

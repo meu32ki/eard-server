@@ -187,7 +187,7 @@ class Event implements Listener{
 				// オブジェクトがあればそっち優先
 				$playerData = Account::get($player);
 				if($obj = $playerData->getFormObject()){
-					$obj->Receive($id, $data);
+					$obj->receive($id, $data);
 				}
 
 				// なければクエストのほうにパケット分岐

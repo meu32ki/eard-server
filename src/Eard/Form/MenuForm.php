@@ -15,7 +15,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Time;
 
 
-class MenuForm extends Form {
+class MenuForm extends FormBase {
 
 	public function close(){
 		// 他のクラスに残るものは削除しておかないと
@@ -569,7 +569,7 @@ class MenuForm extends Form {
 			// sendErrorMoralのときとかは動かないように
 			$this->lastSendData = $data;
 			$this->cache = $cache;
-			$this->Show($playerData, $id, $data);
+			$this->show($id, $data);
 		}else{
 			// echo "formIdが1000と表示されていれば送信済みでもそれいがいならcacheが設定されていないので送られてない\n";
 		}
