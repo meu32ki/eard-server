@@ -26,13 +26,22 @@ class ItemName{
 		// 変換
 		$listById = [];
 		$listByCat = [];
+		$listByLicense = [];
 
 		foreach(self::$listByName as $name => $i){
 			$listById[$i[0]][$i[1]] = $name;
 			$listByCat[$i[0]][$i[1]] = isset($i[2]) ? $i[2] : 0;
+			if($i[3]){
+				if( isset($listByLicense[$i[3]]) ){
+					$listByLicense[$i[3]] .= $name.", ";
+				}else{
+					$listByLicense[$i[3]] = $name.", ";
+				}
+			}
 		}
 		self::$listById = $listById;
 		self::$listByCat = $listByCat;
+		self::$listByLicense = $listByLicense;
 		// print_r($listById);
 	}
 
@@ -57,9 +66,19 @@ class ItemName{
 		return 0;
 	}
 
+	/**
+	*	@return int
+	*/
+	public static function getAllItemNameCanBeCreatedBy($realLicenseNo){
+		if( isset(self::$listByLicense[$realLicenseNo]) ){
+			return substr(self::$listByLicense[$realLicenseNo], 0,-2);
+		}
+		return 0;
+	}
+
 
 	/*
-		20180229 アイテムに、カテゴリを追加。
+		20170229 アイテムに、カテゴリを追加。
 		0 = 分類不能 販売禁止	名前が「(」か「tile.」からはじまってるやつ
 		1 = ふつうのぶろっく (真四角の形をしていたらここに突っ込め 階段とハーフブロックも)
 		2 = 装飾ブロック いろがついてるやつ (羊毛/かたやきねんど/てらこった/コンクリ/コンクリパウダー)
@@ -828,4 +847,5 @@ class ItemName{
 
 	private static $listById = [];
 	private static $listByCat = [];
+	private static $listByLicense = [];
 }

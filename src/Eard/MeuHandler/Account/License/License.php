@@ -72,6 +72,16 @@ class License {
 	}
 
 	/**
+	*	ランクまで分けた番号からライセンスを引きたい時
+	*/
+	public static function getByRealLicenseNo($realLicenseNo){
+		$licenseNo = floor($realLicenseNo / 10);
+		$rank = $realLicenseNo % 10;
+		// echo $licenseNo, " ", $rank, "\n";
+		return self::get($licenseNo, null, $rank);
+	}
+
+	/**
 	*	存在するすべてのライセンスを返す
 	*/
 	public static function getAll(){
