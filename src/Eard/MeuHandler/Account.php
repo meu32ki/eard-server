@@ -6,6 +6,7 @@ namespace Eard\MeuHandler;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
+use pocketmine\entity\Effect;
 
 # Eard
 use Eard\DBCommunication\DB;
@@ -142,6 +143,16 @@ class Account implements MeuHandler {
 	*/
 	public function isOnline(){
 		return $this->player instanceof Player && $this->player->isOnline();
+	}
+
+	public function applyEffect(){
+		$player = $this->getPlayer();
+		$player->removeEffect(Effect::HASTE);
+		switch (true) {
+			case $this->hasValidLicense(License::MINER, 2):
+				$player->addEffect(Effect::getEffect(Effect::HASTE)->setAmplifier(1)->setDuration(INT32_MAX-1));
+			break;
+		}
 	}
 
 /* Block管理

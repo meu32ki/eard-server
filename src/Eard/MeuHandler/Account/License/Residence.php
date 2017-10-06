@@ -76,6 +76,6 @@ class Residence extends License {
 		4 => "上流",
 		5 => "富裕"
 	];
-	public $name = "在住";
+	public $name = "生活";
 
 }

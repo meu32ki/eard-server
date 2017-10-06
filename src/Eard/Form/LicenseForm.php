@@ -510,6 +510,7 @@ class LicenseForm extends FormBase {
 								$license->update($data[0] * 86400);
 								$title = "ライセンス > {$license->getName()} > {$title}";
 								$this->sendSuccessModal($title, "{$title}が完了しました。", 2, 1);
+								$playerData->applyEffect();
 							}
 						}
 					}
