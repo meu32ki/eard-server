@@ -22,6 +22,7 @@ use Eard\DBCommunication\Connection;
 use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
+use Eard\MeuHandler\Account\License\Costable;
 use Eard\Event\Event;
 use Eard\Event\AreaProtector;
 use Eard\Event\BlockObject\BlockObjectManager;
@@ -152,8 +153,8 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 										return true;
 									}
 
-
-									$s->sendMessage(Chat::SystemToPlayer("あげるらいせんす 有効期限: {$license->getValidTimeText()}, ランク: {$license->getRank()} コスト: {$license->getRealCost()}"));
+									$cost = $license instanceof Costable ? $license->getRealCost() : "なし";
+									$s->sendMessage(Chat::SystemToPlayer("あげるらいせんす 有効期限: {$license->getValidTimeText()}, ランク: {$license->getRank()} コスト: {$cost}"));
 
 									$result = $playerData->addLicense($license);
 									switch($result){
