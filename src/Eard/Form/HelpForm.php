@@ -21,7 +21,7 @@ class HelpForm extends FormBase {
 					'title'   => "ヘルプ",
 					'content' => "Eardの遊び方について解説しています\n",
 					'buttons' => [
-						['text' => "§l§c脱出する\n§r§7高い壁が登れないときに仕様奨励"],
+						['text' => "§l§c脱出する\n§r§8高い壁が登れないときに仕様奨励"],
 						['text' => "ライセンス"],
 						['text' => "生活区域と資源区域"],
 						['text' => "携帯"],
