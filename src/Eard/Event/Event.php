@@ -299,6 +299,8 @@ class Event implements Listener{
 						case 362: // すいか
 						case 458: // ビートルート
 						case 392: // じゃがいも
+						case 391: // にんじん
+						case 372: // ネザーウォート
 							if(!$playerData->hasValidLicense(License::FARMER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
