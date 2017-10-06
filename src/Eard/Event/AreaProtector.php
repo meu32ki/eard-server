@@ -60,7 +60,6 @@ class AreaProtector{
 		switch($id){
 			case Item::FURNACE:
 			case Item::CHEST:
-			//case Item::WORKBENCH:
 				return false;
 			break;
 			case Item::BED_BLOCK:
@@ -346,7 +345,7 @@ class AreaProtector{
 	public static function Use(Account $playerData, $x, $y, $z, $blockId){
 		if(!self::canActivateInLivingProtected($blockId)){
 			// 使用できないブロックの場合
-			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) ){
+			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) && $ownerNo !== 100000){ // 政府の土地ではなんでも使える
 				// その土地の所有者を確認し
 				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
@@ -544,7 +543,7 @@ class AreaProtector{
 		self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 		// オフラインリストに一応名前保存
-		Account::$namelist[$uniqueNo] = "政府";
+		// Account::$namelist[$uniqueNo] = "政府";
 
 		self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
 
