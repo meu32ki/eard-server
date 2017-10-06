@@ -69,7 +69,7 @@ class HelpForm extends FormBase {
 					'content' => [
 						[
 							'type' => "label",
-							'text' => self::getLicenseDetailText()
+							'text' => self::getLicenseDetailAllText()
 						]
 					]
 				];
