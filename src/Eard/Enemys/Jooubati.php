@@ -58,7 +58,7 @@ class Jooubati extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 300;
+		return 200;
 	}
 
 	//召喚時のポータルのサイズを取得
@@ -241,7 +241,7 @@ class Jooubati extends Humanoid implements Enemy{
 				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
 				switch($this->charge){
 					case 0:
-						AI::setRate($this, 10);
+						AI::setRate($this, 40);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
 						$this->walkSpeed = -0.025;
@@ -293,7 +293,7 @@ class Jooubati extends Humanoid implements Enemy{
 					;
 				break;
 				case 2:
-					AI::rangeAttack($this, 3.5, 7);
+					AI::rangeAttack($this, 3, 5);
 					$this->level->addParticle(new SpellParticle($this, 234, 41, 89));
 				break;
 			}
