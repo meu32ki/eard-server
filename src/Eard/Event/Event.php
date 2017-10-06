@@ -564,8 +564,8 @@ class Event implements Listener{
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
-				$damagerData = Account::get($damager);
-				if(!$damagerData->getAttackSetting()){
+				$victimData = Account::get($victim);
+				if(!$victimData->getAttackSetting()){
 					$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 					MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
 					$e->setCancelled(true);
