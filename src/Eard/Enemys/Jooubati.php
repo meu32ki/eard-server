@@ -332,7 +332,7 @@ class Jooubati extends Humanoid implements Enemy{
 		$victim = $source->getEntity();
 		if(mt_rand(0, 6) < 3){
 			$ef = Effect::getEffect(19);
-			$ef->setAmplifier(1);
+			$ef->setAmplifier(0);
 			$ef->setDuration(300);
 			$victim->addEffect($ef);
 		}
