@@ -674,12 +674,24 @@ class Account implements MeuHandler {
 	public function setAttackSetting($flag){
 		$this->data[10][0] = (int) $flag;
 	}
-
 	/**
 	*	trueなら殴れる
 	*/
 	public function getAttackSetting(){
 		return $this->data[10][0] ?? false;
+	}
+
+	/**
+	*	ぷれいやーが、このプレイヤーを攻撃できるか
+	*/
+	public function setShowDamageSetting($flag){
+		$this->data[10][1] = (int) $flag;
+	}
+	/**
+	*	trueなら殴れる
+	*/
+	public function getShowDamageSetting(){
+		return $this->data[10][1] ?? false;
 	}
 
 

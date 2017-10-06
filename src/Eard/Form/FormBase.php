@@ -203,7 +203,6 @@ class FormBase implements Form {
 			break;
 			case 'custom_form':
 				$this->lastMode = self::TYPE_CUSTOM_FORM;
-				echo $data."\n";
 				$this->lastData = json_decode($data, true);
 				$this->Send($this->cache[0]);
 			break;
