@@ -544,7 +544,7 @@ class MenuForm extends FormBase {
 							$data = [
 								'type'    => "modal",
 								'title'   => $title,
-								'content' => "§「惑星Eard > {$p->getName()}」へ行きます。".
+								'content' => "§f「惑星Eard > {$p->getName()}」へ行きます。".
 											"${msg}\n".
 											"§fよろしいですか？",
 								'button1' => "やめる",
