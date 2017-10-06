@@ -292,13 +292,24 @@ class Event implements Listener{
 
 			$itemId = $e->getItem()->getId();
 			switch($blockId){
-				case 60; // こうち
+				case 60: // こうち
 					switch($itemId){
 						case 295: // むぎのたね
 						case 361: // かぼちゃ
 						case 362: // すいか
 						case 458: // ビートルート
 						case 392: // じゃがいも
+						case 391: // にんじん
+							if(!$playerData->hasValidLicense(License::FARMER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
+					}
+				break;
+				case 88: //ソウルサンド
+					switch($itemId){
+						case 372: // ネザーウォート
 							if(!$playerData->hasValidLicense(License::FARMER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
