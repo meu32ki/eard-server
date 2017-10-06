@@ -270,7 +270,9 @@ class Event implements Listener{
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
 				if($e->getItem()->getId() == 0){
-					new HelpForm($playerData);
+					if(Connection::getPlace()->isLivingArea()){
+						new HelpForm($playerData);
+					}
 				}
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
