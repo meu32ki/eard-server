@@ -110,11 +110,6 @@ class Event implements Listener{
 		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
 		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 		Account::get($player)->applyEffect();
-		// 資源に来た時に携帯配布
-		if(Connection::getPlace()->isResourceArea()){
-			$inv = $player->getInventory();
-			$inv->addItem(Item::get(416));
-		}
 	}
 
 
@@ -123,8 +118,10 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$task = new Delay($player, function ($player){
 			Account::get($player)->applyEffect();
+			$inv = $player->getInventory();
+			$inv->addItem(Item::get(416));
 		});
-		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 5);		
+		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 5);
 	}
 
 
@@ -270,7 +267,9 @@ class Event implements Listener{
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
 				if($e->getItem()->getId() == 0){
-					new HelpForm($playerData);
+					if(Connection::getPlace()->isLivingArea()){
+						new HelpForm($playerData);
+					}
 				}
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
@@ -565,8 +564,8 @@ class Event implements Listener{
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
-				$damagerData = Account::get($damager);
-				if(!$damagerData->getAttackSetting()){
+				$victimData = Account::get($victim);
+				if(!$victimData->getAttackSetting()){
 					$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 					MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
 					$e->setCancelled(true);
