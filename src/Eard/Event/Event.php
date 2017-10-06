@@ -110,11 +110,6 @@ class Event implements Listener{
 		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
 		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 		Account::get($player)->applyEffect();
-		// 資源に来た時に携帯配布
-		if(Connection::getPlace()->isResourceArea()){
-			$inv = $player->getInventory();
-			$inv->addItem(Item::get(416));
-		}
 	}
 
 
@@ -123,8 +118,10 @@ class Event implements Listener{
 		$player = $e->getPlayer();
 		$task = new Delay($player, function ($player){
 			Account::get($player)->applyEffect();
+			$inv = $player->getInventory();
+			$inv->addItem(Item::get(416));
 		});
-		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 5);		
+		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 5);
 	}
 
 
