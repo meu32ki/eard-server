@@ -304,6 +304,9 @@ class Event implements Listener{
 
 			$itemId = $e->getItem()->getId();
 			switch($blockId){
+				case 58: // クラフティングテーブル
+					$e->setCancelled(false);
+				break;
 				case 60: // こうち
 					switch($itemId){
 						case 295: // むぎのたね
