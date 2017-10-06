@@ -16,6 +16,7 @@ use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\DataIO;
+use Eard\Utils\ItemName;
 
 
 /***
@@ -24,9 +25,31 @@ use Eard\Utils\DataIO;
 */
 class AreaProtector{
 
+	/*
+		todo: $x, $y なのか sectionX,sectionYなのか どういう基準で場合分けしてるのかがわからないので
+	*/
 
 	//true = プロテクトに関係なく壊せるように
 	public static $allowBreakAnywhere = true;
+
+
+	/**
+	*	資源において、設置できるか 設置できる場合はtrue
+	*	@param int ItemId
+	*	@return bool
+	*/
+	public static function canPlaceInResource($id){
+		switch($id){
+			case Item::FURNACE:
+			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
+				return false;
+			break;
+			default:
+				return true;
+			break;
+		}
+	}
 
 	/**
 	*	資源区域において、タップして起動できるか
@@ -37,7 +60,7 @@ class AreaProtector{
 		switch($id){
 			case Item::FURNACE:
 			case Item::CHEST:
-			case Item::WORKBENCH:
+			//case Item::WORKBENCH:
 				return false;
 			break;
 			case Item::BED_BLOCK:
@@ -57,29 +80,18 @@ class AreaProtector{
 		switch($id){
 			case Item::CHEST:
 			case Item::FURNACE:
-				return false;
-			break;
 			case Item::BED_BLOCK:
-			case Item::WORKBENCH:
-			case Item::SHULKER_BOX:
-			default:
-				return true;
-			break;
-		}
-	}
-
-	/**
-	*	資源において、設置できるか 設置できる場合はtrue
-	*	@param int ItemId
-	*	@return bool
-	*/
-	public static function canPlaceInResource($id){
-		switch($id){
-			case Item::FURNACE:
-			case Item::WORKBENCH:
-			case Item::SHULKER_BOX:
+			case Item::OAK_DOOR_BLOCK:
+			case Item::SPRUCE_DOOR_BLOCK:
+			case Item::BIRCH_DOOR_BLOCK:
+			case Item::JUNGLE_DOOR_BLOCK:
+			case Item::ACACIA_DOOR_BLOCK:
+			case Item::DARK_OAK_DOOR_BLOCK:
+			case Item::TRAPDOOR:
 				return false;
 			break;
+			case Item::WORKBENCH:
+			case Item::SHULKER_BOX:
 			default:
 				return true;
 			break;
@@ -206,6 +218,15 @@ class AreaProtector{
 		$sectionA = strrev($out);
 		return "{$minus}{$sectionA}{$sectionNoZ}";
 	}
+
+
+	public static function getSectionCodeFromCoordinate($x, $z){
+		$sectionNoX = self::calculateSectionNo(round($x));
+		$sectionNoZ = self::calculateSectionNo(round($z));
+		return self::getSectionCode($sectionNoX, $sectionNoZ);
+	}
+
+	
 	
 	// return int (or -1) | ownerNo
 	public static function getOwnerFromCoordinate($x, $z){
@@ -253,15 +274,14 @@ class AreaProtector{
 		}
 	}
 	
-	//そこで設置破壊できるか
-	//return bool
+
 	/**
-	*	@param bool $noMessage ポップアップを表示させるか デフォルトではさせる (Interactのときにつかう)
+	*	生活区域 その「場所」で設置破壊ができるか
 	*/
-	public static function Edit(Player $player, $x, $y, $z, $nomessage = false){
-		if( ($result = self::getOwnerFromCoordinate($x, $z)) < 0 ){
+	public static function Edit(Player $player, $x, $y, $z){
+		if( ($ownerNo = self::getOwnerFromCoordinate($x, $z)) < 0 ){
 			// -1 … グリッド上
-			if(!$nomessage) $player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
+			$player->sendPopup(self::makeWarning("グリッド上での設置破壊は許可されていません。"));
 			return false;
 		}else{
 
@@ -271,23 +291,22 @@ class AreaProtector{
 			$sectionNoX = self::calculateSectionNo($x);
 			$sectionNoZ = self::calculateSectionNo($z);
 			if($y <= self::getdigLimit($sectionNoX, $sectionNoZ)){
-				if(!$nomessage) $player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
+				$player->sendPopup(self::makeWarning("大深度地下での設置破壊は許可されていません。"));
 				return false;
 			}elseif(self::getPileLimit($sectionNoX, $sectionNoZ) <= $y){
-				if(!$nomessage) $player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
+				$player->sendPopup(self::makeWarning("領空での設置破壊は許可されていません。"));
 				return false;
 			}
 
 
 			//print_r(self::$sections[$sectionNoX][$sectionNoZ]);
 			$playerData = Account::get($player);
-			$ownerNo = self::getOwnerNoOfSection($sectionNoX, $sectionNoZ);
 			if($ownerNo === 100000){
 				// 政府の土地
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
 					return true;
 				}else{
-					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊は許可されていません。"));
+					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊はできません。"));
 					return false;					
 				}
 			}else{
@@ -300,10 +319,11 @@ class AreaProtector{
 
 					}else{
 						//所有者本人でない。権限が、所有者から与えられているか。
-						$ownerName = self::getNameFromOwnerNo($ownerNo);
-						if($owner = Account::getByName($ownerName)){
-							if(!$owner->allowBreak($no, $sectionNoX, $sectionNoZ)){
-								if(!$nomessage) $player->sendPopup(self::makeWarning("他人の土地での設置破壊は許可されていません。"));							
+						if($ownerData = Account::getByUniqueNo($ownerNo)){
+							$playerName = $playerData->getName();
+							if(!$ownerData->allowEdit($playerName, $sectionNoX, $sectionNoZ)){
+								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));
+								$player->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName)." 土地の編集権限 ".$ownerData->getSectionEdit($sectionNoX, $sectionNoZ).""));	
 								return false;
 							}
 						}
@@ -312,13 +332,39 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					if(!$nomessage) $player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊は許可されていません。"));							
+					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));						
 					return false;
 				}
 			}
 		}
+	}
 
-		return false;
+	/**
+	*	使用できないやつをはじく
+	*	@return bool つかえるならtrue
+	*/
+	public static function Use(Account $playerData, $x, $y, $z, $blockId){
+		if(!self::canActivateInLivingProtected($blockId)){
+			// 使用できないブロックの場合
+			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) ){
+				// その土地の所有者を確認し
+				if($ownerData = Account::getByUniqueNo($ownerNo)){
+					// 所有者のデータを手に入れる
+					if($ownerData !== $playerData){
+						$sectionNoX = self::calculateSectionNo($x);
+						$sectionNoZ = self::calculateSectionNo($z);
+						$playerName = $playerData->getName();
+						if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
+							$blockname = ItemName::getNameOf($blockId);
+							$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
+							$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	public static function makeWarning($txt){
@@ -466,7 +512,7 @@ class AreaProtector{
 		}else{
 			if( $playerData->isOnline() ){
 				//新規セクションデーター
-				$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
+				$sectionData = self::getNewSectionData($uniqueNo, $playerData->getPlayer()->getY());
 				self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
 
 				//残りの数を減らす 販売数
@@ -508,26 +554,6 @@ class AreaProtector{
 		return true;
 	}
 
-	/**
-	*	いちいちDBのデータを読み込むまでもないとき、owneerNoから、持ち主の名前をだす。
-	*	DBのいんでっくすみたいなもん？
-	*	@param int | ownerNo
-	*	@return string | プレイヤーのname
-	*/
-	public static function getNameFromOwnerNo($no){
-		if($no === -1){
-			return "グリッド上";
-		}else{
-			if(isset(Account::$namelist[$no])){
-				return Account::$namelist[$no];
-			}else{
-				//echo "ERROR: ".$no;
-				//空き地が出るようにしているが、、。
-				return "空き地";
-			}
-		}
-	}
-
 /*
 	購入するときの価格について
 */
@@ -550,7 +576,7 @@ class AreaProtector{
 		$percentage = (self::$affordableSection - self::$leftSection) / self::$affordableSection; // 残っている土地の数によって価格が変わるよ
 		$taxChangeable = $taxBase * $percentage * 40; // かかくは、初期 = $taxbase, 最後 = $taxbase * 40;
 
-		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getSectionArray()); //すでに購入してる人は高くなるよ
+		$taxUpToPerson = $taxBase + ($taxBase / 4) * count($playerData->getAllSection()); //すでに購入してる人は高くなるよ
 
         if($pofs == -1){
             //誰も持っていない土地
@@ -573,9 +599,9 @@ class AreaProtector{
 		/* 引数変更で削除
 		$secX = self::calculateSectionNo($x);
 		$secZ = self::calculateSectionNo($z);*/
-		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getSectionArray());
+		$count = abs($sectionNoX - $adX) + abs($sectionNoZ - $adZ) + count($playerData->getAllSection());
 		$mag = 1 + log10($count)*2;
-		return ($price*$mag);
+		return round($price*$mag);
 	}
 
 	public static function getHome($playerData){
@@ -602,7 +628,7 @@ class AreaProtector{
 
 
 	public static function load(){
-		$data = DataIO::load('AreaProtector');
+		$data = DataIO::loadFromDB('AreaProtector');
 		if($data){
 			self::$affordableSection = $data[0];
 			self::$leftSection = $data[1];
@@ -615,16 +641,25 @@ class AreaProtector{
 
 	public static function save(){
 		$data = [self::$affordableSection, self::$leftSection];
-		$result = DataIO::save('AreaProtector', $data);
+		$result = DataIO::saveIntoDB('AreaProtector', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aAreaProtector: data has been saved");
 		}
 	}
 
-	public static function setup(){
+	public static function reset(){
+		// いっかいさくじょ
+		DataIO::DeleteFromDB('AreaProtector');
+
+		// データディレクトリのやつ削除
+		// しゅどうで/EardData/section/の中削除して
+
+		// でーたつくる
 		self::$affordableSection = 1000;
 		self::$leftSection = 1000;
 		self::save();
+
+		MainLogger::getLogger()->notice("§bAreaProtector: Reset");
 	}
 
 	/**

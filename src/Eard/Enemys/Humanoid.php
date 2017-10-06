@@ -40,7 +40,7 @@ use Eard\Quests\Quest;
 
 class Humanoid extends Human{
 
-	protected $gravity = 0.14;
+	protected $gravity = 0.025;
 	public $attackingTick = 0;
 	public $rainDamage = true;//継承先でfalseにすると雨天時にダメージを受けない
 	public $isDrown = true;//継承先でfalseにすると水没にダメージを受けない
@@ -96,6 +96,7 @@ class Humanoid extends Human{
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		AI::setSize($this, static::getSize());
+		$this->setNameTag("");
 		$this->spawnTime = microtime(true);
 	}
 
@@ -199,6 +200,7 @@ class Humanoid extends Human{
 		}
 		parent::attack($source);
 		if(!$source->isCancelled() && $source instanceof EntityDamageByEntityEvent){
+			$source->setKnockBack($source->getKnockBack()/2);
 			$attacker = $source->getDamager();
 			if($attacker instanceof Player){
 				$name = $attacker->getName();
@@ -234,17 +236,19 @@ class Humanoid extends Human{
 				$player->sendMessage(Chat::SystemToPlayer("以下のアイテムを入手しました"));
 				$player->sendMessage(Chat::SystemToPlayer($str));
 				$account = Account::get($player);
-				if($account->getNowQuest() !== null && $account->getNowQuest()->getQuestType() === Quest::TYPE_SUBJUGATION && $account->getNowQuest()->getTarget() === static::getEnemyType()){
-					$result = $account->getNowQuest()->addAchievement();
+				$nq = $account->getNowQuest();
+				if($nq !== null && $nq->getQuestType() === Quest::TYPE_SUBJUGATION && $nq->getTarget() === static::getEnemyType()){
+					$result = $nq->addAchievement();
 					if($result){
 						$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
 						//ここで報酬を送り付ける
-						if($account->addClearQuest($account->getNowQuest()->getQuestId())){
+						$nq->sendReward($player);
+						if($account->addClearQuest($nq->getQuestId())){
 							$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
 						}
 						$account->resetQuest();
 					}else{
-						$player->sendMessage(Chat::SystemToPlayer("あと".($account->getNowQuest()->getNormI()-$account->getNowQuest()->getAchievement())."体です"));
+						$player->sendMessage(Chat::SystemToPlayer("あと".($nq->getNormI()-$nq->getAchievement())."体です"));
 					}
 				}
 			}

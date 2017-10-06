@@ -42,6 +42,7 @@ class Account implements MeuHandler {
 		[ [0,0,0] ], // 7 ItemBoxのアイテムの中身
 		[], // 8 支払い履歴
 		[ [], [] ], // 9 クエストデータ
+		[], // 10 せってい
 	];
 
 	/*
@@ -77,25 +78,43 @@ class Account implements MeuHandler {
 	*/
 	public static function getByName($name){
 		$name = strtolower($name);
-		if(!isset(self::$accounts[$name])){
-			// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
-			$account = new Account();
-			self::$accounts[$name] = $account;
-			return $account;
+		if($name){
+			if(!isset(self::$accounts[$name])){
+				// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
+				$account = new Account();
+				$account->loadData();
+				self::$accounts[$name] = $account;
+				return $account;
+			}
+			return self::$accounts[$name];
 		}
-		return self::$accounts[$name];
+		return null;
 	}
 
+	// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
 	public static function getByUniqueNo($uniqueNo){
-		// とりあえずこんなんでいいかなて感じ。メール実装に必要だった。
-		$account = new Account();
-		$account->data[0] = $uniqueNo;
-
-		$name = strtolower($name);
-		if(!isset(self::$accounts[$name])){
-			self::$accounts[$name] = $account;
+		// インデックスに入ってたらそっちからgetByNameする
+		if(isset(self::$index[$uniqueNo])){
+			$name = self::$index[$uniqueNo];
+			if(isset(self::$accounts[$name])){
+				return self::$accounts[$name];
+			}
+			return null;
+		}else{
+			$account = new Account();
+			$account->data[0] = $uniqueNo;
+			$account->loadData();
+			if($name = $account->getName()){
+				$name = strtolower($name);
+				self::$index[$uniqueNo] = $name;
+				if(!isset(self::$accounts[$name])){
+					// 新しく読み込んだデータ格納
+					self::$accounts[$name] = $account;
+				}
+				return self::$accounts[$name];
+			}
+			return null;
 		}
-		return self::$accounts[$name];
 	}
 
 /* Player
@@ -496,34 +515,6 @@ class Account implements MeuHandler {
 		return $this->data[3];
 	}
 
-
-	/**
-	*	所持しているセクションを追加する。
-	*	※処理は、AreaProtectorからのみ行うこと。 20170701
-	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるxの値
-	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
-	*	@param int | その土地に設定する権限レベル。詳しくはAddSharePlayerの候にて。
-	*	@return bool
-	*/
-	public function addSection($sectionNoX, $sectionNoZ, $authority = 3){
-		if($this->data[4] === []){
-			//住所登録
-			$this->setAddress($sectionNoX, $sectionNoZ);
-		}
-		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = $authority;
-		return true;
-	}
-
-	/**
-	*	所持しているセクションをすべて返す。
-	*	@return array
-	*/
-	public function getSectionArray(){
-		return $this->data[4];
-	}
-
-
-
 	/*
 		authorityは、たとえば、この土地はこのプレイヤーには壊せるが、別のプレイヤーは壊せない、などの順番を付与するものである。。
 		authority = range (1, 10) セクションごとに違う。authorityは各プレイヤーが決め、土地に対してつける。
@@ -538,28 +529,99 @@ class Account implements MeuHandler {
 	*/
 
 	/**
-	*	他プレイヤーが自分の土地を壊せるようになる。土地共有。
-	*	@param int | 対象プレイヤーの、AccountのgetUniqueNo()でえられる値
-	*	@param int | 権限レベル
+	*	所持しているセクションを追加する。
+	*	※処理は、AreaProtectorからのみ行うこと。 20170701
+	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるxの値
+	*	@param int | 座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
+	*	@param int | その土地に設定する権限レベル。詳しくはAddSharePlayerの候にて。
 	*	@return bool
 	*/
-	public function addSharePlayer($uniqueNo, $authority = 4){
-		if($uniqueNo){
-			$this->data[6][$uniqueNo] = $authority;
+	public function addSection($sectionNoX, $sectionNoZ, $editAuth = 4, $exeAuth = 4){
+		if($this->data[4] === []){
+			//住所登録
+			$this->setAddress($sectionNoX, $sectionNoZ);
+		}
+		$this->data[4]["{$sectionNoX}:{$sectionNoZ}"] = [$editAuth, $exeAuth];
+		return true;
+	}
+
+	/**
+	*	@return array
+	*/
+	public function getSection($sectionNoX, $sectionNoZ): array{
+		return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] ?? [];
+	}
+
+	public function getSectionEdit($sectionNoX, $sectionNoZ): int{
+		$data = $this->getSection($sectionNoX, $sectionNoZ);
+		return $data ? $data[0] : 0;
+	}
+
+	public function getSectionUse($sectionNoX, $sectionNoZ): int{
+		$data = $this->getSection($sectionNoX, $sectionNoZ);
+		return $data ? $data[1] : 0;
+	}
+
+	/**
+	*	所持しているセクションをすべて返す。
+	*	@return array
+	*/
+	public function getAllSection(): array{
+		return $this->data[4];
+	}
+
+	/**
+	*	他プレイヤーが自分の土地を壊せるようになる。土地共有。
+	*	@param int | 対象プレイヤーの、AccountのgetUniqueNo()でえられる値
+	*	@param int | 実行・編集 権限レベル
+	*	@return bool
+	*/
+	public function setAuth($name, $editAuth): bool{
+		if($name){
+			$name = strtolower($name);
+			$this->data[6][$name] = $editAuth;
 			return true;
 		}
 		return false; 
 	}
 
+	public function removeAuth($name): bool{
+		unset($this->data[6][$name]);
+		return true; 
+	}
+
+	public function getAuth($name): int{
+		return $this->data[6][$name] ?? 0;
+	}
+
 	/**
-	*	@param int | 対象プレイヤーの、AccountのgetUniqueNo()でえられる値
+	*	与えていいる編集権限をすべて返す。
+	*	@return array
+	*/
+	public function getAllAuth(): array{
+		return $this->data[6];
+	}
+
+	/**
+	*	@param String なまえ
 	*	@param int | 破壊対象の座標を AreaProtector::calculateSectionNo に突っ込んで得られるxの値
 	*	@param int | 破壊対象の座標を AreaProtector::calculateSectionNo に突っ込んで得られるzの値
-	*	@return bool | こわせるならtrue
+	*	@return bool | こわせるならtrue つかえるならtrue
 	*/
-	public function allowBreak($uniqueNo, $sectionNoX, $sectionNoZ){
-		if($uniqueNo && isset($this->data[6][$uniqueNo])){
-			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"] <= $this->data[6][$uniqueNo];
+	public function allowEdit($name, $sectionNoX, $sectionNoZ): bool{
+		$name = strtolower($name);
+		if($name){
+			$auth = isset($this->data[6][$name]) ? $this->data[6][$name] : 0;
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][0] <= $auth;
+		}
+		return false;
+	}
+
+	public function allowUse($name, $sectionNoX, $sectionNoZ): bool{
+		$name = strtolower($name);
+		if($name){
+			$auth = isset($this->data[6][$name]) ? $this->data[6][$name] : 0;
+			return $this->data[4]["{$sectionNoX}:{$sectionNoZ}"][1] <= $auth;
 		}
 		return false;
 	}
@@ -594,6 +656,21 @@ class Account implements MeuHandler {
 		return $this->data[8];
 	}
 	
+
+	/**
+	*	ぷれいやーが、このプレイヤーを攻撃できるか
+	*/
+	public function setAttackSetting($flag){
+		$this->data[10][0] = (int) $flag;
+	}
+
+	/**
+	*	trueなら殴れる
+	*/
+	public function getAttackSetting(){
+		return $this->data[10][0] ?? false;
+	}
+
 
 	private $data = [];
 
@@ -637,6 +714,7 @@ class Account implements MeuHandler {
 					$txtdata = $row['base64'];
 					$data = base64_decode($txtdata);
 					$data = unserialize($data);
+					$name = $row['name'];
 					$data[0] = $row['no'];//noは、テーブルのものを上書き
 
 					//マージ thankyou @m0_83 !
@@ -659,6 +737,7 @@ class Account implements MeuHandler {
 							$changed = true;
 						}
 					}
+					
 					if($changed){
 						$msg = "{$name}さんのデータ形式が更新されました";
 						MainLogger::getLogger()->notice($msg);
@@ -680,6 +759,18 @@ class Account implements MeuHandler {
 						}
 					}
 
+					// 土地系旧形式からの移行用
+					if($data = $this->getAddress()){
+						$sectionNoX = $data[0];
+						$sectionNoZ = $data[1];
+						if(isset($this->data[4]["{$sectionNoX}:{$sectionNoZ}"]) && !is_array($this->data[4]["{$sectionNoX}:{$sectionNoZ}"])){
+							$newdata = [];
+							foreach($this->data[4] as $index => $data){
+								$newdata[$index] = [$data, 4]; // 実行は4に
+							}
+							$this->data[4] = $newdata;
+						}
+					}
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 					return true;
@@ -704,17 +795,22 @@ class Account implements MeuHandler {
 	*	@param bool
 	*/
 	public function saveData($isfrompmmp = false){
-		$name = $this->getPlayer()->getName();
-		$data = serialize(self::$newdata);
-		$txtdata = base64_encode($data);
-    	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
-    	DB::get()->query($sql);
-		MainLogger::getLogger()->notice("§aAccount: {$name} data saved　- first time");
+		$player = $this->getPlayer();
+		if($player instanceof Player){
+			$name = $player->getName();
+			$data = serialize(self::$newdata);
+			$txtdata = base64_encode($data);
+	    	$sql = "INSERT INTO data (name, base64, date) VALUES ('{$name}', '{$txtdata}', now());";
+	    	DB::get()->query($sql);
+			MainLogger::getLogger()->notice("§bAccount: {$name} data saved　- first time");
 
-		$this->data = self::$newdata;//初回データを読み込む
+			$this->data = self::$newdata;//初回データを読み込む
 
-		//meuは展開する
-		$this->meu = Meu::get($this->data[1], $this);
+			//meuは展開する
+			$this->meu = Meu::get($this->data[1], $this);
+		}else{
+			echo "Account: error!\n";
+		}
     }
 
     /**
@@ -795,20 +891,6 @@ class Account implements MeuHandler {
     }
 */
 
-
-	/*
-	*	オフライン用
-	*	このclass::Accountで使っている変数を保存
-	*/
-
-	public static function load(){
-		$data = DataIO::load('Account');
-		if($data){
-			self::$namelist = $data;
-			MainLogger::getLogger()->notice("§aAccount: offline list has loaded");
-		}
-	}
-
 	public static function save(){
 		//全員分のデータセーブ
 		if(self::$accounts){
@@ -817,20 +899,29 @@ class Account implements MeuHandler {
 				if($player && $player->isOnline()){
 					$playerData->updateData();
 				}else{
+					// echo "呼び出されただけのデータ";
 					MainLogger::getLogger()->notice("§aAccount: {$name} data §cClosed");
 					unset(self::$accounts[$name]);
-					// echo "呼び出されただけのデータ";
 				}
 			}
 		}
 
-		//記録データセーブ
-		$data = DataIO::save('Account', self::$namelist);
-		if($data){
-			MainLogger::getLogger()->notice("§aAccount: offline list has saved");
+		//uniqueNoとnameの紐づけ解除
+		if(isset(self::$index)){
+			self::$index = [];
 		}
 	}
 
-	public static $namelist = []; //uniqueNoとnameをふすびつけるもの
+	public static function reset(){
+		$dbname = DB::$name;
+		$db = DB::get();
+
+		// プレイヤーデータ削除
+		$sql = "TRUNCATE TABLE {$dbname}.data";
+		$db->query($sql);
+		MainLogger::getLogger()->info("§bAccount: Reset");
+	}
+
+	public static $index = []; //uniqueNoとnameをふすびつけるもの
 
 }

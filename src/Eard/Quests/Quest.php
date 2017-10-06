@@ -1,9 +1,16 @@
 <?php
 namespace Eard\Quests;
 
+use Eard\Utils\Chat;
+use Eard\Utils\ChestIO;
+use Eard\MeuHandler\Government;
+use Eard\MeuHandler\Account;
+
 class Quest{
 	public static $allQuests = [];
 
+	const TYPE_MEU = 0;
+	const TYPE_ITEM = 1;
 
 	const QUESTID = 0;
 	const NORM = 0;
@@ -31,6 +38,14 @@ class Quest{
 		return static::QUESTID;
 	}
 
+	public static function getNorm(){
+		return static::NORM;
+	}
+
+	public function getNormI(){
+		return static::NORM;
+	}
+
 	/*目的達成するたびに+1
 	*/
 	public function addAchievement(){
@@ -50,5 +65,49 @@ class Quest{
 
 	public function checkAchievement(){
 		return (static::NORM <= $this->achievement);
+	}
+
+	public function sendRewardMeu($player, $amount){
+		//Meu送金処理
+		$player->sendMessage(Chat::SystemToPlayer("§e報酬金 {$amount}μ 獲得しました"));
+		Government::giveMeu(Account::get($player), $amount, "Quest: クリア報酬 {$amount}μ");
+	}
+
+	public function checkDelivery($player){
+		$inv = $player->getInventory();
+		$delitem = static::getTarget();
+		$delid = $delitem[0];
+		$deldamage = $delitem[1];
+		$delamount = static::getNorm();
+		$contents = $inv->getContents();
+		$sendc = $contents;
+		foreach ($contents as $index => $item) {
+			if($item->getId() === $delid && $item->getDamage() === $deldamage){
+				if($delamount >= $item->getCount()){
+					unset($sendc[$index]);
+					$delamount -= $item->getCount();
+				}else{
+					$sendc[$index] = $item->setCount($item->getCount() - $delamount);
+					$delamount = 0;
+				}
+				if($delamount === 0){
+					break;
+				}
+			}
+		}
+		if($delamount === 0){
+			$inv->setContents(array_values($sendc));
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function sendRewardItem($player, $item){
+		//アイテム送信処理
+		$this->inventory = new ChestIO($player);
+		$this->inventory->additem($item);
+		$this->inventory->setName("報酬ボックス(閉じると中のアイテムは消滅します)");
+		$player->addWindow($this->inventory);
 	}
 }

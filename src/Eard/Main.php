@@ -28,6 +28,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Utils\ItemName;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
+use Eard\Utils\Twitter;
 use Eard\DBCommunication\Earmazon;
 use Eard\Form\LicenseForm;
 
@@ -69,20 +70,18 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# クエスト登録
 		QuestManager::init();
+
+		#ツイートOAuth登録
+		Twitter::init();
 	}
 
 	public function reconnect(){
-		Connection::load();
+		// self::reset();
 
-		/*
-		Earmazon::setup();
-		AreaProtector::setup();
-		Connection::setup();
-		*/
+		Connection::load();
 
 		# Eard関連
 		AreaProtector::load();
-		Account::load();
 		BlockObjectManager::load();
 		Government::load();
 		new EnemyRegister();
@@ -104,6 +103,14 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# DB系
 		Connection::close();
+	}
+
+	public static function reset(){
+		Government::reset();
+		AreaProtector::reset();
+		Account::reset();
+		Earmazon::reset();
+		BlockObjectManager::reset();	
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, string $label, array $a): bool{

@@ -70,7 +70,7 @@ use pocketmine\networkprotocol\AnimatePacket;
  */
 abstract class AI{
 
-	const DEFAULT_JUMP = 0.5;
+	const DEFAULT_JUMP = 0.2;
 
 	public static function setSize($enemy, $size){
 		$enemy->setScale($size);
@@ -178,7 +178,7 @@ abstract class AI{
 		return new Vector3(sin($rad_y)*cos($rad_p), sin($rad_p), -cos($rad_y)*cos($rad_p));
 	}
 
-	public static function walkFront($enemy, $vec = 0.095, $yawd = 0, $jump = 0.55){
+	public static function walkFront($enemy, $vec = 0.045, $yawd = 0, $jump = self::DEFAULT_JUMP){
 		$rad = deg2rad($enemy->yaw+$yawd);
 		$vx = -sin($rad);
 		$vz = cos($rad);
@@ -187,20 +187,20 @@ abstract class AI{
 			if($walk === 2){
 				$enemy->motionY = $jump;
 			}
-			$enemy->motionX = $vx*$vec;
-			$enemy->motionZ = $vz*$vec;	
+			$enemy->motionX = $vx*$vec/2;
+			$enemy->motionZ = $vz*$vec/2;	
 		}
 		$enemy->move($enemy->motionX, $enemy->motionY, $enemy->motionZ);
 		return $walk;
 	}
 
-	public static function jump($enemy, $vec = 0.25, $yawd = 0, $jump = self::DEFAULT_JUMP){
+	public static function jump($enemy, $vec = 0.15, $yawd = 0, $jump = self::DEFAULT_JUMP){
 		$rad = deg2rad($enemy->yaw+$yawd);
 		$vx = -sin($rad);
 		$vz = cos($rad);
 		$enemy->motionY = $jump;
-		$enemy->motionX = $vx*$vec;
-		$enemy->motionZ = $vz*$vec;	
+		$enemy->motionX = $vx*$vec/2;
+		$enemy->motionZ = $vz*$vec/2;	
 		$enemy->move($enemy->motionX, $enemy->motionY, $enemy->motionZ);
 	}
 

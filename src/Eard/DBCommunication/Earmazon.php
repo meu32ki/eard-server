@@ -24,7 +24,7 @@ class Earmazon {
 	}
 
 
-	public static function setup (){
+	public static function reset(){
 		$itemListById = ItemName::getListById();
 		$db = DB::get();
 
@@ -68,7 +68,7 @@ class Earmazon {
 		self::addSellUnit(Item::WHEAT, 0, 8000, 30);
 		self::addSellUnit(Item::WHEAT, 0, 2000, 45);
 		self::addSellUnit(Item::BREAD, 0, 100, 150);
-		self::addSellUnit(Item::HORCE_ARMOR_LEATHER, 0, 150, 1000);
+		self::addSellUnit(Item::HORSE_ARMOR_LEATHER, 0, 150, 1000);
 
 		self::addSellUnit(Item::IRON_INGOT, 0, 1000, 400);
 		self::addSellUnit(Item::IRON_INGOT, 0, 100, 450);
@@ -81,7 +81,7 @@ class Earmazon {
 		// プレイヤーがこの価格で購入できる
 		$db->query("truncate earmazon_itembuylist;");
 		self::addBuyUnit(Item::LOG, 0, 100, 50);
-		self::addBuyUnit(Item::HORCE_ARMOR_LEATHER, 0, 200, 1000);
+		self::addBuyUnit(Item::HORSE_ARMOR_LEATHER, 0, 200, 1000);
 		self::addBuyUnit(Item::WHEAT_SEEDS, 0, 10000, 2);
 
 		self::addBuyUnit(Item::IRON_ORE, 0, 1000, 470);
@@ -94,7 +94,7 @@ class Earmazon {
 		self::addBuyUnit(Item::BREWING_STAND, 0, 5, 10000);
 
 
-		MainLogger::getLogger()->notice("§aEarmazon: 完了");
+		MainLogger::getLogger()->notice("§bEarmazon: Reset 完了");
 		self::check();
 	}
 

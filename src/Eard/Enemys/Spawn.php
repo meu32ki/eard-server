@@ -10,6 +10,8 @@ use pocketmine\level\generator\normal\eardbiome\Biome;
 
 # Eard
 use Eard\Event\Time;
+use Eard\MeuHandler\Account;
+use Eard\Quests\Quest;
 
 
 class Spawn extends Task{
@@ -78,6 +80,10 @@ class Spawn extends Task{
 			$rate = $class::getSpawnRate();
 			if(!$isNight){
 				$rate *= 2;
+			}
+			$quest = Account::get($player)->getNowQuest();
+			if($quest !== null && $quest::getQuestType() === Quest::TYPE_SUBJUGATION && $type === $quest::getTarget()){
+				$rate /= 2;
 			}
 			$rate /= $c/($c+1);
 			$rate = ceil($rate);

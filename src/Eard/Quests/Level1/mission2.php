@@ -21,16 +21,16 @@ class mission2 extends Quest{
 		return self::TYPE_DELIVERY;
 	}
 
-	public static function getNorm(){
-		return self::NORM;
-	}
-
-	public function getNormI(){
-		return self::NORM;
-	}
-
 	public static function getTarget(){
 		return [Item::WHEAT, 0];
+	}
+
+	public static function getReward(){
+		return Item::get(Item::GLASS, 0, 1);
+	}
+
+	public function sendReward($player){
+		self::sendRewardItem($player, $this->getReward());
 	}
 
 	/*目的達成するたびに+1

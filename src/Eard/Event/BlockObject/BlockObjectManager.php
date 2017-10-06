@@ -261,7 +261,7 @@ class BlockObjectManager {
 	*	このclass::BlockObjectmanagerで使っている変数を保存
 	*/
 	public static function load(){
-		$data = DataIO::load('BlockObjectManager');
+		$data = DataIO::loadFromDB('BlockObjectManager');
 		if($data){
 			self::$indexNo = $data[0];
 			self::$index = $data[1];
@@ -273,15 +273,21 @@ class BlockObjectManager {
 
 	public static function save(){
 		$data = [self::$indexNo, self::$index];
-		$result = DataIO::save('BlockObjectManager', $data);
+		$result = DataIO::saveIntoDB('BlockObjectManager', $data);
 		if($result){
 			MainLogger::getLogger()->notice("§aBlockObjectManager: Successfully saved");
 		}
 	}
 
-	public function onTime(){
 
+	public static function reset(){
+		// いっかいさくじょ
+		DataIO::DeleteFromDB('BlockObjectManager');
+
+		// データディレクトリのやつ削除
+		// しゅどうで/EardData/obj/の中削除して
+
+		MainLogger::getLogger()->notice("§aBlockObjectManager: Reset");
 	}
-
 
 }

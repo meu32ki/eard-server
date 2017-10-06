@@ -31,6 +31,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 
 # Eard
 use Eard\Main;
@@ -39,6 +40,8 @@ use Eard\Event\AreaProtector;
 use Eard\Event\ChatManager;
 use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
+use Eard\Form\HelpForm;
+use Eard\Form\SettingsForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -115,12 +118,14 @@ class Event implements Listener{
 	public function Q(PlayerQuitEvent $e){
 		$player = $e->getPlayer();
 		if($player->spawned){ //whitelistでひっかかっていなかったら
-
-			// Menuが開いていたら閉じる処理
 			$playerData = Account::get($player);
-			if($playerData->getMenu()->isActive()){
-				$playerData->getMenu()->close();
+
+			// 必ずしも閉じる必要あるかな？
+			/*
+			if($playerData->getFormObject() instanceof Form){
+				$playerData->getFormObject()->close();
 			}
+			*/
 
 			//　オンラインテーブルから記録消す
 			Connection::getPlace()->recordLogout($player->getName());
@@ -135,8 +140,8 @@ class Event implements Listener{
 		}
 	}
 
-/*
-	// 20170928 1.2対応のためいったん無効
+
+	// 20170928 1.2対応のためいったん無効 20171003 対応させたので復活
 	public function F(PlayerFishEvent $e){
 		$item = $e->getItem();
 		$hook = $e->getHook();
@@ -157,7 +162,6 @@ class Event implements Listener{
 			break;
 		}
 	}
-*/
 
 	public function PacketReceive(DataPacketReceiveEvent $e){
 		$packet = $e->getPacket();
@@ -185,7 +189,7 @@ class Event implements Listener{
 				// オブジェクトがあればそっち優先
 				$playerData = Account::get($player);
 				if($obj = $playerData->getFormObject()){
-					$obj->Receive($id, $data);
+					$obj->receive($id, $data);
 				}
 
 				// なければクエストのほうにパケット分岐
@@ -203,12 +207,19 @@ class Event implements Listener{
 					}else if($id > 1500 && $id < 2000){
 						if($packet->formData === "true\n"){
 							$player->sendMessage(Chat::SystemToPlayer("クエストを開始しました"));
-							Account::get($player)->setNowQuest(Quest::get($id - 1500));
+							$playerData->setNowQuest(Quest::get($id - 1500));
 						}else{
 							QuestManager::addQuestsForm($player, 0);
 						}
+					}else if($id === 2000 && $packet->formData === "true\n"){
+						$playerData->resetQuest();
+						$player->sendMessage(Chat::SystemToPlayer("クエストを取り消しました"));	
 					}
 				}
+			break;
+			case ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET:
+				echo "ghuee";
+				new SettingsForm(Account::get($player));
 			break;
 		}
 	}
@@ -245,27 +256,20 @@ class Event implements Listener{
 		// 長押し
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
+				if($e->getItem()->getId() == 0){
+					new HelpForm($playerData);
+				}
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
-
 		// 普通にタップ
 		}else{
 
 			/*	生活区域
 			*/
 			if(Connection::getPlace()->isLivingArea()){
-				// editができるか？
 				// できないばあい
-				if(!AreaProtector::Edit($player, $x, $y, $z, true)){
-					if(!AreaProtector::canActivateInLivingProtected($blockId)){
-						$blockname = ItemName::getNameOf($blockId, $blockMeta);
-						$player->sendMessage(Chat::SystemToPlayer("§e他人の土地に置いてある「{$blockname}」の使用は制限されています！"));
-						$e->setCancelled(true);
-					}else{
-						$r = BlockObjectManager::tap($block, $player);
-						$e->setCancelled( $r );
-					}
-
+				if(!AreaProtector::Use($playerData, $x, $y, $z, $blockId)){
+					$e->setCancelled(true);
 				// できるばあい
 				}else{
 					$r = BlockObjectManager::tap($block, $player);
@@ -288,13 +292,24 @@ class Event implements Listener{
 
 			$itemId = $e->getItem()->getId();
 			switch($blockId){
-				case 60; // こうち
+				case 60: // こうち
 					switch($itemId){
 						case 295: // むぎのたね
 						case 361: // かぼちゃ
 						case 362: // すいか
 						case 458: // ビートルート
 						case 392: // じゃがいも
+						case 391: // にんじん
+							if(!$playerData->hasValidLicense(License::FARMER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
+					}
+				break;
+				case 88: //ソウルサンド
+					switch($itemId){
+						case 372: // ネザーウォート
 							if(!$playerData->hasValidLicense(License::FARMER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
@@ -314,8 +329,29 @@ class Event implements Listener{
 					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
 				break;
 				case 116: // エンチャントテーブル(クエストカウンター)
-					QuestManager::addQuestsForm($player, 0);
-					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+					$nq = $playerData->getNowQuest();
+					if($nq === null){
+						QuestManager::addQuestsForm($player);
+					}else{
+						if($nq->getQuestType() === Quest::TYPE_DELIVERY){
+							if($nq->checkDelivery($player)){
+								$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
+								//ここで報酬を送り付ける
+								$nq->sendReward($player);
+								if($playerData->addClearQuest($nq->getQuestId())){
+									$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
+								}
+								$playerData->resetQuest();
+							}else{
+								QuestManager::sendCanselForm($player);
+							}							
+						}else{
+							QuestManager::sendCanselForm($player);
+						}
+
+
+					}
+					$e->setCancelled(true); // 実際のエンチャントテーブルの効果は使わせない
 				break;
 				default:
 					// 手持ちアイテム
@@ -363,7 +399,7 @@ class Event implements Listener{
 		}else{
 			$item = $e->getItem();
 			$itemId = $item->getId();
-			if( !AreaProtector::canPlaceInResource($itemId) ){
+			if( !AreaProtector::canPlaceInResource($itemId) && $player->isSurvival()){
 				$e->setCancelled(true);
 			}else{
 				$r = BlockObjectManager::place($block, $player);
@@ -416,11 +452,6 @@ class Event implements Listener{
 	public function Death(PlayerDeathEvent $e){
 		$player = $e->getEntity();
 		$playerData = Account::get($player);
-		
-		// メニューを見ていたら、消す
-		if($playerData->getMenu()->isActive()){
-			$playerData->getMenu()->close();
-		}
 
 		// 死んだときのメッセージ
 		$cause = $player->getLastDamageCause();
@@ -521,9 +552,12 @@ class Event implements Listener{
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
-				$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
-				MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
-				$e->setCancelled(true);
+				$damagerData = Account::get($damager);
+				if(!$damagerData->getAttackSetting()){
+					$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+					MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
+					$e->setCancelled(true);
+				}
 			}
 
 			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){

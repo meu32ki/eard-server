@@ -34,10 +34,9 @@ class Recipe {
 				$fishes[] = $id;
 			}
 		}
-		/*
-		// 20170928 src変更により一時的に無効
+
+		// 20170928 src変更により一時的に無効 20171003 対応させたため復活
 		FishingHook::setFishes($fishes);
-		*/
 	}
 
 	//こいつでプレイヤーごとにクラフトできるやつ返して
@@ -55,9 +54,12 @@ class Recipe {
 			*/
 			5 => [
 				2 => true,
-				1 => true
+				1 => true,
+				0 => true
 				],
-			24 => [],
+			24 => [
+				0 => true,
+			],
 			50 => [],
 			53 => [],
 			58 => [],
@@ -91,12 +93,16 @@ class Recipe {
 					459 => [],					
 				];
 			break;
+		}
+		switch (true) {
 			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER): // 危険物取扱
 				$recipe += [
 					46 => [],
 					259 => [],
 				];
 			break;
+		}
+		switch (true) {
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
 				$recipe += [
 					298 => [],
@@ -120,6 +126,9 @@ class Recipe {
 					317 => [],					
 				];
 			break;
+
+		}
+		switch (true) {
 			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
 				$recipe += [
 					1 => [
@@ -308,6 +317,8 @@ class Recipe {
 					294 => [],					
 				];
 			break;
+		}
+		switch (true) {
 			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
 				$recipe += [
 					24 => [

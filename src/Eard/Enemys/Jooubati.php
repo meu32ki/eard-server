@@ -58,7 +58,7 @@ class Jooubati extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 300;
+		return 200;
 	}
 
 	//召喚時のポータルのサイズを取得
@@ -241,7 +241,7 @@ class Jooubati extends Humanoid implements Enemy{
 				//AI::ElementBurstBomb($this, Magic::POISON, 14, 3);
 				switch($this->charge){
 					case 0:
-						AI::setRate($this, 10);
+						AI::setRate($this, 40);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
 						$this->walkSpeed = -0.025;
@@ -252,7 +252,7 @@ class Jooubati extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 1.8;
+						$this->walkSpeed = 0.45;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -264,7 +264,7 @@ class Jooubati extends Humanoid implements Enemy{
 						AI::setRate($this, 20);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.8;
+						$this->walkSpeed = 0.2;
 						$this->float = mt_rand(0, 1);
 						$this->charge = 0;
 					break;
@@ -279,7 +279,7 @@ class Jooubati extends Humanoid implements Enemy{
 				$this->target = false;
 				$this->yaw += mt_rand(-40, 40);
 				$this->walk = true;
-				$this->walkSpeed = 0.8;
+				$this->walkSpeed = 0.2;
 				$this->float = mt_rand(0, 1);
 				$this->pitch = 0;
 				$this->charge = 0;		
@@ -293,7 +293,7 @@ class Jooubati extends Humanoid implements Enemy{
 					;
 				break;
 				case 2:
-					AI::rangeAttack($this, 3.5, 7);
+					AI::rangeAttack($this, 3, 5);
 					$this->level->addParticle(new SpellParticle($this, 234, 41, 89));
 				break;
 			}
@@ -332,7 +332,7 @@ class Jooubati extends Humanoid implements Enemy{
 		$victim = $source->getEntity();
 		if(mt_rand(0, 6) < 3){
 			$ef = Effect::getEffect(19);
-			$ef->setAmplifier(1);
+			$ef->setAmplifier(0);
 			$ef->setDuration(300);
 			$victim->addEffect($ef);
 		}

@@ -221,7 +221,7 @@ class Stinger extends Humanoid implements Enemy{
 		$this->charge = 0;
 		$this->mode = 0;
 		$this->walk = true;
-		$this->walkSpeed = 0.2;
+		$this->walkSpeed = 0.1;
 		$this->float = true;
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
 		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
@@ -240,7 +240,7 @@ class Stinger extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = -0.025;
+						$this->walkSpeed = -0.018;
 						$this->float = -1;
 						$this->charge = 1;
 					break;
@@ -248,7 +248,7 @@ class Stinger extends Humanoid implements Enemy{
 						AI::setRate($this, 20);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 1;
+						$this->walkSpeed = 0.5;
 						if(AI::getFrontVector($this, true)->y > 0){
 							$this->float = 1;
 						}else{
@@ -260,7 +260,7 @@ class Stinger extends Humanoid implements Enemy{
 						AI::setRate($this, 30);
 						AI::lookAt($this, $this->target);
 						$this->walk = true;
-						$this->walkSpeed = 0.4;
+						$this->walkSpeed = 0.2;
 						$this->float = mt_rand(0, 1);
 						$this->charge = 0;
 					break;
@@ -275,7 +275,7 @@ class Stinger extends Humanoid implements Enemy{
 				$this->target = false;
 				$this->yaw += mt_rand(-40, 40);
 				$this->walk = true;
-				$this->walkSpeed = 0.4;
+				$this->walkSpeed = 0.2;
 				$this->float = mt_rand(0, 1);
 				$this->pitch = 0;
 				$this->charge = 0;		

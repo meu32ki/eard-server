@@ -44,7 +44,7 @@ class Residence extends License {
 			case 4: $price = 9000; break;
 			case 5: $price = 16000; break;
 		}
-		return $price;
+		return isset($price) ? $price : 0;
 	}
 
 	public function getUpdatePrice(){
@@ -55,8 +55,12 @@ class Residence extends License {
 			case 4: $price = 400; break;
 			case 5: $price = 800; break;
 		}
-		return $price;
+		return isset($price) ? $price : 0;
 	}
+
+    public function getFullName(){
+        return $this->getName()." ".$this->getRankText();
+    }
 
 	public function getImgPath(){
 		$classar = explode("\\", get_class($this));
@@ -72,6 +76,6 @@ class Residence extends License {
 		4 => "上流",
 		5 => "富裕"
 	];
-	public $name = "生活";
+	public $name = "在住";
 
 }
