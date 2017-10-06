@@ -198,9 +198,8 @@ class Humanoid extends Human{
 		if($source->getCause() === EntityDamageEvent::CAUSE_FALL){
 			$source->setCancelled(true);
 		}
-		parent::attack($source);
 		if(!$source->isCancelled() && $source instanceof EntityDamageByEntityEvent){
-			$source->setKnockBack($source->getKnockBack()/2);
+			$source->setKnockBack($source->getKnockBack()/4);
 			$attacker = $source->getDamager();
 			if($attacker instanceof Player){
 				$name = $attacker->getName();
@@ -210,6 +209,7 @@ class Humanoid extends Human{
 				$this->score[$name] += $damage;
 			}
 		}
+		parent::attack($source);
 	}
 
 	public function kill(){
