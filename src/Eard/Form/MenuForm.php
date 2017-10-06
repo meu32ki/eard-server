@@ -11,6 +11,7 @@ use Eard\DBCommunication\Connection;
 use Eard\DBCommunication\Place;
 use Eard\Event\AreaProtector;
 use Eard\MeuHandler\Account;
+use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Time;
 
@@ -111,42 +112,51 @@ class MenuForm extends FormBase {
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
 				$address = AreaProtector::getSectionCodeFromCoordinate($x, $z);
 				$ownerNo = AreaProtector::getOwnerFromCoordinate($x, $z);
-				if(!$ownerNo || !(Account::getByUniqueNo($ownerNo) instanceof Account) ){
-					$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+
+				if($ownerNo){
+					if($ownerNo === 100000){
+						$ownerName = Government::getInstance()->getName();
+					}else{
+						if(!(Account::getByUniqueNo($ownerNo) instanceof Account) ){
+							$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+						}
+						$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
+					}
 				}else{
-					$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
-					$sectionNoX = AreaProtector::calculateSectionNo(round($x));
-					$sectionNoZ = AreaProtector::calculateSectionNo(round($z));
-					$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
-
-					// ボタン作る
-					if(!$ownerNo){
-						// 所有者がいない
-						$buttons[] = ['text' => "この土地を買う"];
-						$cache[] = 7;
-					}
-					if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
-						// 所有者がいない 政府のライセンスを持っている
-						$buttons[] = ['text' => "この土地を政府が買う"];
-						$cache[] = 8;
-					}
-					if($ownerNo && $ownerNo === $playerData->getUniqueNo()){
-						// そいつの土地
-						$buttons[] = ['text' => "セクション権限設定 土地権限へ"];
-						$cache[] = 13;
-					}
-					$buttons[] = ['text' => "戻る"];
-					$cache[] = 1;
-
-					// 必要データ
-					$data = [
-						'type'    => "form",
-						'title'   => "メニュー > GPS (座標情報)",
-						'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
-									"§f所有者: §7{$ownerName}{$posprice}\n",
-						'buttons' => $buttons
-					];
+					$ownerName = "なし";
 				}
+				$sectionNoX = AreaProtector::calculateSectionNo(round($x));
+				$sectionNoZ = AreaProtector::calculateSectionNo(round($z));
+				$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
+
+				// ボタン作る
+				if(!$ownerNo){
+					// 所有者がいない
+					$buttons[] = ['text' => "この土地を買う"];
+					$cache[] = 7;
+				}
+				if(!$ownerNo && $playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_GENERAL)){
+					// 所有者がいない 政府のライセンスを持っている
+					$buttons[] = ['text' => "この土地を政府が買う"];
+					$cache[] = 8;
+				}
+				if($ownerNo && $ownerNo === $playerData->getUniqueNo()){
+					// そいつの土地
+					$buttons[] = ['text' => "セクション権限設定 土地権限へ"];
+					$cache[] = 13;
+				}
+				$buttons[] = ['text' => "戻る"];
+				$cache[] = 1;
+
+				// 必要データ
+				$data = [
+					'type'    => "form",
+					'title'   => "メニュー > GPS (座標情報)",
+					'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
+								"§f所有者: §7{$ownerName}{$posprice}\n",
+					'buttons' => $buttons
+				];
+			
 			break;
 			case 5:
 				// 所持金の使用履歴 確認
@@ -212,21 +222,26 @@ class MenuForm extends FormBase {
 				$price = AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
 				$havemeu = $playerData->getMeu()->getAmount();
 				$leftmeu = $havemeu - $price;
-				if($leftmeu <= 0){
+				if($id == 7 && $leftmeu <= 0){
 					$this->sendErrorModal(
 						"メニュー > GPS (座標情報) > 土地購入",
 						"土地購入のための所持金が足りません。".abs($leftmeu)."μ不足しています。", 1
 					);
 				}else{
-					$c = $id == 7 ? "土地購入をしあなたを所有者として登録します。" : "土地購入をし§c政府を所有者として§f登録します。";
+					if($id == 7){// 普通に購入
+						$c = "土地購入をしあなたを所有者として登録します。\n土地代として{$price}μを支払います。";
+						$money = "§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n";
+					}else{
+						$c = "土地購入をし§c政府を所有者として§f登録します。";
+						$money = "";
+					}
 					$data = [
 						'type'    => "modal",
 						'title'   => "メニュー > GPS (座標情報) > 土地購入 確認",
 						'content' => "§f{$c}\n".
-									"土地代として{$price}μを支払います。\n".
 									"\n".
 									"§f購入土地住所: §7{$address}\n".
-									"§f所持金: §7{$havemeu}μ => {$leftmeu}μ\n".
+									"{$money}".
 									"\n".
 									"よろしいですか？",
 						'button1' => "はい",
@@ -275,7 +290,7 @@ class MenuForm extends FormBase {
 				$sections = $playerData->getAllSection();
 				$title = "メニュー > セクション権限設定 > 土地権限";
 				if(!$sections){
-					$this->sendErrorModal($title, "あなたの土地がありません");
+					$this->sendErrorModal($title, "あなたの土地がありません", 1);
 				}else{
 					$buttons = [];
 					foreach($sections as $index => $d){
