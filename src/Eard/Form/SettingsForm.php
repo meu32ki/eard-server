@@ -30,6 +30,11 @@ class SettingsForm implements Form {
 			'text' => "PVP (onにするとほかのプレイヤーがあなたを殴れます)",
 			'default' => (bool) $playerData->getAttackSetting(),
 		];
+		$content[] = [
+			'type' => "toggle",
+			'text' => "戦闘時発生ダメージ表示",
+			'default' => (bool) $playerData->getShowDamageSetting(),
+		];
 
 		// おおもとのデータ
 		$data = [
@@ -57,6 +62,7 @@ class SettingsForm implements Form {
 		$data = json_decode($data, true);
 
 		$playerData->setAttackSetting($data[0]);
+		$playerData->setShowDamageSetting($data[1]);
 		return true;
 	}
 }

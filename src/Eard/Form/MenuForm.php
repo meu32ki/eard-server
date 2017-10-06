@@ -60,6 +60,20 @@ class MenuForm extends FormBase {
 			break;
 			case 2:
 				// アイテムボックス
+				if(Connection::getPlace()->isResourceArea()){
+					$player = $playerData->getPlayer();
+					$x = round($player->x);
+					$z = round($player->z);
+					$biomeId = Server::getInstance()->getDefaultLevel()->getBiomeId($x, $z);
+					if($biomeId !== Biome::PLAINS){
+						$this->sendErrorModal("メニュー > アイテムボックス","エーテル波が不安定なため、その場所からはアイテムボックスにアクセスできません。平原バイオーム(転送されてきた場所)に戻ってください。", 1);
+						return false;
+					}
+					if(round($player->y < 50)){
+						$this->sendErrorModal("メニュー > アイテムボックス","電波状況が不安定なため、その場所からはアイテムボックスにアクセスできません。地上に戻ってください。", 1);
+						return false;
+					}
+				}
 				$this->close();
 				$itembox = $playerData->getItemBox();
 				$playerData->getPlayer()->addWindow($itembox);
@@ -85,7 +99,7 @@ class MenuForm extends FormBase {
 				$data = [
 					'type'    => "form",
 					'title'   => "メニュー > ステータス確認",
-					'content' => "§f所持金: §7{$meu} §f在住ライセンス: §7{$ltext}\n".
+					'content' => "§f所持金: §7{$meu} §f生活ライセンス: §7{$ltext}\n".
 								"§fプレイ時間: §7{$time} {$day}日目 §f住所: §7{$address}\n",
 					'buttons' => $buttons
 				];

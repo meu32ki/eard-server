@@ -140,7 +140,7 @@ class FormBase implements Form {
 		$this->cache = [$b1jump, $b2jump ? $b2jump : $b1jump];
 
 		$this->lastSendData = $data;
-		$this->Show($this->playerData, 1000, $data);
+		$this->show(1000, $data);
 	}
 
 	/**
@@ -203,7 +203,6 @@ class FormBase implements Form {
 			break;
 			case 'custom_form':
 				$this->lastMode = self::TYPE_CUSTOM_FORM;
-				echo $data."\n";
 				$this->lastData = json_decode($data, true);
 				$this->Send($this->cache[0]);
 			break;

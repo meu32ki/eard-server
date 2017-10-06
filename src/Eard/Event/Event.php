@@ -218,7 +218,7 @@ class Event implements Listener{
 				}
 			break;
 			case ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET:
-				echo "ghuee";
+				// echo "ghuee";
 				new SettingsForm(Account::get($player));
 			break;
 		}
