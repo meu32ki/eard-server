@@ -69,7 +69,7 @@ class MenuForm extends FormBase {
 						$this->sendErrorModal("メニュー > アイテムボックス","エーテル波が不安定なため、その場所からはアイテムボックスにアクセスできません。平原バイオーム(転送されてきた場所)に戻ってください。", 1);
 						return false;
 					}
-					if(round($player->y < 63)){
+					if(round($player->y < 50)){
 						$this->sendErrorModal("メニュー > アイテムボックス","電波状況が不安定なため、その場所からはアイテムボックスにアクセスできません。地上に戻ってください。", 1);
 						return false;
 					}
