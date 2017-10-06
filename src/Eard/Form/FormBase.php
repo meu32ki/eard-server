@@ -140,7 +140,7 @@ class FormBase implements Form {
 		$this->cache = [$b1jump, $b2jump ? $b2jump : $b1jump];
 
 		$this->lastSendData = $data;
-		$this->Show($this->playerData, 1000, $data);
+		$this->show(1000, $data);
 	}
 
 	/**
