@@ -58,8 +58,8 @@ class Recipe {
 				0 => true
 				],
 			24 => [
-				0 => true,
-			],
+				0 => true
+				],
 			50 => [],
 			53 => [],
 			58 => [],
@@ -76,6 +76,45 @@ class Recipe {
 			281 => [],
 			282 => [],
 			290 => [],
+			373 => [
+				36 => true,
+				35 => true,
+				34 => true,
+				33 => true,
+				32 => true,
+				31 => true,
+				30 => true,
+				29 => true,
+				28 => true,
+				27 => true,
+				26 => true,
+				25 => true,
+				24 => true,
+				23 => true,
+				22 => true,
+				21 => true,
+				20 => true,
+				19 => true,
+				18 => true,
+				17 => true,
+				16 => true,
+				15 => true,
+				14 => true,
+				13 => true,
+				12 => true,
+				11 => true,
+				10 => true,
+				9 => true,
+				8 => true,
+				7 => true,
+				6 => true,
+				5 => true,
+				4 => true,
+				3 => true,
+				2 => true,
+				1 => true
+				],
+			
 		];
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
