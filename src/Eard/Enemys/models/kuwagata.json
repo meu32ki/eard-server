@@ -1,3 +1,4 @@
+{
   "geometry.MagicTheGathering.NicolBolas": {
     "bones": [
       {
@@ -1548,3 +1549,4 @@
     "META_ModelVersion": "1.0.6",
     "rigtype": "slim"
   }
+}

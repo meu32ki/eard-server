@@ -1,8 +1,9 @@
 {
+"skin.JourneyToTheWest.sha_wujing": {
     "bones": [
-        {   "name": "body",
+        {	"name": "body",
             "cubes": [
-                {   "origin": [-4,12,-2],
+                {	"origin": [-4,12,-2],
                     "uv": [16,16],
                     "size": [8,12,4]
                 }
@@ -13,9 +14,9 @@
                 0
             ]
         },
-        {   "name": "head",
+        {	"name": "head",
             "cubes": [
-                {   "origin": [-4,24,-4],
+                {	"origin": [-4,24,-4],
                     "uv": [0,0],
                     "size": [8,8,8]
                 }
@@ -27,9 +28,9 @@
             ],
             "parent": "body"
         },
-        {   "name": "hat",
+        {	"name": "hat",
             "cubes": [
-                {   "origin": [-4,24,-4],
+                {	"origin": [-4,24,-4],
                     "inflate": 0.5,
                     "uv": [32,0],
                     "size": [8,8,8]
@@ -42,13 +43,13 @@
             ],
             "parent": "head"
         },
-        {   "name": "helmet",
+        {	"name": "helmet",
             "cubes": [
-                {   "origin": [-4,32,-4],
+                {	"origin": [-4,32,-4],
                     "uv": [24,4],
                     "size": [4,3,1]
                 },
-                {   "origin": [0,32,-4],
+                {	"origin": [0,32,-4],
                     "uv": [24,0],
                     "size": [4,3,1]
                 }
@@ -60,9 +61,9 @@
             ],
             "parent": "head"
         },
-        {   "name": "jacket",
+        {	"name": "jacket",
             "cubes": [
-                {   "origin": [-4,12,-2],
+                {	"origin": [-4,12,-2],
                     "inflate": 0.25,
                     "uv": [16,32],
                     "size": [8,12,4]
@@ -75,9 +76,9 @@
             ],
             "parent": "body"
         },
-        {   "name": "rightArm",
+        {	"name": "rightArm",
             "cubes": [
-                {   "origin": [-8,12,-2],
+                {	"origin": [-8,12,-2],
                     "uv": [40,16],
                     "size": [4,12,4]
                 }
@@ -89,9 +90,9 @@
             ],
             "parent": "body"
         },
-        {   "name": "rightSleeve",
+        {	"name": "rightSleeve",
             "cubes": [
-                {   "origin": [-8,12,-2],
+                {	"origin": [-8,12,-2],
                     "inflate": 0.25,
                     "uv": [40,32],
                     "size": [4,12,4]
@@ -104,9 +105,9 @@
             ],
             "parent": "rightArm"
         },
-        {   "name": "leftArm",
+        {	"name": "leftArm",
             "cubes": [
-                {   "origin": [4,12,-2],
+                {	"origin": [4,12,-2],
                     "uv": [40,16],
                     "size": [4,12,4]
                 }
@@ -119,9 +120,9 @@
             "mirror": true,
             "parent": "body"
         },
-        {   "name": "leftSleeve",
+        {	"name": "leftSleeve",
             "cubes": [
-                {   "origin": [4,12,-2],
+                {	"origin": [4,12,-2],
                     "inflate": 0.25,
                     "uv": [40,32],
                     "size": [4,12,4]
@@ -135,21 +136,21 @@
             "mirror": true,
             "parent": "leftArm"
         },
-        {   "name": "bodyArmor",
+        {	"name": "bodyArmor",
             "cubes": [
-                {   "origin": [-4,15,2],
+                {	"origin": [-4,15,2],
                     "uv": [0,50],
                     "size": [8,8,6]
                 },
-                {   "origin": [-8,26,8],
+                {	"origin": [-8,26,8],
                     "uv": [48,50],
                     "size": [7,7,1]
                 },
-                {   "origin": [-8,7,8],
+                {	"origin": [-8,7,8],
                     "uv": [48,58],
                     "size": [7,5,1]
                 },
-                {   "origin": [-5,12,8],
+                {	"origin": [-5,12,8],
                     "uv": [60,35],
                     "size": [1,14,1]
                 }
@@ -161,9 +162,9 @@
             ],
             "parent": "body"
         },
-        {   "name": "rightLeg",
+        {	"name": "rightLeg",
             "cubes": [
-                {   "origin": [-4,0,-2],
+                {	"origin": [-4,0,-2],
                     "uv": [0,16],
                     "size": [4,12,4]
                 }
@@ -174,9 +175,9 @@
                 0
             ]
         },
-        {   "name": "rightPants",
+        {	"name": "rightPants",
             "cubes": [
-                {   "origin": [-4,0,-2],
+                {	"origin": [-4,0,-2],
                     "inflate": 0.25,
                     "uv": [0,32],
                     "size": [4,12,4]
@@ -189,9 +190,9 @@
             ],
             "parent": "rightLeg"
         },
-        {   "name": "leftLeg",
+        {	"name": "leftLeg",
             "cubes": [
-                {   "origin": [0,0,-2],
+                {	"origin": [0,0,-2],
                     "uv": [0,16],
                     "size": [4,12,4]
                 }
@@ -203,9 +204,9 @@
             ],
             "mirror": true
         },
-        {   "name": "leftPants",
+        {	"name": "leftPants",
             "cubes": [
-                {   "origin": [0,0,-2],
+                {	"origin": [0,0,-2],
                     "inflate": 0.25,
                     "uv": [0,32],
                     "size": [4,12,4]
@@ -221,4 +222,5 @@
         }
     ],
     "rigtype": "male"
+}
 }
