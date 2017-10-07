@@ -110,6 +110,7 @@ class Event implements Listener{
 		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
 		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 		Account::get($player)->applyEffect();
+		var_dump($player->getSkin()->getGeometryName());
 	}
 
 

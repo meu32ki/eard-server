@@ -183,6 +183,9 @@ class Crosser extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
+				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
+				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Crosser')),
 				new StringTag("Name", 'MagicTheGathering_MagicTheGatheringNicolBolas')
 			]),

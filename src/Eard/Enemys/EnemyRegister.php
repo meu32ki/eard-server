@@ -89,4 +89,14 @@ class EnemyRegister{
 		$decode_skin = urldecode($skinData);
 		return $decode_skin;
 	}
+
+	public static function loadModelData($modelName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/models/'.$modelName.'.json';
+		$modelData = file_get_contents($fullPath);
+		/*$decode_model = json_decode($modelData);
+		return $decode_model;*/
+		return $modelData;
+	}
 }
