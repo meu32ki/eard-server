@@ -16,6 +16,7 @@ use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
+use Eard\Event\BlockObject\BlockMenu;
 
 
 /****
