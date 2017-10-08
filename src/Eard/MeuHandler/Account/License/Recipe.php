@@ -58,8 +58,8 @@ class Recipe {
 				0 => true
 				],
 			24 => [
-				0 => true,
-			],
+				0 => true
+				],
 			50 => [],
 			53 => [],
 			58 => [],
@@ -76,6 +76,44 @@ class Recipe {
 			281 => [],
 			282 => [],
 			290 => [],
+			373 => [
+				36 => true,
+				35 => true,
+				34 => true,
+				33 => true,
+				32 => true,
+				31 => true,
+				30 => true,
+				29 => true,
+				28 => true,
+				27 => true,
+				26 => true,
+				25 => true,
+				24 => true,
+				23 => true,
+				22 => true,
+				21 => true,
+				20 => true,
+				19 => true,
+				18 => true,
+				17 => true,
+				16 => true,
+				15 => true,
+				14 => true,
+				13 => true,
+				12 => true,
+				11 => true,
+				10 => true,
+				9 => true,
+				8 => true,
+				7 => true,
+				6 => true,
+				5 => true,
+				4 => true,
+				3 => true,
+				2 => true,
+				1 => true
+				],			
 		];
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
@@ -90,7 +128,7 @@ class Recipe {
 					396 => [],
 					400 => [],
 					413 => [],
-					459 => [],					
+					459 => [],													
 				];
 			break;
 		}
@@ -98,7 +136,7 @@ class Recipe {
 			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER): // 危険物取扱
 				$recipe += [
 					46 => [],
-					259 => [],
+					259 => [],					
 				];
 			break;
 		}
@@ -112,7 +150,7 @@ class Recipe {
 					306 => [],
 					307 => [],
 					308 => [],
-					309 => [],					
+					309 => [],
 				];
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER, 2): // 服飾2
 				$recipe += [
@@ -123,7 +161,7 @@ class Recipe {
 					314 => [],
 					315 => [],
 					316 => [],
-					317 => [],					
+					317 => [],																
 				];
 			break;
 
@@ -135,9 +173,6 @@ class Recipe {
 						6 => true,
 						4 => true,
 						2 => true
-						],
-					35 => [
-						1 => true
 						],
 					43 => [
 						3 => true,
@@ -191,11 +226,12 @@ class Recipe {
 						0 => true
 						],
 					427 => [],
-					428 => [],																	
+					428 => [],																						
 				];
 			case $playerData->hasValidLicense(License::PROCESSOR, 2): // 加工2
 				$recipe += [
 					5 => [
+						6 => true,
 						5 => true,
 						4 => true,
 						3 => true
@@ -236,7 +272,6 @@ class Recipe {
 						4 => true,
 						3 => true
 						],
-					160 => [],
 					163 => [],
 					164 => [],
 					167 => [],
@@ -266,7 +301,7 @@ class Recipe {
 					380 => [],
 					429 => [],
 					430 => [],
-					431 => [],
+					431 => [],													
 				];
 			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
 				$recipe += [
@@ -314,7 +349,7 @@ class Recipe {
 					285 => [],
 					286 => [],
 					293 => [],
-					294 => [],					
+					294 => [],								
 				];
 			break;
 		}
@@ -357,7 +392,7 @@ class Recipe {
 						1 => true,
 						0 => true
 						],
-					171 => [
+					160 => [
 						15 => true,
 						14 => true,
 						13 => true,
@@ -375,7 +410,7 @@ class Recipe {
 						1 => true,
 						0 => true
 						],
-					236 => [
+					171 => [
 						15 => true,
 						14 => true,
 						13 => true,
@@ -410,7 +445,25 @@ class Recipe {
 						2 => true,
 						1 => true,
 						0 => true
-						],					
+						],
+					241 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
+						6 => true,
+						5 => true,
+						4 => true,
+						3 => true,
+						2 => true,
+						1 => true,
+						0 => true
+						],													
 				];
 			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
 				$recipe += [
@@ -427,6 +480,7 @@ class Recipe {
 						],
 					156 => [],
 					208 => [],
+					213 => [],
 					355 => [
 						15 => true,
 						14 => true,
