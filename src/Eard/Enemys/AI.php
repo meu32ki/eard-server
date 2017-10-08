@@ -5,6 +5,8 @@ namespace Eard\Enemys;
 use pocketmine\Player;
 use pocketmine\Server;
 
+use pocketmine\scheduler\Task;
+
 use pocketmine\block\Liquid;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
@@ -36,6 +38,8 @@ use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\particle\DustParticle;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\FlameParticle;
+use pocketmine\level\particle\HappyVillagerParticle;
+use pocketmine\level\particle\FloatingTextParticle;
 use pocketmine\level\sound\LaunchSound;
 use pocketmine\level\sound\ExplodeSound;
 use pocketmine\level\sound\EndermanTeleportSound;
@@ -143,6 +147,28 @@ abstract class AI{
 
 		$enemy->yaw = $yaw;
 		$enemy->pitch = $pitch;
+	}
+
+	public static function getLookYaw(Entity $from, Vector3 $to){
+		$x1 = $from->x;
+		$y1 = $from->y;
+		$z1 = $from->z;
+		$x2 = $to->x;
+		$y2 = $to->y;
+		$z2 = $to->z;
+
+		if(-$z2+$z1 == 0){
+			return false;
+		}
+
+		$yaw = atan(($x2-$x1)/(-$z2+$z1))*180/M_PI;
+
+		if((-$z2+$z1)/abs(-$z2+$z1) == 1){
+
+			$yaw = $yaw+180;
+		}
+
+		return $yaw;
 	}
 
 	/**
@@ -264,7 +290,7 @@ abstract class AI{
 	}
 
 	//範囲攻撃
-	public static function rangeAttack($enemy, $range, $power, $target = null){
+	public static function rangeAttack($enemy, $range, $power, $target = null, $callFunc = null){
 		if($target === null){
 			$target = Server::getInstance()->getOnlinePlayers();
 		}
@@ -274,6 +300,12 @@ abstract class AI{
 			}
 			$disq = $enemy->distanceSquared($player);
 			if($disq <= pow($range, 2)){
+				if($callFunc !== null){
+					$result = $callFunc($enemy, $player);
+					if(!$result){
+						continue;
+					}
+				}
 				$ev = new EntityDamageByEntityEvent($enemy, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($power), 0);
 				$player->attack($ev);
 			}
@@ -358,4 +390,66 @@ abstract class AI{
 		return new Vector3($sx, $sy, $sz);
 	}
 
+	public static function addGuideParticle(Player $from, Vector3 $to){
+		$level = $from->getLevel();
+		$fromPos = $from->getPosition()->add(0, 0.5, 0);
+		$particle = new FlameParticle($fromPos);
+		$yaw = self::getLookYaw($from, $to);
+		$xx = -sin($yaw/180*M_PI)*0.5;
+		$zz =  cos($yaw/180*M_PI)*0.5;
+		for($r = -2; $r <= 5; $r += 0.5){
+			$p = clone $particle;
+			$p->x += $xx*$r;
+			$p->z += $zz*$r;
+			$level->addParticle($p, [$from]);
+		}
+		$m_xx = -sin(($yaw+140)/180*M_PI)*0.5;
+		$m_zz =  cos(($yaw+140)/180*M_PI)*0.5;
+		$p_xx = -sin(($yaw-140)/180*M_PI)*0.5;
+		$p_zz =  cos(($yaw-140)/180*M_PI)*0.5;
+		for($c = 0.5; $c <= 2.5; $c += 0.5){
+			$p = clone $particle;
+			$p->x += $xx*$r;
+			$p->z += $zz*$r;
+			$p1 = clone $p;
+			$p1->x += $m_xx*$c;
+			$p1->z += $m_zz*$c;
+			$p2 = clone $p;
+			$p2->x += $p_xx*$c;
+			$p2->z += $p_zz*$c;
+			$level->addParticle($p1, [$from]);
+			$level->addParticle($p2, [$from]);
+		}
+	}
+
+	public static function sendDamageText(Player $player, Vector3 $pos, $damage){
+		$damage *= -1;
+		if($damage == 0){
+			$color = "§f";
+		}else if($damage < 0){
+			$color = "§c";
+		}else{
+			$color = "§a+";
+		}
+		$particle = new FloatingTextParticle(
+			$pos->add(mt_rand(-100, 100)/100, mt_rand(20, 100)/100, mt_rand(-100, 100)/100),
+			"",
+			$color.$damage
+		);
+		$player->getLevel()->addParticle($particle, [$player]);
+		$task = new DeleteText($particle, $player);
+		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 20);
+	}
+}
+
+class DeleteText extends Task{
+	public function __construct($particle, $player){
+		$this->particle = $particle;
+		$this->player = $player;
+	}
+
+	public function onRun($tick){
+		$this->particle->setInvisible();
+		$this->player->getLevel()->addParticle($this->particle, [$this->player]);
+	}
 }

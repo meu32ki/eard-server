@@ -193,6 +193,9 @@ class Layzer extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
+				new StringTag("geometryData", EnemyRegister::loadModelData('Layzer')),
+				new StringTag("geometryName", 'geometry.Fallout.Fallout3BrotherhoodofSteelPaladin'),
+				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Layzer')),
 				new StringTag("Name", 'Fallout_FalloutFallout3BrotherhoodofSteelPaladin')
 			]),

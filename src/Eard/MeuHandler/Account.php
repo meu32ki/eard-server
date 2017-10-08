@@ -75,15 +75,16 @@ class Account implements MeuHandler {
 	/**
 	*	名前から、上記のオブジェクトを取得する。
 	*	@param String | name
+	*  @param bool | isfromweb 
 	*	@return Account or null
 	*/
-	public static function getByName($name){
+	public static function getByName($name,$isfromweb = false){
 		$name = strtolower($name);
 		if($name){
 			if(!isset(self::$accounts[$name])){
 				// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
 				$account = new Account();
-				$account->loadData();
+				if(!$isfromweb) $account->loadData();
 				self::$accounts[$name] = $account;
 				return $account;
 			}
@@ -148,9 +149,21 @@ class Account implements MeuHandler {
 	public function applyEffect(){
 		$player = $this->getPlayer();
 		$player->removeEffect(Effect::HASTE);
+		$player->removeEffect(Effect::DAMAGE_RESISTANCE);
+		$player->setMaxHealth(20);
 		switch (true) {
 			case $this->hasValidLicense(License::MINER, 2):
 				$player->addEffect(Effect::getEffect(Effect::HASTE)->setAmplifier(1)->setDuration(INT32_MAX-1));
+			break;
+			case $this->hasValidLicense(License::HUNTER, 3):
+				$player->addEffect(Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(1)->setDuration(INT32_MAX-1));
+			case $this->hasValidLicense(License::HUNTER, 2):
+				$player->setMaxHealth(40);
+				$player->setHealth(40);
+			break;
+			case $this->hasValidLicense(License::HUNTER, 1):
+				$player->setMaxHealth(30);
+				$player->setHealth(30);
 			break;
 		}
 	}
@@ -720,13 +733,17 @@ class Account implements MeuHandler {
 	*	@param bool webからならtrue
 	*	@return bool でーたがあったかどうか
 	*/
-	public function loadData($isfromweb = false){
+	public function loadData($name="",$isfromweb = false){
 		if($this->player instanceof Player){
 			$name = strtolower($this->player->getName());
 			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
 		}elseif(isset($this->data[0])){
 			$no = $this->data[0];
 			$sql = "SELECT * FROM data WHERE `no` = '{$no}';";
+		}else{
+			$name = strtolower($name);
+			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
+			echo $sql;
 		}
 		
 		$db = DB::get();

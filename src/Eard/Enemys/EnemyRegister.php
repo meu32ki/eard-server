@@ -89,4 +89,24 @@ class EnemyRegister{
 		$decode_skin = urldecode($skinData);
 		return $decode_skin;
 	}
+
+	public static function loadModelData($modelName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/models/'.$modelName.'.json';
+		$modelData = file_get_contents($fullPath);
+		/*$decode_model = json_decode($modelData);
+		return $decode_model;*/
+		return $modelData;
+	}
+
+	//スキンのバイナリデータを再エンコードしてテキストに出力
+	public static function reEncode($skinName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/skins/'.$skinName.'.txt';
+		$data = hex2bin(file_get_contents($fullPath));
+		$encode_skin = urlencode($data);
+		file_put_contents($fullPath, $encode_skin);
+	}
 }

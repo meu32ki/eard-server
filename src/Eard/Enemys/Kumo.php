@@ -197,6 +197,9 @@ class Kumo extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
+				new StringTag("geometryData", EnemyRegister::loadModelData('Kumo')),
+				new StringTag("geometryName", 'skin.JourneyToTheWest.spider_demon'),
+				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Kumo')),
 				new StringTag("Name", 'JTTW_JTTWSpiderDemon')
 			]),

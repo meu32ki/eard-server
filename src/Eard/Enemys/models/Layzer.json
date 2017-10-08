@@ -1,0 +1,647 @@
+{
+    "geometry.Fallout.Fallout3BrotherhoodofSteelPaladin": {
+    "bones": [
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -5.0,
+              19.0,
+              -2.0
+            ],
+            "size": [
+              1.0,
+              6.0,
+              4.0
+            ],
+            "uv": [
+              48.0,
+              41.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          },
+          {
+            "origin": [
+              -4.0,
+              12.0,
+              -2.0
+            ],
+            "size": [
+              8.0,
+              13.0,
+              4.0
+            ],
+            "uv": [
+              16.0,
+              16.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          },
+          {
+            "origin": [
+              4.0,
+              19.0,
+              -2.0
+            ],
+            "size": [
+              1.0,
+              6.0,
+              4.0
+            ],
+            "uv": [
+              48.0,
+              41.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "body",
+        "parent": null
+      },
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -4.0,
+              25.0,
+              -4.0
+            ],
+            "size": [
+              8.0,
+              8.0,
+              8.0
+            ],
+            "uv": [
+              0.0,
+              0.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "head",
+        "parent": null
+      },
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -4.0,
+              25.0,
+              -4.0
+            ],
+            "size": [
+              8.0,
+              8.0,
+              8.0
+            ],
+            "uv": [
+              32.0,
+              0.0
+            ],
+            "inflate": 0.5,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "clothing",
+        "name": "hat",
+        "parent": "head"
+      },
+      {
+        "pivot": [
+          5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              4.9,
+              12.0,
+              -2.0
+            ],
+            "size": [
+              4.0,
+              13.0,
+              4.0
+            ],
+            "uv": [
+              40.0,
+              16.0
+            ],
+            "inflate": 0.0,
+            "mirror": true
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "leftArm",
+        "parent": null
+      },
+      {
+        "pivot": [
+          -5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -8.9,
+              12.0,
+              -2.0
+            ],
+            "size": [
+              4.0,
+              13.0,
+              4.0
+            ],
+            "uv": [
+              40.0,
+              16.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "rightArm",
+        "parent": null
+      },
+      {
+        "pivot": [
+          5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "clothing",
+        "name": "leftSleeve",
+        "parent": "leftArm"
+      },
+      {
+        "pivot": [
+          -5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "clothing",
+        "name": "rightSleeve",
+        "parent": "rightArm"
+      },
+      {
+        "pivot": [
+          1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -0.1,
+              0.0,
+              -2.0
+            ],
+            "size": [
+              4.0,
+              12.0,
+              4.0
+            ],
+            "uv": [
+              0.0,
+              16.0
+            ],
+            "inflate": 0.0,
+            "mirror": true
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "leftLeg",
+        "parent": null
+      },
+      {
+        "pivot": [
+          -1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -3.9,
+              0.0,
+              -2.0
+            ],
+            "size": [
+              4.0,
+              12.0,
+              4.0
+            ],
+            "uv": [
+              0.0,
+              16.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "base",
+        "name": "rightLeg",
+        "parent": null
+      },
+      {
+        "pivot": [
+          1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "clothing",
+        "name": "leftPants",
+        "parent": "leftLeg"
+      },
+      {
+        "pivot": [
+          -1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "clothing",
+        "name": "rightPants",
+        "parent": "rightLeg"
+      },
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "clothing",
+        "name": "jacket",
+        "parent": "body"
+      },
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              2.0,
+              32.0,
+              -5.0
+            ],
+            "size": [
+              2.0,
+              2.0,
+              1.0
+            ],
+            "uv": [
+              0.0,
+              2.0
+            ],
+            "inflate": 0.0,
+            "mirror": true
+          },
+          {
+            "origin": [
+              -6.0,
+              28.0,
+              -2.0
+            ],
+            "size": [
+              2.0,
+              2.0,
+              4.0
+            ],
+            "uv": [
+              24.0,
+              0.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "helmet",
+        "parent": "head"
+      },
+      {
+        "pivot": [
+          0.0,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "armor_offset",
+        "name": "waist",
+        "parent": "body"
+      },
+      {
+        "pivot": [
+          -6.0,
+          15.0,
+          1.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "item",
+        "name": "rightItem",
+        "parent": "rightArm"
+      },
+      {
+        "pivot": [
+          6.0,
+          15.0,
+          1.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [],
+        "META_BoneType": "item",
+        "name": "leftItem",
+        "parent": "leftArm"
+      },
+      {
+        "pivot": [
+          0.0,
+          25.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -4.0,
+              20.0,
+              -3.0
+            ],
+            "size": [
+              8.0,
+              5.0,
+              1.0
+            ],
+            "uv": [
+              10.0,
+              41.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "bodyArmor",
+        "parent": "body"
+      },
+      {
+        "pivot": [
+          -5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -10.0,
+              24.0,
+              -3.0
+            ],
+            "size": [
+              6.0,
+              2.0,
+              6.0
+            ],
+            "uv": [
+              17.0,
+              33.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "rightArmArmor",
+        "parent": "rightArm"
+      },
+      {
+        "pivot": [
+          1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              3.9,
+              0.0,
+              -2.0
+            ],
+            "size": [
+              1.0,
+              14.0,
+              4.0
+            ],
+            "uv": [
+              0.0,
+              32.0
+            ],
+            "inflate": 0.0,
+            "mirror": true
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "leftLegging",
+        "parent": "leftLeg"
+      },
+      {
+        "pivot": [
+          -1.9,
+          12.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              -4.9,
+              0.0,
+              -2.0
+            ],
+            "size": [
+              1.0,
+              14.0,
+              4.0
+            ],
+            "uv": [
+              0.0,
+              32.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "rightLegging",
+        "parent": "rightLeg"
+      },
+      {
+        "pivot": [
+          5.0,
+          23.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "cubes": [
+          {
+            "origin": [
+              4.0,
+              24.0,
+              -3.0
+            ],
+            "size": [
+              6.0,
+              2.0,
+              6.0
+            ],
+            "uv": [
+              40.0,
+              33.0
+            ],
+            "inflate": 0.0,
+            "mirror": false
+          }
+        ],
+        "META_BoneType": "armor",
+        "name": "leftArmArmor",
+        "parent": "leftArm"
+      }
+    ],
+    "texturewidth": 64,
+    "textureheight": 64,
+    "META_ModelVersion": "1.0.6",
+    "rigtype": "normal"
+  }
+}

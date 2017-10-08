@@ -41,6 +41,9 @@ class NPC extends Human implements ChatInput {
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
+				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
+				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("capeData", ''),
 				new StringTag("Data", $skinData),
 				new StringTag("Name", $skinId)
 			]),

@@ -5,8 +5,12 @@ namespace Eard\Event\BlockObject;
 # TextParticle
 use pocketmine\entity\Item as ItemEntity;
 use pocketmine\entity\Entity;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\math\Vector3;
+use pocketmine\utils\UUID;
 
 # Eard
 use Eard\Account;
@@ -98,17 +102,13 @@ trait BlockMenu {
 ********************/
 
 	private function getAddPacket($text){
-		$pk = new AddEntityPacket();
+		$pk = new AddPlayerPacket();
 		$pk->entityRuntimeId = 900000 + $this->getObjIndexNo();
-		$pk->type = ItemEntity::NETWORK_ID;
-		$pk->x = $this->x + 0.5;
-		$pk->y = $this->y + 1.5;
-		$pk->z = $this->z + 0.5;
-		$pk->speedX = 0;
-		$pk->speedY = 0;
-		$pk->speedZ = 0;
-		$pk->yaw = 0;
-		$pk->pitch = 0;
+		$pk->uuid = UUID::fromRandom();
+		$pk->username = "";
+		$pk->position = new Vector3($this->x + 0.5,$this->y + 1.5,$this->z + 0.5);
+		$pk->item = ItemFactory::get(Item::AIR, 0, 0);
+
 		$flags = (
 			(1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG) |
 			(1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG) |
@@ -117,13 +117,14 @@ trait BlockMenu {
 		$pk->metadata = [
 			Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
 			Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $text],
+			Entity::DATA_SCALE =>   [Entity::DATA_TYPE_FLOAT,  0.01] //zero causes problems on debug builds
 		];
 		return $pk;
 	}
 
 	public function getRemovePacket(){
 		$pk = new RemoveEntityPacket;
-		$pk->eid = 900000 + $this->getObjIndexNo();
+		$pk->entityUniqueId = 900000 + $this->getObjIndexNo();
 		return $pk;
 	}
 

@@ -305,7 +305,7 @@ class Event implements Listener{
 			$itemId = $e->getItem()->getId();
 			switch($blockId){
 				case 58: // クラフティングテーブル
-					$e->setCancelled(false);
+					//$e->setCancelled(false);
 				break;
 				case 60: // こうち
 					switch($itemId){
@@ -315,11 +315,29 @@ class Event implements Listener{
 						case 458: // ビートルート
 						case 392: // じゃがいも
 						case 391: // にんじん
-							if(!$playerData->hasValidLicense(License::FARMER)){
+							if(AreaProtector::Edit($player, $x, $y, $z)){
+								$e->setCancelled(true);
+							}else if(!$playerData->hasValidLicense(License::FARMER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
 							}
 						break;
+					}
+				break;
+				case 2:
+					if($e->getItem()->isShovel() && !AreaProtector::Edit($player, $x, $y, $z)){
+						$e->setCancelled(true);
+						break;
+					}
+				case 3:
+				case 198:
+					if($e->getItem()->isHoe()){
+						if(!AreaProtector::Edit($player, $x, $y, $z)){
+							$e->setCancelled(true);
+						}else if(!$playerData->hasValidLicense(License::FARMER)){
+							$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+							$e->setCancelled(true);
+						}
 					}
 				break;
 				case 88: //ソウルサンド
@@ -371,6 +389,9 @@ class Event implements Listener{
 				default:
 					// 手持ちアイテム
 					switch($itemId){
+						case 280:
+							//AI::addGuideParticle($player, $player->getSpawn()); //この関数を使うと矢印が出る
+						break;
 						case 259: // うちがね
 							if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
@@ -403,7 +424,7 @@ class Event implements Listener{
 		*/
 		if(Connection::getPlace()->isLivingArea()){
 			if(AreaProtector::Edit($player, $x, $y, $z)){
-				$r = BlockObjectManager::place($block, $player);
+				$r = BlockObjectManager::Place($block, $player);
 				$e->setCancelled( $r );
 			}else{
 				$e->setCancelled(true);
@@ -417,7 +438,7 @@ class Event implements Listener{
 			if( !AreaProtector::canPlaceInResource($itemId) && $player->isSurvival()){
 				$e->setCancelled(true);
 			}else{
-				$r = BlockObjectManager::place($block, $player);
+				$r = BlockObjectManager::Place($block, $player);
 				$e->setCancelled( $r );			
 			}
 		}
@@ -577,6 +598,17 @@ class Event implements Listener{
 
 			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){
 				$damager->attackTo($e);
+			}
+
+			if(!$e->isCancelled() && $damager instanceof Player && $victim instanceof Humanoid && Account::get($damager)->getShowDamageSetting()){
+				if(Account::get($damager)->hasValidLicense(License::HUNTER, 3)){
+					$e->setDamage($e->getDamage()*1.75);
+				}else if(Account::get($damager)->hasValidLicense(License::HUNTER, 2)){
+					$e->setDamage($e->getDamage()*1.5);
+				}else if(Account::get($damager)->hasValidLicense(License::HUNTER, 1)){
+					$e->setDamage($e->getDamage()*1.25);
+				}
+				AI::sendDamageText($damager, $victim, $e->getFinalDamage());
 			}
 
 			if($victim instanceof NPC && $damager instanceof Player){
