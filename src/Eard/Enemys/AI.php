@@ -5,6 +5,8 @@ namespace Eard\Enemys;
 use pocketmine\Player;
 use pocketmine\Server;
 
+use pocketmine\scheduler\Task;
+
 use pocketmine\block\Liquid;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
@@ -36,6 +38,7 @@ use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\particle\DustParticle;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\FlameParticle;
+use pocketmine\level\particle\FloatingTextParticle;
 use pocketmine\level\sound\LaunchSound;
 use pocketmine\level\sound\ExplodeSound;
 use pocketmine\level\sound\EndermanTeleportSound;
@@ -364,4 +367,34 @@ abstract class AI{
 		return new Vector3($sx, $sy, $sz);
 	}
 
+	public static function sendDamageText(Player $player, Vector3 $pos, $damage){
+		$damage *= -1;
+		if($damage === 0){
+			$color = "§f";
+		}else if($damage < 0){
+			$color = "§c";
+		}else{
+			$color = "§a+";
+		}
+		$particle = new FloatingTextParticle(
+			$pos->add(mt_rand(-100, 100)/100, mt_rand(20, 100)/100, mt_rand(-100, 100)/100),
+			"",
+			$color.$damage
+		);
+		$player->getLevel()->addParticle($particle, [$player]);
+		$task = new DeleteText($particle, $player);
+		Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 20);
+	}
+}
+
+class DeleteText extends Task{
+	public function __construct($particle, $player){
+		$this->particle = $particle;
+		$this->player = $player;
+	}
+
+	public function onRun($tick){
+		$this->particle->setInvisible();
+		$this->player->getLevel()->addParticle($this->particle, [$this->player]);
+	}
 }

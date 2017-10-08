@@ -110,7 +110,6 @@ class Event implements Listener{
 		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
 		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 		Account::get($player)->applyEffect();
-		var_dump($player->getSkin()->getGeometryName());
 	}
 
 
@@ -594,6 +593,10 @@ class Event implements Listener{
 
 			if($damager instanceof Humanoid && method_exists($damager, 'attackTo')){
 				$damager->attackTo($e);
+			}
+
+			if(!$e->isCancelled() && $damager instanceof Player && $victim instanceof Humanoid && Account::get($damager)->getShowDamageSetting()){
+				AI::sendDamageText($damager, $victim, $e->getFinalDamage());
 			}
 
 			if($victim instanceof NPC && $damager instanceof Player){
