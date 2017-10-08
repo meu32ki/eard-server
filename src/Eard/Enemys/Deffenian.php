@@ -43,7 +43,7 @@ class Deffenian extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
-		return "のなめ";
+		return "アイザー";
 	}
 
 	//エネミー識別番号を取得
