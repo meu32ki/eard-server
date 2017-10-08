@@ -194,7 +194,7 @@ class Stinger extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('batta')),
-				new StringTag("geometryName", '"skin.JourneyToTheWest.sha_wujing"'),
+				new StringTag("geometryName", 'skin.JourneyToTheWest.sha_wujing'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Stinger')),
 				new StringTag("Name", 'JTTW_JTTWShaWujing')
