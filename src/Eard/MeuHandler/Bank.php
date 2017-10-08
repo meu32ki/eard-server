@@ -162,7 +162,8 @@ class Bank {
 	public static function getData(int $n, int $amount): string{
 		switch($n){
 			case 0:
-				$data[] = strtotime( "+1 week" );
+				//$data[] = strtotime( "+1 week" );
+				$data[] = strtotime( "+1 second" );
 			break;
 			case 1:
 				$data[] = strtotime( "+1 month" );
@@ -261,7 +262,7 @@ class Bank {
 		}
 
 		//2時間いないと作れない
-	if($playerData->getTotalTime() < 60 * 60 * 2){
+	if($playerData->getTotalTime() < 60 /** 60 * 2*/){
 			return false;
 		}
 

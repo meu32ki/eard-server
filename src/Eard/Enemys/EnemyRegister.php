@@ -99,4 +99,14 @@ class EnemyRegister{
 		return $decode_model;*/
 		return $modelData;
 	}
+
+	//スキンのバイナリデータを再エンコードしてテキストに出力
+	public static function reEncode($skinName){
+		$path = __FILE__ ;
+		$dir = dirname($path);
+		$fullPath = $dir.'/skins/'.$skinName.'.txt';
+		$data = hex2bin(file_get_contents($fullPath));
+		$encode_skin = urlencode($data);
+		file_put_contents($fullPath, $encode_skin);
+	}
 }

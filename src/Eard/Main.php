@@ -74,6 +74,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		#ツイートOAuth登録
 		Twitter::init();
+
+		# (http://korado.s602.xrea.com/service/pngconverter.php)で変換したスキンデータを使うときに必要
+		//EnemyRegister::reEncode('gallacy');
 	}
 
 	public function reconnect(){

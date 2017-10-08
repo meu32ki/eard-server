@@ -198,7 +198,7 @@ class BankForm extends FormBase {
 			}else{
 				$this->sendErrorModal(
 					"銀行 > お引き出し",
-					"引き出しに失敗しました。", 1
+					"	預金に失敗しました。", 1
 				);
 			}
 			break;
