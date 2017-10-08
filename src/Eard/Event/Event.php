@@ -306,7 +306,7 @@ class Event implements Listener{
 			$itemId = $e->getItem()->getId();
 			switch($blockId){
 				case 58: // クラフティングテーブル
-					$e->setCancelled(false);
+					//$e->setCancelled(false);
 				break;
 				case 60: // こうち
 					switch($itemId){
@@ -316,11 +316,27 @@ class Event implements Listener{
 						case 458: // ビートルート
 						case 392: // じゃがいも
 						case 391: // にんじん
-							if(!$playerData->hasValidLicense(License::FARMER)){
+							if(AreaProtector::Edit($player, $x, $y, $z)){
+								$e->setCancelled(true);
+							}else if(!$playerData->hasValidLicense(License::FARMER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
 							}
 						break;
+					}
+				break;
+				case 2:
+					if($e->getItem()->isShovel() && !AreaProtector::Edit($player, $x, $y, $z)){
+						$e->setCancelled(true);
+						break;
+					}
+				case 3:
+				case 198:
+					if($e->getItem()->isHoe() && !AreaProtector::Edit($player, $x, $y, $z)){
+						$e->setCancelled(true);
+					}else if(!$playerData->hasValidLicense(License::FARMER)){
+						$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+						$e->setCancelled(true);
 					}
 				break;
 				case 88: //ソウルサンド
@@ -404,7 +420,7 @@ class Event implements Listener{
 		*/
 		if(Connection::getPlace()->isLivingArea()){
 			if(AreaProtector::Edit($player, $x, $y, $z)){
-				$r = BlockObjectManager::place($block, $player);
+				$r = BlockObjectManager::Place($block, $player);
 				$e->setCancelled( $r );
 			}else{
 				$e->setCancelled(true);
@@ -418,7 +434,7 @@ class Event implements Listener{
 			if( !AreaProtector::canPlaceInResource($itemId) && $player->isSurvival()){
 				$e->setCancelled(true);
 			}else{
-				$r = BlockObjectManager::place($block, $player);
+				$r = BlockObjectManager::Place($block, $player);
 				$e->setCancelled( $r );			
 			}
 		}

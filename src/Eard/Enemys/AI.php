@@ -264,7 +264,7 @@ abstract class AI{
 	}
 
 	//範囲攻撃
-	public static function rangeAttack($enemy, $range, $power, $target = null){
+	public static function rangeAttack($enemy, $range, $power, $target = null, $callFunc = null){
 		if($target === null){
 			$target = Server::getInstance()->getOnlinePlayers();
 		}
@@ -274,6 +274,12 @@ abstract class AI{
 			}
 			$disq = $enemy->distanceSquared($player);
 			if($disq <= pow($range, 2)){
+				if($callFunc !== null){
+					$result = $callFunc($enemy, $player);
+					if(!$result){
+						continue;
+					}
+				}
 				$ev = new EntityDamageByEntityEvent($enemy, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, round($power), 0);
 				$player->attack($ev);
 			}

@@ -37,6 +37,7 @@ use pocketmine\entity\Living;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
@@ -197,7 +198,7 @@ class Kamadouma extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('batta')),
-				new StringTag("geometryName", '"skin.JourneyToTheWest.sha_wujing"'),
+				new StringTag("geometryName", 'skin.JourneyToTheWest.sha_wujing'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Kamadouma')),
 				new StringTag("Name", 'JTTW_JTTWShaWujing')
@@ -226,6 +227,7 @@ class Kamadouma extends Humanoid implements Enemy{
 		$this->target = false;
 		$this->charge = 0;
 		$this->mode = 0;
+		$this->check = 0;
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
@@ -240,7 +242,7 @@ class Kamadouma extends Humanoid implements Enemy{
 					AI::lookAt($this, $this->target);
 				}
 				AI::setRate($this, 40);
-				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*2.5);
+				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*3.5);
 				AI::rangeAttack($this, 3.5, 7);
 				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(4)));
 				$this->charge = false;
@@ -254,7 +256,15 @@ class Kamadouma extends Humanoid implements Enemy{
 				$this->mode = false;
 			}else{
 				$radius = 6;
-				AI::rangeAttack($this, $radius, 2);
+				if($this->check%2 == 0){
+					AI::rangeAttack($this, $radius, 2, null, function($a, $v){
+						if($v->getHealth() < $v->getmaxHealth() && $v->getHealth() > 0){
+							$v->heal(new EntityRegainHealthEvent($v, 1.0, EntityRegainHealthEvent::CAUSE_MAGIC));
+						}
+						return true;
+					});
+				}
+				++$this->check;
 				$this->level->addSound(new AnvilFallSound($this));
 				$position = $this->getPosition();
 				$block = Block::get(20);
