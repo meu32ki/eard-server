@@ -20,7 +20,7 @@ class BlockObjectManager {
 	オブジェクトにたどりつくためのキーを入れておくのが $index
 
 	セーブ時 $index 書く $blocks をセーブしファイルに書き込む。
-	ロード時 $index読む $blocks　読まない 
+	ロード時 $index読む $blocks　読まない
 	blocks タップ時に、indexをissetして、あればblocksに展開してから open する
 */
 
@@ -96,7 +96,7 @@ class BlockObjectManager {
 
 			// 重要、これがないと、処理が重かった場合に死ぬ
 			$player->lastBreak = $player->lastBreak - 1.4;
-			
+
 			if(!$result){
 				$obj->Delete();
 				self::deleteObject($x, $y, $z);
@@ -122,7 +122,7 @@ class BlockObjectManager {
 	private static function getEmptyObject($objNo){
 		$obj = null;
 		switch($objNo){
-			case 1: $obj = new ItemExchanger(); break;
+			case 1: $obj = new BankFront(); break;
 			case 2: $obj = new Shop(); break;
 			case 3: $obj = new EarmazonShop(); break;
 			case 4: $obj = new FreeShop(); break;
@@ -185,7 +185,7 @@ class BlockObjectManager {
 					// self::$blocks上にうまくオブジェクトのデータの読み出しができない
 					MainLogger::getLogger()->notice("§cBlockObjectManager: index {$x},{$y},{$z} has been deleted due to save failure.");
 					self::deleteObject($x, $y, $z);
-					return null;			
+					return null;
 				}
 			}
 		}else{
