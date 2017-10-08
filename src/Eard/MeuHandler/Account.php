@@ -75,9 +75,10 @@ class Account implements MeuHandler {
 	/**
 	*	名前から、上記のオブジェクトを取得する。
 	*	@param String | name
+	*  @param bool | isfromweb 
 	*	@return Account or null
 	*/
-	public static function getByName($name,$isfromweb = "false"){
+	public static function getByName($name,$isfromweb = false){
 		$name = strtolower($name);
 		if($name){
 			if(!isset(self::$accounts[$name])){
