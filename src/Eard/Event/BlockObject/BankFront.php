@@ -10,7 +10,7 @@ use pocketmine\item\Item;
 use Eard\MeuHandler\Account;
 use Eard\Utils\ItemName;
 use Eard\Form\BankForm;
-
+use Eard\Utils\Chat;
 
 class BankFront implements BlockObject {
 
@@ -42,8 +42,8 @@ class BankFront implements BlockObject {
 	}
 
 	public function Delete(){
-		$this->backItemAll();
-		$this->removeTextParticleAll();
+		//$this->backItemAll(); ItemExchangerではないため不要 by moyasan
+		//$this->removeTextParticleAll(); TextParticleではなくForm形式のため不要 by moyasan
 	}
 
 	public function getData(){
