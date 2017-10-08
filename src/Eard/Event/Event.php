@@ -331,11 +331,13 @@ class Event implements Listener{
 					}
 				case 3:
 				case 198:
-					if($e->getItem()->isHoe() && !AreaProtector::Edit($player, $x, $y, $z)){
-						$e->setCancelled(true);
-					}else if(!$playerData->hasValidLicense(License::FARMER)){
-						$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
-						$e->setCancelled(true);
+					if($e->getItem()->isHoe()){
+						if(!AreaProtector::Edit($player, $x, $y, $z)){
+							$e->setCancelled(true);
+						}else if(!$playerData->hasValidLicense(License::FARMER)){
+							$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+							$e->setCancelled(true);
+						}
 					}
 				break;
 				case 88: //ソウルサンド
