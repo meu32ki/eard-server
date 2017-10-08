@@ -210,8 +210,8 @@ class Unagi extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
-				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("geometryData", EnemyRegister::loadModelData('Unagi')),
+				new StringTag("geometryName", 'geometry.Biome2.nether_banished'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Unagi')),
 				new StringTag("Name", 'Biome2_Biome2NetherBanished')

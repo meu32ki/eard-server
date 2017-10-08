@@ -172,6 +172,9 @@ class Deffenian extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
+				new StringTag("geometryData", EnemyRegister::loadModelData('Golem')),
+				new StringTag("geometryName", 'skin.Redstone.golem'),
+				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Deffenian')),
 				new StringTag("Name", 'Redstone_Redstone_Golem')
 			]),
