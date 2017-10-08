@@ -77,13 +77,13 @@ class Account implements MeuHandler {
 	*	@param String | name
 	*	@return Account or null
 	*/
-	public static function getByName($name){
+	public static function getByName($name,$isfromweb = "false"){
 		$name = strtolower($name);
 		if($name){
 			if(!isset(self::$accounts[$name])){
 				// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
 				$account = new Account();
-				$account->loadData();
+				if(!$isfromweb) $account->loadData();
 				self::$accounts[$name] = $account;
 				return $account;
 			}
@@ -720,13 +720,17 @@ class Account implements MeuHandler {
 	*	@param bool webからならtrue
 	*	@return bool でーたがあったかどうか
 	*/
-	public function loadData($isfromweb = false){
+	public function loadData($name="",$isfromweb = false){
 		if($this->player instanceof Player){
 			$name = strtolower($this->player->getName());
 			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
 		}elseif(isset($this->data[0])){
 			$no = $this->data[0];
 			$sql = "SELECT * FROM data WHERE `no` = '{$no}';";
+		}else{
+			$name = strtolower($name);
+			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
+			echo $sql;
 		}
 		
 		$db = DB::get();
