@@ -389,6 +389,9 @@ class Event implements Listener{
 				default:
 					// 手持ちアイテム
 					switch($itemId){
+						case 280:
+							//AI::addGuideParticle($player, $player->getSpawn()); //この関数を使うと矢印が出る
+						break;
 						case 259: // うちがね
 							if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
