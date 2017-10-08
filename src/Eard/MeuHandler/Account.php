@@ -148,9 +148,21 @@ class Account implements MeuHandler {
 	public function applyEffect(){
 		$player = $this->getPlayer();
 		$player->removeEffect(Effect::HASTE);
+		$player->removeEffect(Effect::DAMAGE_RESISTANCE);
+		$player->setMaxHealth(20);
 		switch (true) {
 			case $this->hasValidLicense(License::MINER, 2):
 				$player->addEffect(Effect::getEffect(Effect::HASTE)->setAmplifier(1)->setDuration(INT32_MAX-1));
+			break;
+			case $this->hasValidLicense(License::HUNTER, 3):
+				$player->addEffect(Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(1)->setDuration(INT32_MAX-1));
+			case $this->hasValidLicense(License::HUNTER, 2):
+				$player->setMaxHealth(40);
+				$player->setHealth(40);
+			break;
+			case $this->hasValidLicense(License::HUNTER, 1):
+				$player->setMaxHealth(30);
+				$player->setHealth(30);
 			break;
 		}
 	}

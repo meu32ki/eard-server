@@ -424,7 +424,7 @@ abstract class AI{
 
 	public static function sendDamageText(Player $player, Vector3 $pos, $damage){
 		$damage *= -1;
-		if($damage === 0){
+		if($damage == 0){
 			$color = "§f";
 		}else if($damage < 0){
 			$color = "§c";

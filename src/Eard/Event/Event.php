@@ -601,6 +601,13 @@ class Event implements Listener{
 			}
 
 			if(!$e->isCancelled() && $damager instanceof Player && $victim instanceof Humanoid && Account::get($damager)->getShowDamageSetting()){
+				if(Account::get($damager)->hasValidLicense(License::HUNTER, 3)){
+					$e->setDamage($e->getDamage()*1.75);
+				}else if(Account::get($damager)->hasValidLicense(License::HUNTER, 2)){
+					$e->setDamage($e->getDamage()*1.5);
+				}else if(Account::get($damager)->hasValidLicense(License::HUNTER, 1)){
+					$e->setDamage($e->getDamage()*1.25);
+				}
 				AI::sendDamageText($damager, $victim, $e->getFinalDamage());
 			}
 
