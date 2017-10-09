@@ -517,11 +517,27 @@ class MenuForm extends FormBase {
 
 				// くそこーど
 				$thisplace = Connection::getPlace();
-				if( Connection::getPlaceByNo(1) !== $thisplace){
-					$p = Connection::getPlaceByNo(1);
-				}
-				if( Connection::getPlaceByNo(2) !== $thisplace){
-					$p = Connection::getPlaceByNo(2);
+
+				switch ($thisplace) {
+					case Connection::getPlaceByNo(1):
+						$p = Connection::getPlaceByNo(2);
+						break;
+						
+					case Connection::getPlaceByNo(2):
+						$p = Connection::getPlaceByNo(1);
+						break;
+					
+					case Connection::getPlaceByNo(8):
+						$p = Connection::getPlaceByNo(9);
+						break;
+					
+					case Connection::getPlaceByNo(9):
+						$p = Connection::getPlaceByNo(8);
+						break;
+					
+					default:
+						# err
+						break;
 				}
 
 				$buttons = [];
