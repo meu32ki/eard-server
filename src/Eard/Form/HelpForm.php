@@ -4,9 +4,11 @@ namespace Eard\Form;
 
 # Eard
 use Eard\Enemys\AI;
+use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\MeuHandler\Account\License\License;
-
+# pmmp
+use pocketmine\item\Item;
 
 class HelpForm extends FormBase {
 
@@ -25,9 +27,10 @@ class HelpForm extends FormBase {
 						['text' => "ライセンス"],
 						['text' => "生活区域と資源区域"],
 						['text' => "携帯"],
+						['text' => "携帯を受け取る"],
 					]
 				];
-				$cache = [2,3,8,9];
+				$cache = [2,3,8,9,10];
 			break;
 			case 2:
 				$player = $playerData->getPlayer();
@@ -140,6 +143,16 @@ class HelpForm extends FormBase {
 					]
 				];
 				$cache = [1];
+			break;
+			case 10:
+				$player = $playerData->getPlayer();
+				$inventry = $player->getInventory();
+				if($inventry->contains(Item::get(Item::HORSE_ARMOR_LEATHER))){
+					$player->sendMessage(Chat::SystemToPlayer("すでに携帯を所持しています"));
+				}else{
+					$player->sendMessage(Chat::SystemToPlayer("携帯を受け取りました"));
+					$inventry->addItem(Item::get(Item::HORSE_ARMOR_LEATHER));
+				}
 			break;
 		}
 
