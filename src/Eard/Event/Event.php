@@ -303,113 +303,114 @@ class Event implements Listener{
 
 
 			$itemId = $e->getItem()->getId();
-			switch($blockId){
-				case 58: // クラフティングテーブル
-					//$e->setCancelled(false);
+
+			// 手持ちアイテム
+			switch($itemId){
+				case 280:
+					//AI::addGuideParticle($player, $player->getSpawn()); //この関数を使うと矢印が出る
 				break;
-				case 60: // こうち
-					switch($itemId){
-						case 295: // むぎのたね
-						case 361: // かぼちゃ
-						case 362: // すいか
-						case 458: // ビートルート
-						case 392: // じゃがいも
-						case 391: // にんじん
-							if(AreaProtector::Edit($player, $x, $y, $z)){
-								$e->setCancelled(true);
-							}else if(!$playerData->hasValidLicense(License::FARMER)){
-								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
-								$e->setCancelled(true);
-							}
-						break;
-					}
-				break;
-				case 2:
-					if($e->getItem()->isShovel() && !AreaProtector::Edit($player, $x, $y, $z)){
-						$e->setCancelled(true);
-						break;
-					}
-				case 3:
-				case 198:
-					if($e->getItem()->isHoe()){
-						if(!AreaProtector::Edit($player, $x, $y, $z)){
-							$e->setCancelled(true);
-						}else if(!$playerData->hasValidLicense(License::FARMER)){
-							$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
-							$e->setCancelled(true);
-						}
-					}
-				break;
-				case 88: //ソウルサンド
-					switch($itemId){
-						case 372: // ネザーウォート
-							if(!$playerData->hasValidLicense(License::FARMER)){
-								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
-								$e->setCancelled(true);
-							}
-						break;
-					}
-				break;
-				case 61: // かまど
-					if(!$playerData->hasValidLicense(License::REFINER)){
-						$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));
+				case 259: // うちがね
+					if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
+						$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
 						$e->setCancelled(true);
 					}
 				break;
-				case 130: // エンダーチェスト
-					$inv = $playerData->getItemBox();
-					$player->addWindow($inv);
-					$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
-				break;
-				case 116: // エンチャントテーブル(クエストカウンター)
-					$nq = $playerData->getNowQuest();
-					if($nq === null){
-						QuestManager::addQuestsForm($player);
-					}else{
-						if($nq->getQuestType() === Quest::TYPE_DELIVERY){
-							if($nq->checkDelivery($player)){
-								$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
-								//ここで報酬を送り付ける
-								$nq->sendReward($player);
-								if($playerData->addClearQuest($nq->getQuestId())){
-									$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
-								}
-								$playerData->resetQuest();
-							}else{
-								QuestManager::sendCanselForm($player);
-							}							
-						}else{
-							QuestManager::sendCanselForm($player);
-						}
-
-
+				case 338: // さとうきび
+					if(!$playerData->hasValidLicense(License::FARMER)){
+						$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+						$e->setCancelled(true);
 					}
-					$e->setCancelled(true); // 実際のエンチャントテーブルの効果は使わせない
+				break;
+				case 416: // うまよろい
+					new MenuForm($playerData);
 				break;
 				default:
-					// 手持ちアイテム
-					switch($itemId){
-						case 280:
-							//AI::addGuideParticle($player, $player->getSpawn()); //この関数を使うと矢印が出る
+					switch($blockId){
+						case 58: // クラフティングテーブル
+							//$e->setCancelled(false);
 						break;
-						case 259: // うちがね
-							if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
-								$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
+						case 60: // こうち
+							switch($itemId){
+								case 295: // むぎのたね
+								case 361: // かぼちゃ
+								case 362: // すいか
+								case 458: // ビートルート
+								case 392: // じゃがいも
+								case 391: // にんじん
+									if(AreaProtector::Edit($player, $x, $y, $z)){
+										$e->setCancelled(true);
+									}else if(!$playerData->hasValidLicense(License::FARMER)){
+										$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+										$e->setCancelled(true);
+									}
+								break;
+							}
+						break;
+						case 2:
+							if($e->getItem()->isShovel() && !AreaProtector::Edit($player, $x, $y, $z)){
+								$e->setCancelled(true);
+								break;
+							}
+						case 3:
+						case 198:
+							if($e->getItem()->isHoe()){
+								if(!AreaProtector::Edit($player, $x, $y, $z)){
+									$e->setCancelled(true);
+								}else if(!$playerData->hasValidLicense(License::FARMER)){
+									$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+									$e->setCancelled(true);
+								}
+							}
+						break;
+						case 88: //ソウルサンド
+							switch($itemId){
+								case 372: // ネザーウォート
+									if(!$playerData->hasValidLicense(License::FARMER)){
+										$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
+										$e->setCancelled(true);
+									}
+								break;
+							}
+						break;
+						case 61: // かまど
+							if(!$playerData->hasValidLicense(License::REFINER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));
 								$e->setCancelled(true);
 							}
 						break;
-						case 338: // さとうきび
-							if(!$playerData->hasValidLicense(License::FARMER)){
-								$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
-								$e->setCancelled(true);
+						case 130: // エンダーチェスト
+							$inv = $playerData->getItemBox();
+							$player->addWindow($inv);
+							$e->setCancelled(true); // 実際のエンダーチェストの効果は使わせない
+						break;
+						case 116: // エンチャントテーブル(クエストカウンター)
+							$nq = $playerData->getNowQuest();
+							if($nq === null){
+								QuestManager::addQuestsForm($player);
+							}else{
+								if($nq->getQuestType() === Quest::TYPE_DELIVERY){
+									if($nq->checkDelivery($player)){
+										$player->sendMessage(Chat::SystemToPlayer("クエストクリア！"));
+										//ここで報酬を送り付ける
+										$nq->sendReward($player);
+										if($playerData->addClearQuest($nq->getQuestId())){
+											$player->sendMessage(Chat::SystemToPlayer("初クリア！"));
+										}
+										$playerData->resetQuest();
+									}else{
+										QuestManager::sendCanselForm($player);
+									}							
+								}else{
+									QuestManager::sendCanselForm($player);
+								}
+		
+		
 							}
+							$e->setCancelled(true); // 実際のエンチャントテーブルの効果は使わせない
 						break;
-						case 416: // うまよろい
-							new MenuForm($playerData);
-						break;
-					}
+					} // endswitch
 				break;
-			} // endswitch
+			}//endswitch
 
 		}
 	}
