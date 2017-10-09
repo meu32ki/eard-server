@@ -38,7 +38,7 @@ class Residence extends License {
 
 	public function getPrice(){
 		switch($this->getRank()){
-			case 1: $price = 1; break;
+			case 1: $price = 10; break;
 			case 2: $price = 1000; break;
 			case 3: $price = 4000; break;
 			case 4: $price = 9000; break;
@@ -49,7 +49,7 @@ class Residence extends License {
 
 	public function getUpdatePrice(){
 		switch($this->getRank()){
-			case 1: $price = 1; break;
+			case 1: $price = 10; break;
 			case 2: $price = 50; break;
 			case 3: $price = 200; break;
 			case 4: $price = 400; break;
