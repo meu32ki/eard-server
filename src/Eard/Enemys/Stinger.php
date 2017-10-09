@@ -300,9 +300,9 @@ class Stinger extends Humanoid implements Enemy{
 
 		if($this->float !== -1){
 			if($this->float && 100 > $this->y){
-				$this->motionY = ($this->motionY+0.2)/2;
+				$this->motionY = ($this->motionY+0.2)/4;
 			}else{
-				$this->motionY = ($this->motionY-0.2)/2;
+				$this->motionY = ($this->motionY-0.2)/4;
 			}
 		}
 
@@ -329,9 +329,9 @@ class Stinger extends Humanoid implements Enemy{
 
 	public function attackTo(EntityDamageEvent $source){
 		$victim = $source->getEntity();
-		if(mt_rand(0, 9) < 3){
+		if(mt_rand(0, 9) < 2){
 			$ef = Effect::getEffect(19);
-			$ef->setDuration(300);
+			$ef->setDuration(260);
 			$victim->addEffect($ef);
 		}
 

@@ -36,7 +36,7 @@ use pocketmine\item\Item;
 
 use pocketmine\math\Vector3;
 class HaneAri extends Humanoid implements Enemy{
-	protected $gravity = 0.0008;
+	protected $gravity = 0.0012;
 	public static $ground = false;
 	public $rainDamage = false;
 

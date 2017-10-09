@@ -7,7 +7,9 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 use pocketmine\item\Item;
+use pocketmine\item\Potion;
 use pocketmine\block\Block;
+use pocketmine\entity\Effect;
 
 # Event
 use pocketmine\event\Listener;
@@ -21,6 +23,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerFishEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -628,7 +631,28 @@ class Event implements Listener{
 		return true;
 	}
 
-
+	public function Consume(PlayerItemConsumeEvent $e){
+		$item = $e->getItem();
+		$player = $e->getPlayer();
+		switch($item->getId()){
+			case Item::POTION:
+				switch($item->getDamage()){
+					case Potion::WATER_BOTTLE:
+						$player->removeEffect(Effect::POISON);
+					break;
+					case Potion::MUNDANE:
+						AI::allEffectExtension($player, 1200);
+					break;
+					case Potion::MUNDANE_EXTENDED:
+						AI::allEffectExtension($player, 2400);
+					break;
+					case Potion::THICK:
+						AI::removeBadEffect($player);
+					break;
+				}
+			break;
+		}
+	}
 /*
 	public function D(DataPacketReceiveEvent $e){
 		$pk = $e->getPacket();

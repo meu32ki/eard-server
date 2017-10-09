@@ -105,6 +105,25 @@ abstract class AI{
 		return true;
 	}
 
+	public static function removeBadEffect($entity){
+		foreach($entity->getEffects() as $effect){
+			if($effect->isBad()){
+				$entity->removeEffect($effect->getId());
+			}
+		}
+	}
+
+	public static function allEffectExtension($entity, $tick){
+		foreach($entity->getEffects() as $effect){
+			if($effect->getDuration()+$tick < INT32_MAX){
+				$effect->setDuration($effect->getDuration()+$tick);
+			}else{
+				$effect->setDuration(INT32_MAX-1);
+			}
+			$entity->addEffect($effect);
+		}
+	}
+
 	public static function canLook($enemy, $player){
 		if(!$player->hasEffect(Effect::INVISIBILITY)){
 			return true;
