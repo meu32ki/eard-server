@@ -13,7 +13,7 @@ use Eard\DBCommunication\DB;
 use Eard\Event\ChatManager;
 use Eard\Form\Form;
 use Eard\MeuHandler\Account\Mail;
-use Eard\MeuHandler\Account\itemBox;
+use Eard\MeuHandler\Account\ItemBox;
 use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
 use Eard\Utils\DataIO;
