@@ -594,10 +594,12 @@ class Account implements MeuHandler {
 				$this->data[2][3] += 1; //日数
 			}
 			$this->data[2][1] = $timeNow;//最終ログイン時間
-			$this->data[2][2] += ($timeNow - $this->inTime);//鯖の中にいた累計時間
+			if($timeNow && $this->inTime){
+				$this->data[2][2] += ($timeNow - $this->inTime);//鯖の中にいた累計時間
+			}
 		}
 		public function getFirstLoginTime(){
-			return $this->data[2][1];	
+			return $this->data[2][0];	
 		}
 		public function getLastLoginTime(){
 			return $this->data[2][1];	
@@ -883,6 +885,7 @@ class Account implements MeuHandler {
 					}
 
 					// 土地系旧形式からの移行用
+					/*
 					if($data = $this->getAddress()){
 						$sectionNoX = $data[0];
 						$sectionNoZ = $data[1];
@@ -893,6 +896,16 @@ class Account implements MeuHandler {
 							}
 							$this->data[4] = $newdata;
 						}
+					}*/
+
+					// 累計ログイン時間がおかしいとき用
+					if(1507270000 < $this->data[2][2]){
+						$this->data[2][2] = 10;
+					} 
+
+					// 読み込み時がログイン時間として
+					if(!$isfromweb){
+						$this->onLoadTime();
 					}
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
@@ -986,7 +999,7 @@ class Account implements MeuHandler {
     	}
     	return true;
     }
-	public function dumpData(){
+	public function dump(){
 		print_r($this->data);
 	}
 

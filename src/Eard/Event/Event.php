@@ -49,6 +49,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
 use Eard\Form\HelpForm;
 use Eard\Form\SettingsForm;
+use Eard\Form\PopupForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -90,7 +91,6 @@ class Event implements Listener{
 		$playerData->setPlayer($player);//	touitusuruna
 		$playerData->loadData();
 		$playerData->initItemBox();
-		$playerData->onLoadTime();
 
 		#権限関係
 		$main = Main::getInstance();
@@ -594,11 +594,18 @@ class Event implements Listener{
 
 			// プレイヤーに対しての攻撃の場合、キャンセル
 			if($victim instanceof Player && $damager instanceof Player){
+				// 手持ちが携帯なら
 				$victimData = Account::get($victim);
-				if(!$victimData->getAttackSetting()){
-					$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
-					MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
+				if($damager->getItemInHand()->getId() === Item::HORSE_ARMOR_LEATHER){
+					new PopupForm(Account::get($damager), $victimData);
 					$e->setCancelled(true);
+				}else{
+
+					if(!$victimData->getAttackSetting()){
+						$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
+						MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
+						$e->setCancelled(true);
+					}
 				}
 			}
 

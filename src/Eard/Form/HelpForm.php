@@ -2,13 +2,15 @@
 namespace Eard\Form;
 
 
+# Basic
+use pocketmine\item\Item;
+
 # Eard
 use Eard\Enemys\AI;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\MeuHandler\Account\License\License;
-# pmmp
-use pocketmine\item\Item;
+
 
 class HelpForm extends FormBase {
 
@@ -24,13 +26,13 @@ class HelpForm extends FormBase {
 					'content' => "Eardの遊び方について解説しています\n",
 					'buttons' => [
 						['text' => "§l§c脱出する\n§r§8高い壁が登れないときに使用奨励"],
+						['text' => "§l§c携帯を受け取る\n§r§8なくしたときに使用奨励"],
 						['text' => "ライセンス"],
 						['text' => "生活区域と資源区域"],
 						['text' => "携帯"],
-						['text' => "携帯を受け取る"],
 					]
 				];
-				$cache = [2,3,8,9,10];
+				$cache = [2,10,3,8,9];
 			break;
 			case 2:
 				$player = $playerData->getPlayer();
@@ -147,11 +149,12 @@ class HelpForm extends FormBase {
 			case 10:
 				$player = $playerData->getPlayer();
 				$inventry = $player->getInventory();
-				if($inventry->contains(Item::get(Item::HORSE_ARMOR_LEATHER))){
+				$item = Item::get(Item::HORSE_ARMOR_LEATHER);
+				if($inventry->contains($item)){
 					$player->sendMessage(Chat::SystemToPlayer("すでに携帯を所持しています"));
 				}else{
+					$inventry->addItem($item);
 					$player->sendMessage(Chat::SystemToPlayer("携帯を受け取りました"));
-					$inventry->addItem(Item::get(Item::HORSE_ARMOR_LEATHER));
 				}
 			break;
 		}
