@@ -3,13 +3,17 @@ namespace Eard\Form;
 
 # basic
 use pocketmine\Server;
+use pocketmine\scheduler\Task;
+use pocketmine\math\Vector3;
 
 # Eard
+use Eard\DBCommunication\Connection;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
 use Eard\Event\AreaProtector;
+use Eard\Enemys\AI;
 use Eard\Utils\Chat;
 
 class NaviForm extends FormBase {
@@ -26,6 +30,11 @@ class NaviForm extends FormBase {
 	public function __construct(Account $playerData, $isLivingArea){
 		$this->isLivingArea = $isLivingArea;
 		parent::__construct($playerData);
+	}
+
+	//案内するためのタスク生成
+	public static function init(){
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask(new Navigation(), 20);
 	}
 
 	public function send(int $id){
@@ -320,6 +329,39 @@ class NaviForm extends FormBase {
 			$this->lastSendData = $data;
 			$this->cache = $cache;
 			$this->show($id, $data);
+		}
+	}
+}
+
+class Navigation extends Task{
+
+	public function onRun($tick){
+		$isLivingArea = Connection::getPlace()->isLivingArea();
+		foreach(Server::getInstance()->getOnlinePlayers() as $player){
+			$playerData = Account::get($player);
+			$target = $playerData->getNavigating($isLivingArea);
+			if($target !== null){
+				$pos = null;
+				switch (true) {
+					case $target === true: //リスポーン地点
+						$pos = $player->getSpawn();
+					break;
+					case is_string($target): //プレイヤー名
+						$p = Server::getInstance()->getPlayer($target);
+						if($p){
+							$pos = $p;
+						}else{
+							$playerData->setNavigating(null, $isLivingArea);
+							$player->sendMessage(Chat::SystemToPlayer("そのプレイヤーは同じ区域にいませんでした"));
+							$player->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
+						}
+					break;
+					case is_array($target): //セクション
+						$pos = new Vector3(AreaProtector::uncalculateSectionNo($target[0]), 0, AreaProtector::uncalculateSectionNo($target[1])); //どこかに動的に保存すれば軽量化できるかも
+					break;
+				}
+				if($pos) AI::addGuideParticle($player, $pos);
+			}
 		}
 	}
 }

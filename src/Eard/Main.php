@@ -32,6 +32,7 @@ use Eard\Utils\Chat;
 use Eard\Utils\Twitter;
 use Eard\DBCommunication\Earmazon;
 use Eard\Form\LicenseForm;
+use Eard\Form\NaviForm;
 
 # Enemys
 use Eard\Enemys\EnemyRegister;
@@ -71,6 +72,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# クエスト登録
 		QuestManager::init();
+
+		# ナビゲーション
+		NaviForm::init();
 
 		#ツイートOAuth登録
 		Twitter::init();

@@ -102,6 +102,11 @@ class AreaProtector{
 		return ceil( $xorz / (self::$section + 1) ) - 1;
 	}
 
+	// return int | xorz;
+	public static function uncalculateSectionNo($sectionNoXorZ){
+		return  (self::$section + 1) * ($sectionNoXorZ + 1) - ceil(self::$section / 2);
+	}
+
 	public static function isOnGrid($xorz){
 		return $xorz % (self::$section + 1) == 0;
 	}
