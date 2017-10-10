@@ -101,7 +101,7 @@ class MenuForm extends FormBase {
 					'type'    => "form",
 					'title'   => "メニュー > ステータス確認",
 					'content' => "§f所持金: §7{$meu} §f在住ライセンス: §7{$ltext}\n".
-								"§fプレイ時間: §7{$time} {$day}日目 §f住所: §7{$address}\n",
+								"§f住所: §7{$address} §fプレイ時間: §7{$time} {$day}日目\n\n",
 					'buttons' => $buttons
 				];
 			break;
