@@ -65,14 +65,13 @@ class PopupForm extends FormBase {
 
 
 	public function getTop(){
-		$playerData = $this->playerData;
 		$targetData = $this->targetData;
 
 		$haveMeu = $targetData->getMeu()->getName();
-		$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
-		$residence = $playerData->getLicense(1);
+		$address = ($ad = $targetData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
+		$residence = $targetData->getLicense(1);
 		$ltext = ($residence instanceof License) ? ($residence->isValidTime() ? $residence->getRankText() : $residence->getRankText()."(無効)") : "未所持";
-		$timeText = Time::calculateTime($playerData->getTotalTime())." ".$targetData->getTotalLoginDay()."日目";
+		$timeText = Time::calculateTime($targetData->getTotalTime())." ".$targetData->getTotalLoginDay()."日目";
 
 		$out = "§f所持金: §7{$haveMeu} §f在住ライセンス: §7{$ltext}\n".
 				"§f住所: §7{$address} §fプレイ時間: §7{$timeText}\n".
