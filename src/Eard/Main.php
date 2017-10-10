@@ -121,17 +121,13 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
-				$player = Server::getInstance()->getPlayer("meu32ki");
+				$player = $s; //Server::getInstance()->getPlayer("meu32ki");
 				$playerData = Account::get($player);
-				new LicenseForm($playerData);
+				$playerData->dump();
 				return true;
 			break;
 			case "t":
-				if(count($a) != 2) return false;
-				$player = Server::getInstance()->getPlayer("meu32ki");
-				$playerData = Account::get($player);
-				$playerData->getFormObject()->Receive($a[0], $a[1]);
-				return true;
+
 			break;
 			case "li": // らいせんすかんけい
 				if(isset($a[0])){
