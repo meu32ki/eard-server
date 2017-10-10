@@ -10,11 +10,12 @@ use Eard\DBCommunication\Connection;
 use Eard\Event\AreaProtector;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
-use Eard\Utils\Time;
+
 */
 
 # Eard
 use Eard\MeuHandler\Account;
+use Eard\Utils\Time;
 
 
 class PopupForm extends FormBase {
@@ -69,10 +70,11 @@ class PopupForm extends FormBase {
 
 		$haveMeu = $targetData->getMeu()->getName();
 		$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
-		$ltext = ($residence instanceof License) ? ($residence->isValidTime() ? $ranktxt : $ranktxt."(無効)") : "未所持";
-		$timeText = Account::calculateTime($playerData->getTotalTime())." ".$targetData->getTotalLoginDay()."日目";
+		$residence = $playerData->getLicense(1);
+		$ltext = ($residence instanceof License) ? ($residence->isValidTime() ? $residence->getRankText() : $residence->getRankText()."(無効)") : "未所持";
+		$timeText = Time::calculateTime($playerData->getTotalTime())." ".$targetData->getTotalLoginDay()."日目";
 
-		$out = "§f所持金: §7{$haveMeu} }§f在住ライセンス: §7{$ltext}\n".
+		$out = "§f所持金: §7{$haveMeu} §f在住ライセンス: §7{$ltext}\n".
 				"§f住所: §7{$address} §fプレイ時間: §7{$timeText}\n".
 				"\n";
 		return $out;
