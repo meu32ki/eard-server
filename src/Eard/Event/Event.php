@@ -91,7 +91,6 @@ class Event implements Listener{
 		$playerData->setPlayer($player);//	touitusuruna
 		$playerData->loadData();
 		$playerData->initItemBox();
-		$playerData->onLoadTime();
 
 		#権限関係
 		$main = Main::getInstance();

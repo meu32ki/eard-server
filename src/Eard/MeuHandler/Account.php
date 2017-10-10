@@ -820,7 +820,10 @@ class Account implements MeuHandler {
 						$this->data[2][2] = 10;
 					} 
 
-
+					// 読み込み時がログイン時間として
+					if(!$isfromweb){
+						$this->onLoadTime();
+					}
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 					return true;
