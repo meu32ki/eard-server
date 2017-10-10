@@ -257,4 +257,6 @@ class Hopper extends Humanoid implements Enemy{
 	public function getName() : string{
 		return self::getEnemyName();
 	}
+
+	public $cooltime, $charge, $target, $mode;
 }
