@@ -810,7 +810,14 @@ class Account implements MeuHandler {
 							}
 							$this->data[4] = $newdata;
 						}
-					}
+					}*/
+
+					// 累計ログイン時間がおかしいとき用
+					if(1507270000 < $this->data[2][2]){
+						$this->data[2][2] = 10;
+					} 
+
+
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
 					return true;
