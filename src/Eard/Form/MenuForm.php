@@ -42,6 +42,7 @@ class MenuForm extends FormBase {
 						["エリア転送",18],
 						["ステータス照会",3],
 						["ライセンス",6],
+						["GPS (目的地設定)",22],
 						//["チャットモード変更",20],
 						//["μを送る", 45],
 					];
@@ -107,6 +108,8 @@ class MenuForm extends FormBase {
 			break;
 			case 4:
 				// GPS
+				$buttons[] = ['text' => "目的地設定"];
+				$cache[] = 21;
 				AreaProtector::viewSection($playerData); //セクション可視化
 				$player = $playerData->getPlayer();
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
@@ -517,27 +520,11 @@ class MenuForm extends FormBase {
 
 				// くそこーど
 				$thisplace = Connection::getPlace();
-
-				switch ($thisplace) {
-					case Connection::getPlaceByNo(1):
-						$p = Connection::getPlaceByNo(2);
-						break;
-						
-					case Connection::getPlaceByNo(2):
-						$p = Connection::getPlaceByNo(1);
-						break;
-					
-					case Connection::getPlaceByNo(8):
-						$p = Connection::getPlaceByNo(9);
-						break;
-					
-					case Connection::getPlaceByNo(9):
-						$p = Connection::getPlaceByNo(8);
-						break;
-					
-					default:
-						# err
-						break;
+				if( Connection::getPlaceByNo(1) !== $thisplace){
+					$p = Connection::getPlaceByNo(1);
+				}
+				if( Connection::getPlaceByNo(2) !== $thisplace){
+					$p = Connection::getPlaceByNo(2);
 				}
 
 				$buttons = [];
@@ -585,6 +572,11 @@ class MenuForm extends FormBase {
 						}
 					}
 				}
+			break;
+			case 21:
+			case 22:
+				// 目的地設定へ移動
+				new NaviForm($playerData, $id === 21);
 			break;
 		}
 

@@ -44,6 +44,7 @@ class Account implements MeuHandler {
 		[], // 8 支払い履歴
 		[ [], [] ], // 9 クエストデータ
 		[], // 10 せってい
+		[ null, null, [], []], // 11 目的地設定 [ 現在の目的地(生活区域), 現在の目的地(資源区域区域), [登録した住所(生活区域) "登録名" => 住所, ...], [登録した住所(資源区域) "登録名" => 住所, ...]]
 	];
 
 	/*
@@ -264,6 +265,88 @@ class Account implements MeuHandler {
 		$this->data[9][0] = [];
 	}
 	private $nowQuest = null;
+
+
+/* Navi
+*/
+	/**
+	* 道案内のデータを保存するやつ
+	* $data[11] = [
+	*		案内中のとこ,
+	*		[ //生活区域の登録情報
+	*			"登録名" => 住所,
+	*			"登録名" => 住所,...
+	*		],
+	*		[ //資源区域の登録情報
+	*			"登録名" => 住所,
+	*			"登録名" => 住所,...
+	*		],
+	*	]
+	*/
+
+	/**
+	*	案内中の場所かプレイヤー名を返す
+	*	@param bool $isLivingArea
+	*	@return null or String $playerName or array[$sectionNoX, $sectionNoZ]
+	*/
+	public function getNavigating(bool $isLivingArea){
+		$area = ($isLivingArea)? 0: 1;
+		return $this->data[11][$area];
+	}
+
+	/**
+	*	ここに案内しろ
+	*	@param null | String $playerName | array[$sectionNoX, $sectionNoZ]
+	*	@param bool $isLivingArea
+	*/
+	public function setNavigating($target, bool $isLivingArea){
+		$area = ($isLivingArea)? 0: 1;
+		$this->data[11][$area] = $target;
+	}
+
+	/**
+	*	住所を登録する
+	*	@param String $key
+	*	@param $target array[$sectionNoX, $sectionNoZ]
+	*	@param bool $isLivingArea
+	*	@param bool $overWrite 上書きを許可するかどうか
+	*	@return bool $result
+	*/
+	public function registerNavigationPoint(String $key, array $target, bool $isLivingArea, bool $overWrite = false){
+		$area = ($isLivingArea)? 2: 3;
+		if(isset($this->data[11][$area][$key]) && !$overWrite){
+			//同じ名前は登録できない
+			return false;
+		}
+		$this->data[11][$area][$key] = $target;
+		return true;
+	}
+
+	/**
+	*	登録した住所を削除する
+	*	@param String $key
+	*	@param bool $isLivingArea
+	*	@return bool $result
+	*/
+	public function diffNavigationPoint(String $key, bool $isLivingArea){
+		$area = ($isLivingArea)? 2: 3;
+		if(!isset($this->data[11][$area][$key])){
+			//無かった
+			return false;
+		}
+		unset($this->data[11][$area][$key]);
+		return true;
+	}
+
+	/**
+	*	登録した住所のリストを取得する
+	*	@param bool $isLivingArea
+	*	@return bool $result
+	*/
+	public function getNavigatingList(bool $isLivingArea){
+		$area = ($isLivingArea)? 2: 3;
+		return $this->data[11][$area];
+	}
 
 /* Chat
 */
