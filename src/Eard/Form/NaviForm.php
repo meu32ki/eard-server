@@ -140,6 +140,7 @@ class NaviForm extends FormBase {
 				$section = [$this->data[0], $this->data[1]];
 				if($playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea)){
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
+					$this->close();
 				}else{
 					$title = "入力して登録 > 確認 > 上書き確認";
 					$data = [
@@ -158,6 +159,7 @@ class NaviForm extends FormBase {
 				$section = [$this->data[0], $this->data[1]];
 				$playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea, true);
 				$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
+				$this->close();
 			break;
 			case 3:
 				// 名前を入力して登録
@@ -200,6 +202,7 @@ class NaviForm extends FormBase {
 				$section = [$this->data[0], $this->data[1]];
 				if($playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea)){
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
+					$this->close();
 				}else{
 					$title = "現在地点の住所を登録する > 確認 > 上書き確認";
 					$data = [
@@ -218,6 +221,7 @@ class NaviForm extends FormBase {
 				$section = [$this->data[0], $this->data[1]];
 				$playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea, true);
 				$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
+				$this->close();
 			break;
 			case 4:
 				//自宅を案内先にする
@@ -226,6 +230,7 @@ class NaviForm extends FormBase {
 				}else{
 					$playerData->setNavigating($playerData->getAddress(), $this->isLivingArea);
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「自宅」に設定しました"));
+					$this->close();
 				}
 			break;
 			case 5:
@@ -267,6 +272,7 @@ class NaviForm extends FormBase {
 				if($this->lastData[0] === 0){ //選択なし
 					$playerData->setNavigating(null, $this->isLivingArea);
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
+					$this->close();
 				}else if($this->lastData[1]){
 					$this->data = $this->name[$this->lastData[0]];
 					$title = "GPS > 目的地設定 > 登録済みの住所から選ぶ > 削除";
@@ -285,14 +291,17 @@ class NaviForm extends FormBase {
 					$name = $this->name[$this->lastData[0]];
 					$playerData->setNavigating($section, $this->isLivingArea);
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}」に設定しました"));
+					$this->close();
 				}
 			break;
 			case 5+self::NEXT*2:
 				$result = $playerData->diffNavigationPoint($this->data, $this->isLivingArea);
 				if($result){
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data}」を削除をしました"));
+					$this->close();
 				}else{
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data}」は未登録でした"));
+					$this->close();
 				}
 			break;
 			case 6:
@@ -324,6 +333,7 @@ class NaviForm extends FormBase {
 				if($this->lastData[0] === 0){ //選択なし
 					$playerData->setNavigating(null, $this->isLivingArea);
 					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
+					$this->close();
 				}else{
 					$name = $this->onlinelist[$this->lastData[0]];
 					$title = "GPS > 目的地設定 > ユーザー検索 > {$name}";
@@ -347,26 +357,32 @@ class NaviForm extends FormBase {
 					if(Server::getInstance()->getPlayer($name)){
 						$playerData->setNavigating($name, $this->isLivingArea);
 						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}さん」に設定しました"));
+						$this->close();
 					}else{
 						$this->sendErrorModal("GPS > 目的地設定 > ユーザー検索 > {$name}", "そのプレイヤーは同じ区域にいませんでした。", 6);
 					}
 				}else{
-					$address = Account::getByName($name)->getAddress();
-					if(empty($playerData->getAddress())){
+					$ac = Account::getByName($name);
+					if(!$ac instanceof Account){
+						$this->sendErrorModal("GPS > 目的地設定 > ユーザー検索 > {$name}", "そのプレイヤーは同じ区域にいませんでした。", 6);
+					}elseif(empty($ac->getAddress())){
 						$this->sendErrorModal("ユーザー検索 > {$name} > {$name}さんの自宅", "{$name}さんの自宅はありませんでした。", 6);
 					}else{
-						$playerData->setNavigating($playerData->getAddress(), $this->isLivingArea);
+						$playerData->setNavigating($ac->getAddress(), $this->isLivingArea);
 						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}さんの自宅」に設定しました"));
+						$this->close();
 					}
 				}
 			break;
 			case 7:
 				$playerData->setNavigating(true, $this->isLivingArea);
 				$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「リスポーン地点」に設定しました"));
+				$this->close();
 			break;
 			case 8:
 				$playerData->setNavigating(null, $this->isLivingArea);
 				$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
+				$this->close();
 			break;
 		}
 		
@@ -401,6 +417,7 @@ class Navigation extends Task{
 							$playerData->setNavigating(null, $isLivingArea);
 							$player->sendMessage(Chat::SystemToPlayer("そのプレイヤーは同じ区域にいませんでした"));
 							$player->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
+							$this->close();
 						}
 					break;
 					case is_array($target): //セクション
