@@ -41,6 +41,7 @@ class LicenseForm extends FormBase {
 				// ライセンス一覧がぶぁーってでるやつ
 				$this->selectedLicenseNo = 0; // リセット
 				$buttons = [];
+				$enablingCost = 0;
 				foreach(License::getAll() as $l){
 					$lNo = $l->getLicenseNo();
 					if($l instanceof Costable or $lNo === 1){
@@ -50,14 +51,17 @@ class LicenseForm extends FormBase {
 								// $status = $license->isValidTime() ? ($license->isExpireing() ? "§e".$license->getValidTimeText() : "§c".$license->getValidTimeText() ) : "無効";
 								$color = $license->isValidTime() ? ($license->isExpireing() ? "§e§l" : "§2§l") : "§7§l";
 								$text = $license->getFullName()."\n{$color}".$license->getValidTimeText();
+								$maxCost = ( $license instanceof License && 4 <= $license->getRank() ) ? 5 : 6;
 							}else{
 								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l残2時間未満" : "§2§l有効") : "§7§l無効";
 								$text = $license->getName()." ". $status;
+								$enablingCost += $license->isExpireing()　? $license->getCost() : 0;
 							}
 							$url = $license->getImgPath();
 						}else{
 							$text = "§7".$l->getFullName()." 未所持";
 							$url = $l->getImgPath();
+							$maxCost = 5;
 						}
 
 						$buttons[] = [
@@ -73,7 +77,7 @@ class LicenseForm extends FormBase {
 				$data = [
 					'type'    => 'form',
 					'title'   => 'ライセンス編集',
-					'content' => "ライセンスの新規購入、有効期限確認、有効期限延長、無効化など、ライセンスにかかわるすべての操作をここで行うことができます。\n",
+					'content' => "ライセンスの新規購入、有効期限確認、有効期限延長、無効化など、ライセンスにかかわる操作を行うことができます。 \n§2現在有効:{$enablingCost} / 最大:{$maxCost}",
 					'buttons' => $buttons
 				];
 				$cache = [2];
