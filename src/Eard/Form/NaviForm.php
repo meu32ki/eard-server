@@ -343,7 +343,7 @@ class NaviForm extends FormBase {
 			break;
 			case 6+self::NEXT*2:
 				$name = $this->data;
-				if($this->lastData[0] === 0){
+				if($this->lastData === 0){
 					if(Server::getInstance()->getPlayer($name)){
 						$playerData->setNavigating($name, $this->isLivingArea);
 						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}さん」に設定しました"));
@@ -351,11 +351,13 @@ class NaviForm extends FormBase {
 						$this->sendErrorModal("GPS > 目的地設定 > ユーザー検索 > {$name}", "そのプレイヤーは同じ区域にいませんでした。", 6);
 					}
 				}else{
-					$address = Account::getByName($name)->getAddress();
-					if(empty($playerData->getAddress())){
+					$ac = Account::getByName($name);
+					if(!$ac instanceof Account){
+						$this->sendErrorModal("GPS > 目的地設定 > ユーザー検索 > {$name}", "そのプレイヤーは同じ区域にいませんでした。", 6);
+					}elseif(empty($ac->getAddress())){
 						$this->sendErrorModal("ユーザー検索 > {$name} > {$name}さんの自宅", "{$name}さんの自宅はありませんでした。", 6);
 					}else{
-						$playerData->setNavigating($playerData->getAddress(), $this->isLivingArea);
+						$playerData->setNavigating($ac->getAddress(), $this->isLivingArea);
 						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}さんの自宅」に設定しました"));
 					}
 				}
