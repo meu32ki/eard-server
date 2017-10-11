@@ -657,8 +657,8 @@ class AreaProtector{
 		if($address === null){//自宅なし
 			return $price;
 		}
-		$adX = self::calculateSectionNo($address[0]);
-		$adZ = self::calculateSectionNo($address[1]);
+		$adX = $address[0];
+		$adZ = $address[1];
 		/* 引数変更で削除
 		$secX = self::calculateSectionNo($x);
 		$secZ = self::calculateSectionNo($z);*/
