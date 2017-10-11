@@ -108,8 +108,6 @@ class MenuForm extends FormBase {
 			break;
 			case 4:
 				// GPS
-				$buttons[] = ['text' => "目的地設定"];
-				$cache[] = 21;
 				AreaProtector::viewSection($playerData); //セクション可視化
 				$player = $playerData->getPlayer();
 				$x = round($player->x); $y = round($player->y); $z = round($player->z);
@@ -122,6 +120,7 @@ class MenuForm extends FormBase {
 					}else{
 						if(!(Account::getByUniqueNo($ownerNo) instanceof Account) ){
 							$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+							return false;
 						}
 						$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
 					}
@@ -133,6 +132,9 @@ class MenuForm extends FormBase {
 				$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
 
 				// ボタン作る
+				$buttons[] = ['text' => "目的地設定"];
+				$cache[] = 21;
+
 				if(!$ownerNo){
 					// 所有者がいない
 					$buttons[] = ['text' => "この土地を買う"];
@@ -155,7 +157,7 @@ class MenuForm extends FormBase {
 				$data = [
 					'type'    => "form",
 					'title'   => "メニュー > GPS (座標情報)",
-					'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
+					'content' => "§f現在地住所: {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
 								"§f所有者: §7{$ownerName}{$posprice}\n",
 					'buttons' => $buttons
 				];
@@ -576,6 +578,7 @@ class MenuForm extends FormBase {
 			case 21:
 			case 22:
 				// 目的地設定へ移動
+				$this->close();
 				new NaviForm($playerData, $id === 21);
 			break;
 		}
