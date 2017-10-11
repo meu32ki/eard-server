@@ -343,7 +343,7 @@ class NaviForm extends FormBase {
 			break;
 			case 6+self::NEXT*2:
 				$name = $this->data;
-				if($this->lastData[0] === 0){
+				if($this->lastData === 0){
 					if(Server::getInstance()->getPlayer($name)){
 						$playerData->setNavigating($name, $this->isLivingArea);
 						$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("案内先を「{$name}さん」に設定しました"));
