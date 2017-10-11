@@ -812,6 +812,20 @@ class Account implements MeuHandler {
 		return $this->data[10][3] ?? 0;
 	}
 
+	/**
+	*	目的地までの距離を表示するか
+	*/
+	public function setShowDistanceSetting($flag){
+		$this->data[10][4] = (int) $flag;
+	}
+	/**
+	*	trueなら表示する
+	*/
+	public function getShowDistanceSetting(){
+		return $this->data[10][4] ?? true;
+	}
+
+
 	private $data = [];
 
 /* 転送

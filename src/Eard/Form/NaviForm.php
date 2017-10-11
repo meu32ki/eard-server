@@ -417,7 +417,6 @@ class Navigation extends Task{
 							$playerData->setNavigating(null, $isLivingArea);
 							$player->sendMessage(Chat::SystemToPlayer("そのプレイヤーは同じ区域にいませんでした"));
 							$player->sendMessage(Chat::SystemToPlayer("案内先を未選択状態に設定しました"));
-							$this->close();
 						}
 					break;
 					case is_array($target): //セクション

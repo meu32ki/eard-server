@@ -430,6 +430,17 @@ abstract class AI{
 			$p->z += $zz*$r;
 			$level->addParticle($p, [$from]);
 		}
+		if($playerData->getShowDistanceSetting()){
+			$dis = round( sqrt( (($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2) ), 1);
+			$text = new FloatingTextParticle(
+				$p,
+				"",
+				"§f目的地まであと {$dis}m"
+			);
+			$level->addParticle($text, [$from]);
+			$task = new DeleteText($text, $from);
+			Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 20);
+		}
 		$m_xx = -sin(($yaw+140)/180*M_PI)*0.5;
 		$m_zz =  cos(($yaw+140)/180*M_PI)*0.5;
 		$p_xx = -sin(($yaw-140)/180*M_PI)*0.5;
@@ -477,6 +488,6 @@ class DeleteText extends Task{
 
 	public function onRun($tick){
 		$this->particle->setInvisible();
-		$this->player->getLevel()->addParticle($this->particle, [$this->player]);
+		if($this->player instanceof Player) $this->player->getLevel()->addParticle($this->particle, [$this->player]);
 	}
 }

@@ -36,6 +36,11 @@ class SettingsForm implements Form {
 			'default' => (bool) $playerData->getShowDamageSetting(),
 		];
 		$content[] = [
+			'type' => "toggle",
+			'text' => "目的地までの距離表示",
+			'default' => (bool) $playerData->getShowDistanceSetting(),
+		];
+		$content[] = [
 			'type' => "step_slider",
 			'text' => "目的地設定での矢印の大きさ",
 			'steps' => ["小", "中", "大"],
@@ -75,8 +80,9 @@ class SettingsForm implements Form {
 
 		$playerData->setAttackSetting($data[0]);
 		$playerData->setShowDamageSetting($data[1]);
-		$playerData->setArrowSize($data[2]);
-		$playerData->setArrowHeight($data[3]);
+		$playerData->setShowDistanceSetting($data[2]);
+		$playerData->setArrowSize($data[3]);
+		$playerData->setArrowHeight($data[4]);
 		return true;
 	}
 }

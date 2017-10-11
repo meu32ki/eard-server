@@ -592,6 +592,10 @@ class Recipe {
 
 	//いじらないで
 	public static function packetFilter(CraftingDataPacket $pk, Player $player){
+		$recipeType = $pk->getVarInt();
+		if($recipeType === CraftingDataPacket::ENTRY_FURNACE || $recipeType === CraftingDataPacket::ENTRY_FURNACE_DATA){
+			return true;
+		}
 		$fil = self::getRecipe($player);
 		$F = function ($recipe) use ($fil){
 			if(isset($fil[$recipe->getResult()->getId()])){
