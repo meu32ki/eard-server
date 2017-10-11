@@ -792,6 +792,25 @@ class Account implements MeuHandler {
 		return $this->data[10][1] ?? false;
 	}
 
+	/**
+	*	Naviでの矢印の大きさ
+	*/
+	public function setArrowSize(int $size){
+		return $this->data[10][2] = $size;
+	}
+	public function getArrowSize(){
+		return $this->data[10][2] ?? 1;
+	}
+
+	/**
+	*	Naviでの矢印の高さ
+	*/
+	public function setArrowHeight(int $height){
+		return $this->data[10][3] = $height;
+	}
+	public function getArrowHeight(){
+		return $this->data[10][3] ?? 0;
+	}
 
 	private $data = [];
 

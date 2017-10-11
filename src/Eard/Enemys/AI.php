@@ -69,6 +69,8 @@ use pocketmine\math\Vector3;
 
 use pocketmine\networkprotocol\AnimatePacket;
 
+use Eard\MeuHandler\Account;
+
 /**AIとして使う関数を簡単に呼び出せるように置いておく場所
 　* abstractだけど継承して使うものではない
  */
@@ -410,13 +412,19 @@ abstract class AI{
 	}
 
 	public static function addGuideParticle(Player $from, Vector3 $to){
+		$playerData = Account::get($from);
+		$sizes = [0.75, 1, 1.25];
+		$size = $sizes[$playerData->getArrowSize()];
+		$heights = [0.5, 1.25, 3];
+		$height = $heights[$playerData->getArrowHeight()];
+
 		$level = $from->getLevel();
-		$fromPos = $from->getPosition()->add(0, 0.5, 0);
+		$fromPos = $from->getPosition()->add(0, $height, 0);
 		$particle = new FlameParticle($fromPos);
 		$yaw = self::getLookYaw($from, $to);
 		$xx = -sin($yaw/180*M_PI)*0.5;
 		$zz =  cos($yaw/180*M_PI)*0.5;
-		for($r = -2; $r <= 5; $r += 0.5){
+		for($r = round(-2*$size); $r <= 5*$size; $r += 0.5){
 			$p = clone $particle;
 			$p->x += $xx*$r;
 			$p->z += $zz*$r;
@@ -426,7 +434,7 @@ abstract class AI{
 		$m_zz =  cos(($yaw+140)/180*M_PI)*0.5;
 		$p_xx = -sin(($yaw-140)/180*M_PI)*0.5;
 		$p_zz =  cos(($yaw-140)/180*M_PI)*0.5;
-		for($c = 0.5; $c <= 2.5; $c += 0.5){
+		for($c = 0.5; $c <= 2.5*$size; $c += 0.5){
 			$p = clone $particle;
 			$p->x += $xx*$r;
 			$p->z += $zz*$r;

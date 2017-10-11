@@ -103,7 +103,7 @@ class NaviForm extends FormBase {
 				$custom[] = [
 					'type' => "input",
 					'text' => "",
-					'placeholder' => "住所(半角英数字)"
+					'placeholder' => "住所(半角英数字と-記号で入力)"
 				];
 				$data = [
 					'type'    => "custom_form",
@@ -111,6 +111,53 @@ class NaviForm extends FormBase {
 					'content' => $custom
 				];
 				$cache[] = 2+self::NEXT;
+			break;
+			case 2+self::NEXT:
+				"GPS > 目的地設定 > 入力して登録";
+				$name = $this->lastData[0];
+				$address = $this->lastData[1];
+				$section = AreaProtector::getCoordinateFromSectionCode($address);
+				if($section[0] === 0 && $section[1] === 0){
+					$this->sendErrorModal("GPS > 目的地設定 > 入力して登録", "住所の形式が正しくないか、半角英数字と-記号以外の文字が含まれています。", 1);
+				}else{
+					// 名前を入力して登録
+					$title = "GPS > 目的地設定 > 入力して登録 > 確認";
+					$data = [
+						'type'    => "form",
+						'title'   => $title,
+						'content' => "{$address}を{$name}として登録します。よろしいですか？",
+						'buttons' => [
+							['text' => "はい"],
+							['text' => "いいえ"]
+						]
+					];
+					$this->data = $section;
+					$this->data[3] = $name;
+					$cache = [2+self::NEXT*2, 1];
+				}
+			break;
+			case 2+self::NEXT*2:
+				$section = [$this->data[0], $this->data[1]];
+				if($playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea)){
+					$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
+				}else{
+					$title = "入力して登録 > 確認 > 上書き確認";
+					$data = [
+						'type'    => "form",
+						'title'   => $title,
+						'content' => "「{$this->data[3]}」は既に登録されています。上書きしますか？",
+						'buttons' => [
+							['text' => "はい"],
+							['text' => "いいえ"]
+						]
+					];
+					$cache = [2+self::NEXT*3, 2];
+				}
+			break;
+			case 2+self::NEXT*3:
+				$section = [$this->data[0], $this->data[1]];
+				$playerData->registerNavigationPoint($this->data[3], $section, $this->isLivingArea, true);
+				$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("「{$this->data[3]}」を登録しました。"));
 			break;
 			case 3:
 				// 名前を入力して登録
