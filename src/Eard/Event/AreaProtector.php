@@ -206,9 +206,17 @@ class AreaProtector{
 		}
 	}
 
-	// return string
+	/**
+	*	codeふたつ入れたら住所返してくれる
+	*	@return string
+	*/
 	public static function getSectionCode($sectionNoX, $sectionNoZ){
 		$ar = range('A', 'Z');
+
+		/*
+			英字のほうは、マイナスをつけないといけない
+			数字のほうは、マイナスはついてる
+		*/
 
 		$left = abs($sectionNoX);
 		$out = "";
@@ -223,6 +231,59 @@ class AreaProtector{
 		return "{$minus}{$sectionA}{$sectionNoZ}";
 	}
 
+
+	/**
+	*	住所入れたらcodeふたつにしてかえしてくれる
+	*	@return array
+	*/
+	public static function getCoordinateFromSectionCode(string $code){
+		$code = strtolower($code);
+		// 英語、日本語以外が入っている
+		if(preg_match("/[^-0-9a-z]+/", $code)){
+			return [0,0];
+		}
+
+		$codear = str_split($code);
+		$ar = array_flip(range('a', 'z')); // 英語から数字に変換する用
+		$flag = true; // trueのときはcodeXの処理中、falseのときはcodeZを処理中
+		$codeX = 0;
+		$minus = 1;
+		$codeZ = 1;
+		$alpha = []; // 英語検証用配列 英語が出てきたかどうか
+		$degit = false; // 数字が出てきたかどうか
+		foreach($codear as $index => $string){
+			if($string === "-"){
+				if($index === 0){
+					$minus = -1;// 先頭がマイナスで始まっていたら
+				}else{
+					$codeZ = -1;
+				}
+			}elseif(ctype_alpha($string)){
+				// 英語なら
+				$alpha[] = $string; // あとのしょりにまわす
+			}else{
+				// 数字なら
+				$codeZ = $codeZ * (int) substr($code, $index); // それより後ろを切り出す
+				$degit = true;
+				break;
+			}
+		}
+
+		// 英語数字がそれぞれ含まれていたか 含まれていない場合は住所形式が正しくない
+		if(!$degit or !$alpha){
+			return [0,0];
+		}
+
+		// 英語部分の判定
+		$powed = count($alpha) - 1; // "AAZ"の場合は2,1,0とかける "DB"のばあいは1,0とかける
+		// "AAZ" は 26*26*1 + 26*1 + 1*25
+		foreach($alpha as $string){
+			$codeX += ($ar[$string] + 1) * pow(26, $powed);
+			//echo ($ar[$string] + 1) * pow(26, $powed), " ";
+			$powed-=1;
+		}
+		return [$minus * $codeX, $codeZ];
+	}
 
 	public static function getSectionCodeFromCoordinate($x, $z){
 		$sectionNoX = self::calculateSectionNo(round($x));
