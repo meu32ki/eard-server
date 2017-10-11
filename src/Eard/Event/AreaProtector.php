@@ -371,6 +371,7 @@ class AreaProtector{
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
 					return true;
 				}else{
+					// todo 権限者によって
 					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊はできません。"));
 					return false;					
 				}
@@ -584,7 +585,7 @@ class AreaProtector{
 				--self::$leftSection;
 
 				//オフラインリストに名前を保存
-				Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
+				Account::$index[$uniqueNo] = $playerData->getName();
 
 				//購入時にセーブ
 				$playerData->addSection($sectionNoX, $sectionNoZ);
@@ -607,9 +608,6 @@ class AreaProtector{
 		//新規セクションデーター
 		$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
 		self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
-
-		// オフラインリストに一応名前保存
-		// Account::$namelist[$uniqueNo] = "政府";
 
 		self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
 
