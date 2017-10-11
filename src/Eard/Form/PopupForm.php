@@ -14,6 +14,7 @@ use Eard\MeuHandler\Account\License\License;
 */
 
 # Eard
+use Eard\Event\AreaProtector;
 use Eard\MeuHandler\Account;
 use Eard\Utils\Time;
 
