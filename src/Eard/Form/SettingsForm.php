@@ -81,8 +81,8 @@ class SettingsForm implements Form {
 		$playerData->setAttackSetting($data[0]);
 		$playerData->setShowDamageSetting($data[1]);
 		$playerData->setShowDistanceSetting($data[2]);
-		$playerData->setArrowSize($data[3]);
-		$playerData->setArrowHeight($data[4]);
+		$playerData->setArrowSize((int) $data[3]);
+		$playerData->setArrowHeight((int) $data[4]);
 		return true;
 	}
 }
