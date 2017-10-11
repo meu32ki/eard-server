@@ -120,6 +120,7 @@ class MenuForm extends FormBase {
 					}else{
 						if(!(Account::getByUniqueNo($ownerNo) instanceof Account) ){
 							$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+							return false;
 						}
 						$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
 					}
