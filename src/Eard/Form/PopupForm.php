@@ -74,8 +74,17 @@ class PopupForm extends FormBase {
 		$ltext = ($residence instanceof License) ? ($residence->isValidTime() ? $residence->getRankText() : $residence->getRankText()."(無効)") : "未所持";
 		$timeText = Time::calculateTime($targetData->getTotalTime())." ".$targetData->getTotalLoginDay()."日目";
 
+		// 所持ライセンス一覧
+		$licensestext = "";
+		foreach($targetData->getAllLicenses() as $lno => $license){
+			if($license->isValidTime()) $licensestext .= $license->getFullName()." ";
+		}
+		$licensestext = substr($licensestext, 0, -1);
+		if(!$licensestext) $licensestext = "なし";
+
 		$out = "§f所持金: §7{$haveMeu} §f在住ライセンス: §7{$ltext}\n".
 				"§f住所: §7{$address} §fプレイ時間: §7{$timeText}\n".
+				"§f現在有効化しているライセンス: §7{$licensestext}\n".
 				"\n";
 		return $out;
 	}

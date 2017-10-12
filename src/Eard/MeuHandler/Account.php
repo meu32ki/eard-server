@@ -509,6 +509,11 @@ class Account implements MeuHandler {
 		return isset($this->licenses[$licenseNo]) ? $this->licenses[$licenseNo] : null;
 	}
 
+	public function removeLicense($licenseNo){
+		if($this->getLicense($licenseNo)) unset($this->licenses[$licenseNo]);
+		return true;
+	}
+
 	/**
 	*	そのライセンスが有効期限内であるか。
 	*	$rankに値を入れたばあいには、そのランクを満たしているかもチェックする

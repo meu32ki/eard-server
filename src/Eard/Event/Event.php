@@ -49,6 +49,7 @@ use Eard\Event\BlockObject\BlockObjectManager;
 use Eard\Form\MenuForm;
 use Eard\Form\HelpForm;
 use Eard\Form\SettingsForm;
+use Eard\Form\GovernmentForm;
 use Eard\Form\PopupForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
@@ -328,6 +329,9 @@ class Event implements Listener{
 				break;
 				case 416: // うまよろい
 					new MenuForm($playerData);
+				break;
+				case 417: // うまよろい	
+					new GovernmentForm($playerData);
 				break;
 				default:
 					switch($blockId){
