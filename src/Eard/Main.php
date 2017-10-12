@@ -437,10 +437,10 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			$dir = dirname($path);
 			$name = $player->getName();
 			$fullPath = $dir.'/Enemys/skins/'.$name.'.txt';
-			$skinData = $player->getSkinData();
+			$skinData = $player->getSkin()->getSkinData();
 			$encode_skin = urlencode($skinData);
 			file_put_contents($fullPath, $encode_skin);
-			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkinId());
+			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkin()->getSkinId());
 			return true;
 		}
 		return false;
