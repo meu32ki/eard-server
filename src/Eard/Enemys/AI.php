@@ -411,6 +411,42 @@ abstract class AI{
 		return new Vector3($sx, $sy, $sz);
 	}
 
+	/**
+	 * レーザーサイト的な
+	 * @param Entity  $enemy
+	 * @param int     $range
+	 */
+	public static function chargerRight($enemy, $range){
+		$yaw = $enemy->yaw;
+		$pitch = $enemy->pitch;
+		$yaw_rand = 0;
+		$x = $enemy->x;
+		$y = $enemy->y+1.5;
+		$z = $enemy->z;
+		$rad_y = ($yaw+$yaw_rand)/180*M_PI;
+		$rad_p = ($pitch-180)/180*M_PI;
+		$xx = sin($rad_y)*cos($rad_p);
+		$yy = sin($rad_p);
+		$zz = -cos($rad_y)*cos($rad_p);
+		$level = Server::getInstance()->getDefaultLevel();
+		$no_break = true;
+		$r = 0;
+		for($p = 0; $p <= $range; $p++){
+			$sx = $x+$xx*$p;
+			$sy = $y+$yy*$p;
+			$sz = $z+$zz*$p;
+			$bid = $level->getBlockIdAt(floor($sx), floor($sy), floor($sz));
+			if(Humanoid::canThrough($bid)){
+				$r = $p;
+				$level->addParticle(new FlameParticle(new Vector3($sx, $sy, $sz)));
+			}else{
+				$r = $p;
+				$no_break = false;
+				break;
+			}
+		}
+	}
+
 	public static function addGuideParticle(Player $from, Vector3 $to){
 		$playerData = Account::get($from);
 		$sizes = [0.75, 1, 1.25];
