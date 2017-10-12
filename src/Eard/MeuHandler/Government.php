@@ -48,7 +48,7 @@ class Government implements MeuHandler {
 	public function allowEdit($playerData, $sectionNoX, $sectionNoZ){
 		$editRank = $this->getAuthData($sectionNoX, $sectionNoZ)[0];
 		if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, $editRank)){
-			if(!$this->isWorker()) $this->addWorker($playerData->getName());
+			if(!$this->isWorker($playerData->getName())) $this->addWorker($playerData->getName());
 			return true;
 		}else{
 			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 設置破壊権限がありません。"));
@@ -59,7 +59,7 @@ class Government implements MeuHandler {
 	public function allowUse($playerData, $sectionNoX, $sectionNoZ){
 		$editRank = $this->getAuthData($sectionNoX, $sectionNoZ)[1];
 		if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, $editRank)){
-			if(!$this->isWorker()) $this->addWorker($playerData->getName());
+			if(!$this->isWorker($playerData->getName())) $this->addWorker($playerData->getName());
 			return true;
 		}else{
 			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 実行権限がありません。"));

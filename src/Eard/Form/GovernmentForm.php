@@ -56,7 +56,7 @@ class GovernmentForm extends FormBase {
 					foreach($worker as $name => $flag){
 						$playerData = Account::getByName($name);
 						$buttons[] = ['text' => "{$name}さん {$playerData->getLicense(2)->getRankText()}"];
-						$cache[] = [4];
+						$cache[] = 4;
 						$workers[] = $name;
 					}
 					$this->workers = $workers;
@@ -116,23 +116,32 @@ class GovernmentForm extends FormBase {
 			break;
 			case 4:
 				// 既存プレイヤーの権限編集
-				$nameindex = $this->lastData[1] - 1;
+				$nameindex = $this->lastData - 1;
 				$this->name = $this->workers[$nameindex];
 
 				$title = "政府コマンド > 政府関係者一覧 > {$this->name}";
 
-				$targetData = Account::getByName($name);
-				$targetlicense = $this->playerData->getLicense(license::GOVERNMENT_WORKER);
-				$targetrank = $mylicense instanceof License ? $targetlicense->getRank() : 0;
+				$targetData = Account::getByName($this->name);
+				$targetlicense = $targetData->getLicense(license::GOVERNMENT_WORKER);
+				$targetrank = $targetlicense instanceof License ? $targetlicense->getRank() : 0;
 				$mylicense = $this->playerData->getLicense(license::GOVERNMENT_WORKER);
 				$myrank = $mylicense instanceof License ? $mylicense->getRank() : 0;
 
+				// todo: オフラインの時に権限いじれるかを考える
+				if(!$targetData || !$targetData->isOnline()){
+					$this->sendErrorModal($title, "対象プレイヤーがいませんでした", 2);
+					return false;
+				}
+				if(!$targetData->getUniqueNo()){
+					$this->sendErrorModal($title, "入ったばかりのプレイヤーは追加できません。リログするように伝えてください。", 2);
+					return false;
+				}
 				if(!($authlist = $this->getAuthList())){
 					$this->sendErrorModal($title, "あなたには人の権限を編集する権限はありません。", 2);
 					return false;
 				}
-				if($myrank <= $targetrank){
-					$this->sendErrorModal($title, "対象のプレイヤーはあなたよりも権限あるプレイヤーなので、権限の編集ができません。", 2);
+				if(!isset($authlist[$targetrank])){
+					$this->sendErrorModal($title, "対象のプレイヤーの権限編集はできません。", 2);
 					return false;
 				}
 
@@ -151,7 +160,8 @@ class GovernmentForm extends FormBase {
 						[
 							'type' => "dropdown",
 							'text' => "与える権限",
-							'options' => $authlist
+							'options' => $authlist,
+							'default' => $targetrank
 						],
 						[
 							'type' => "dropdown",
@@ -204,10 +214,13 @@ class GovernmentForm extends FormBase {
 					}
 				}else{
 					// 権限付与
+					echo "$time";
 					$license = License::get(License::GOVERNMENT_WORKER, $time, $auth);
-					if($targetData->addLicense($license) < 0){
+					if($targetData->addLicense($license) !== 1){
+						if($playerData->getLicense(License::GOVERNMENT_WORKER)) Government::addWorker($name);
 						$this->sendErrorModal($title, "ライセンス追加できへんかったで", 1);
 					}else{
+						$authlist = $this->getAuthList();
 						Government::addWorker($name);
 						$this->sendSuccessModal($title, "§f完了しました。\n{$name}の権限を「§7".$authlist[$auth]."§f」にしました。", 2, 1);
 					}

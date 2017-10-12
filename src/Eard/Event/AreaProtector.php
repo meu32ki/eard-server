@@ -407,6 +407,8 @@ class AreaProtector{
 		if(!self::canActivateInLivingProtected($blockId)){
 			// 使用できないブロックの場合
 			$ownerNo = self::getOwnerFromCoordinate($x, $z);
+			$sectionNoX = self::calculateSectionNo($x);
+			$sectionNoZ = self::calculateSectionNo($z);
 			if($ownerNo === 100000){
 				// 政府の土地
 				return Government::getInstance()->allowUse($playerData, $sectionNoX, $sectionNoZ);
@@ -416,8 +418,6 @@ class AreaProtector{
 				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
 					if($ownerData !== $playerData){
-						$sectionNoX = self::calculateSectionNo($x);
-						$sectionNoZ = self::calculateSectionNo($z);
 						$playerName = $playerData->getName();
 						if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
 							$blockname = ItemName::getNameOf($blockId);
