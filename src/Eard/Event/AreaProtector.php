@@ -368,13 +368,7 @@ class AreaProtector{
 			$playerData = Account::get($player);
 			if($ownerNo === 100000){
 				// 政府の土地
-				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
-					return true;
-				}else{
-					// todo 権限者によって
-					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊はできません。"));
-					return false;					
-				}
+				return Government::getInstance()->allowEdit($playerData, $sectionNoX, $sectionNoZ);
 			}else{
 				// 一般の土地
 				$no = $playerData->getUniqueNo();
@@ -388,7 +382,7 @@ class AreaProtector{
 						if($ownerData = Account::getByUniqueNo($ownerNo)){
 							$playerName = $playerData->getName();
 							if(!$ownerData->allowEdit($playerName, $sectionNoX, $sectionNoZ)){
-								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));
+								$player->sendPopup(self::makeWarning("[{$ownerData->getName()}の土地] 設置破壊権限がありません。"));
 								$player->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName)." 土地の編集権限 ".$ownerData->getSectionEdit($sectionNoX, $sectionNoZ).""));	
 								return false;
 							}
@@ -398,7 +392,7 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));						
+					$player->sendPopup(self::makeWarning("[売地] 設置破壊はできません。"));						
 					return false;
 				}
 			}
@@ -412,7 +406,12 @@ class AreaProtector{
 	public static function Use(Account $playerData, $x, $y, $z, $blockId){
 		if(!self::canActivateInLivingProtected($blockId)){
 			// 使用できないブロックの場合
-			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) && $ownerNo !== 100000){ // 政府の土地ではなんでも使える
+			$ownerNo = self::getOwnerFromCoordinate($x, $z);
+			if($ownerNo === 100000){
+				// 政府の土地
+				return Government::getInstance()->allowUse($playerData, $sectionNoX, $sectionNoZ);
+			}elseif( 0 < $ownerNo){
+				// 一般の土地
 				// その土地の所有者を確認し
 				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
@@ -422,7 +421,7 @@ class AreaProtector{
 						$playerName = $playerData->getName();
 						if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
 							$blockname = ItemName::getNameOf($blockId);
-							$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
+							$playerData->getPlayer()->sendPopup(self::makeWarning("[{$ownerData->getName()}の土地] 実行権限がありません。"));
 							$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
 							return false;
 						}

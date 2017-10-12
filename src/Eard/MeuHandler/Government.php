@@ -6,6 +6,7 @@ namespace Eard\MeuHandler;
 use pocketmine\utils\MainLogger;
 
 # Eard
+use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 
@@ -39,6 +40,80 @@ class Government implements MeuHandler {
 		}
 		return self::$instance;
 	}
+
+/*
+	authdata AreaProtector
+*/
+
+	public function allowEdit($playerData, $sectionNoX, $sectionNoZ){
+		$editRank = $this->getAuthData($sectionNoX, $sectionNoZ)[0];
+		if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, $editRank)){
+			if(!$this->isWorker()) $this->addWorker($playerData->getName());
+			return true;
+		}else{
+			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 設置破壊権限がありません。"));
+			return false;					
+		}
+	}
+
+	public function allowUse($playerData, $sectionNoX, $sectionNoZ){
+		$editRank = $this->getAuthData($sectionNoX, $sectionNoZ)[1];
+		if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, $editRank)){
+			if(!$this->isWorker()) $this->addWorker($playerData->getName());
+			return true;
+		}else{
+			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 実行権限がありません。"));
+			return false;					
+		}
+	}
+
+	public static function makeWarning($txt){
+		return "§e！！！ §4{$txt} §e！！！";
+	}
+
+	public function getAllAuthData(){
+		return self::$authdata;
+	}
+
+	public function getAuthData($sectionNoX, $sectionNoZ){
+		return self::$authdata[$sectionNoX][$sectionNoZ] ?? [1,0];
+	}
+
+	public function setAuthData($sectionNoX, $sectionNoZ, $editRank, $useRank){
+		if($editRank === 1 && $useRank === 0){
+			if(isset(self::$authdata[$sectionNoX][$sectionNoZ])) unset(self::$authdata[$sectionNoX][$sectionNoZ]);
+		}else{
+			self::$authdata[$sectionNoX][$sectionNoZ] = [$editRank, $useRank];
+		}
+		return true;
+	}
+
+/*
+	workerdata
+*/
+
+	public static function getAllWorker(){
+		return self::$workerdata;
+	}	
+
+	public static function isWorker($name){
+		return self::$workerdata[strtolower($name)] ?? false;
+	}	
+
+	public static function addWorker($name){
+		self::$workerdata[strtolower($name)] = true;
+		return true;
+	}
+
+	public static function removeWorker($name){
+		unset(self::$workerdata[strtolower($name)]);
+		return true;
+	}
+
+/*
+	銀行系
+*/
+
 
 	/**
 	*	中央銀行が発行したMeuの量を設定。鯖が開いてる時でも、コマンドとかでへんこうしていいよ。
@@ -162,6 +237,9 @@ class Government implements MeuHandler {
 			self::$CentralBankMeu = Meu::get(1000 * 10000, self::getInstance());
 			MainLogger::getLogger()->notice("§eGovernment: No data found. Set the amount of Meu");
 		}
+
+		self::$authdata = DataIO::loadFromDB('GovernmentAuth') ?? [];
+		self::$workerdata = DataIO::loadFromDB('GovernmentWorker') ?? [];
 	}
 
 
@@ -170,6 +248,7 @@ class Government implements MeuHandler {
 
 		// ↓ 起動に失敗したとき、save()がMain::onDisableで実行されるが、その時変な値でsaveされないように。
 		if($bankMeu){
+			// よきんでーた
 			$data = [
 				self::$CentralBankFirst,
 				$bankMeu->getAmount()
@@ -177,6 +256,18 @@ class Government implements MeuHandler {
 			$result = DataIO::saveIntoDB('Government', $data);
 			if($result){
 				MainLogger::getLogger()->notice("§aGovernment: data has been saved");
+			}
+
+			// せいふがもつとちでーた
+			$result = DataIO::saveIntoDB('GovernmentAuth', self::$authdata);
+			if($result){
+				MainLogger::getLogger()->notice("§aGovernment: authdata has been saved");
+			}
+
+			// せいふ関係者リスト
+			$result = DataIO::saveIntoDB('GovernmentWorker', self::$workerdata);
+			if($result){
+				MainLogger::getLogger()->notice("§aGovernment: workerdata has been saved");
 			}
 		}
 	}
@@ -189,6 +280,7 @@ class Government implements MeuHandler {
 	}
 
 	private static $CentralBankFirst, $CentralBankMeu;
+	private static $authdata, $workerdata = [];
 	public static $instance = null;
 
 
