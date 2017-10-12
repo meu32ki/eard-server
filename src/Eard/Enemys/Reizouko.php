@@ -199,8 +199,8 @@ class Reizouko extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
-				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("geometryData", EnemyRegister::loadModelData('Reizouko')),
+				new StringTag("geometryName", 'geometry.BiomeSettlers03.EndZealot'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Reizouko')),
 				new StringTag("Name", 'Standard_Custom')
