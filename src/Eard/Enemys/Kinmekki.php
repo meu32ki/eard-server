@@ -194,7 +194,7 @@ class Kinmekki extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
-				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("geometryName", 'geometry.humanoid.custom:geometry.humanoid'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Kinmekki')),
 				new StringTag("Name", 'Standard_Custom')
