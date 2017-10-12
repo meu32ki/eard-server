@@ -297,11 +297,14 @@ class MenuForm extends FormBase {
 				if(!$sections){
 					$this->sendErrorModal($title, "あなたの土地がありません", 1);
 				}else{
+					$player = $playerData->getPlayer();
+					$currentaddress = AreaProtector::getSectionCodeFromCoordinate(round($player->x), round($player->z));
 					$buttons = [];
 					foreach($sections as $index => $d){
 						$ar = explode(":", $index);
 						$address = AreaProtector::getSectionCode((int) $ar[0], (int) $ar[1]);
-						$buttons[] = ['text' => "§l{$address} §r§7(編集".$d[0].",実行".$d[1].")"];
+						$here = $address === $currentaddress ? "§b現在地 §8" : "";
+						$buttons[] = ['text' => "§l{$here}{$address} §r§7(編集".$d[0].",実行".$d[1].")"];
 						$cache[] = 13;
 					}
 
