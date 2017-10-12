@@ -250,6 +250,7 @@ class Ayzer extends Humanoid implements Enemy{
 		$this->charge = 0;
 		$this->beamYaw = 0;
 		$this->mode = 0;
+		$this->walkSpeed = 0.2;
 	}
 
 	public function onUpdate(int $tick): bool{
