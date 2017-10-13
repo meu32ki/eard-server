@@ -98,7 +98,7 @@ class Bank {
 					$now = time();
 					foreach(Account::get($playerData->getPlayer())->getAllLicense() as $license){
   					$license->setRank(0);
-  					$license->setValidTime($time);
+  					$license->setValidTime($now);
 					}
 
 					//返済期限の延長（１週間）
