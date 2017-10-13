@@ -90,6 +90,14 @@ class MenuForm extends FormBase {
 				$day = $playerData->getTotalLoginDay();
 				$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
 
+				// 所持ライセンス一覧
+				$licensestext = "";
+				foreach($playerData->getAllLicenses() as $lno => $license){
+					if($license->isValidTime()) $licensestext .= $license->getFullName()." ";
+				}
+				$licensestext = substr($licensestext, 0, -1);
+				if(!$licensestext) $licensestext = "なし";
+
 				// 必要データ
 				$buttons = [
 					['text' => "所持金の使用履歴を見る"],
@@ -102,7 +110,9 @@ class MenuForm extends FormBase {
 					'type'    => "form",
 					'title'   => "メニュー > ステータス確認",
 					'content' => "§f所持金: §7{$meu} §f在住ライセンス: §7{$ltext}\n".
-								"§f住所: §7{$address} §fプレイ時間: §7{$time} {$day}日目\n\n",
+								"§f住所: §7{$address} §fプレイ時間: §7{$time} {$day}日目\n".
+								"§f現在有効化しているライセンス: §7{$licensestext}\n".
+								"\n\n",
 					'buttons' => $buttons
 				];
 			break;
