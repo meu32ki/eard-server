@@ -85,7 +85,7 @@ class Account implements MeuHandler {
 			if(!isset(self::$accounts[$name])){
 				// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
 				$account = new Account();
-				if(!$isfromweb) $account->loadData();
+				if(!$isfromweb) $account->loadData($name);
 				self::$accounts[$name] = $account;
 				return $account;
 			}
@@ -866,7 +866,7 @@ class Account implements MeuHandler {
 		}else{
 			$name = strtolower($name);
 			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
-			echo $sql;
+			//echo $sql;
 		}
 		
 		$db = DB::get();
