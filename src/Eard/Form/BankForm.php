@@ -24,7 +24,7 @@ class BankForm extends FormBase {
 			if(!$account){
 				$data = [
 					'type'    => "modal",
-					'title'   => "銀行 > お預入れ",
+					'title'   => "銀行",
 					'content' => "§f銀行口座がまだ開設されていないようです。\n".
 								"新たに口座を開設しますか？\n".
 								"<<条件>>\n".
@@ -151,7 +151,7 @@ class BankForm extends FormBase {
 				}else{
 					$this->sendErrorModal(
 						"銀行 > お預入れ",
-						"	預金に失敗しました。", 1
+						"預金に失敗しました。", 1
 					);
 				}
 			break;
@@ -369,8 +369,7 @@ class BankForm extends FormBase {
 			break;
 			case 14:
 				$debit = $this->lists;
-				$total = $debit[0] * (1 + $debit[2]);
-				$repay = $bank->repay($playerData, $total, 0, $debit);
+				$repay = $bank->repay($playerData, $debit[0], 0, $debit);
 				if($repay){
 					$data = [
 						'type'    => "form",
@@ -394,8 +393,8 @@ class BankForm extends FormBase {
 			$debit = $this->lists;
 			$total = ($debit[3] == 5) ? $debit[0] * (1 + $debit[2]) : $debit[4];
 			$remainder =  $total % $debit[3];
-			$per_time = ($total - $remainder) / $debit[3];
-			$first_time = ($remainder) ? $per_time + $remainder : 0;
+			$per_time = round (($total - $remainder) / $debit[3]);
+			$first_time = ($remainder > 1) ? round($per_time + $remainder) : 0;
 
 			if($first_time){
 				$buttons[] = ['text' => "初回 {$first_time}μ"];
