@@ -55,7 +55,7 @@ class LicenseForm extends FormBase {
 							}else{
 								$status = $license->isValidTime() ? ($license->isExpireing() ? "§e§l残2時間未満" : "§2§l有効") : "§7§l無効";
 								$text = $license->getName()." ". $status;
-								$enablingCost += $license->isExpireing() ? $license->getCost() : 0;
+								$enablingCost += $license->isValidTime() ? $license->getCost() : 0;
 							}
 							$url = $license->getImgPath();
 						}else{
