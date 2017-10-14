@@ -510,8 +510,12 @@ class Account implements MeuHandler {
 	}
 
 	public function removeLicense($licenseNo){
-		if($this->getLicense($licenseNo)) unset($this->licenses[$licenseNo]);
-		return true;
+		if($this->getLicense($licenseNo)){
+			unset($this->licenses[$licenseNo]);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	/**
@@ -1015,6 +1019,7 @@ class Account implements MeuHandler {
 		// ライセンス
 		if($this->licenses){
 			// var_dump($this->licenses);
+			$this->data[5] = [];
 			foreach($this->licenses as $licenseNo => $license){
 				if(!$licenseNo || !$license){ // ライセンス追加ミスった時のためのほけんで
 					unset($this->data[5][$licenseNo]);
