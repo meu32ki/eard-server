@@ -470,9 +470,14 @@ class Account implements MeuHandler {
 				// すでに持ってたら
 				$oldrank = $oldone->getRank();
 				$newrank = $license->getRank();
+
+				// ゲットしたとき用
+				$gottext = Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！ 有効期限：{$license->getValidTimeText()}");
+
 				if($oldrank < $newrank){
 					// 新しくもらったほうがランク高いなら、追加
 					$this->licenses[$licenseNo] = $license;
+					if($this->isOnline()) $this->getPlayer()->sendMessage($gottext);
 					return 1;
 				}elseif($oldrank == $newrank){
 					// 同じなら、まだ追加できる可能性がある
@@ -480,6 +485,7 @@ class Account implements MeuHandler {
 					$newtime = $license->getValidTime();
 					if(0 <= $oldtime && $oldtime <= $newtime){ // 古いライセンスの有効期限が無期限でなければ、延長
 						$this->licenses[$licenseNo] = $license;
+						if($this->isOnline()) $this->getPlayer()->sendMessage($gottext);
 						return 1;
 					}else{
 						// 無期限か、新しいほうが有効期限が短ければ
