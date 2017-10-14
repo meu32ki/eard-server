@@ -18,7 +18,8 @@ class GovernmentWorker extends License {
 		2 => "研修者",
 		3 => "係員",
 		4 => "次官",
-		5 => "高官"
+		5 => "高官",
+		6 => "長官",
 	];
 	public $name = "政府関係者";
 

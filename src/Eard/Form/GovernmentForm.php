@@ -272,6 +272,17 @@ class GovernmentForm extends FormBase {
 					"§8§l5 §d".$ranktxt[5],
 				];
 			break;
+			case 6:
+				$authlist = [
+					"§8§l0 §b権限なし",
+					"§8§l1 §a".$ranktxt[1],
+					"§8§l2 §e".$ranktxt[2],
+					"§8§l3 §6".$ranktxt[3],
+					"§8§l4 §c".$ranktxt[4],
+					"§8§l5 §d".$ranktxt[5],
+					"§8§l5 §0".$ranktxt[6],
+				];
+			break;
 		}
 		return $authlist;
 	}
