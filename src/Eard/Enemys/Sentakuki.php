@@ -269,7 +269,7 @@ class Sentakuki extends Humanoid implements Enemy{
 							break;
 							case 7:
 								$wihts = array_filter($this->level->getEntities(), function($value) use ($th){
-									return ($value !== $th && $value instanceof Humanoid && $th->distance($value));
+									return ($value !== $th && $value instanceof Humanoid && $th->distance($value) <= 30);
 								});
 								foreach($wihts as $key => $ent){
 									AI::lineParticle($this->level, $this, $ent, new CriticalParticle($this));
@@ -286,33 +286,36 @@ class Sentakuki extends Humanoid implements Enemy{
 								$this->mode = 0;
 								AI::setRate($this, 600);
 								$this->walk = true;
+								$this->yaw = mt_rand(0, 360);
 							break;
 						}
 					break;
 					case 2: //雨天時の特殊行動
 						switch($this->charge){
 							case 0:
-							case 1:
-							case 2:
-								$this->level->addParticle(new SpellParticle($this, 220, 40, 40));
+								AI::setRate($this, 20);
 								AI::lookAt($this, $this->target);
-								++$this->charge;
-								AI::setRate($this, 7);// => default
-							break;
-							case 3:
-								$this->charge = 4;
-								AI::lookAt($this, $this->target);
-								AI::setRate($this, 10);
-								AI::chargerRight($this, 30);
-							break;
-							case 4:
-								AI::chargerShot($this, 30, new RedstoneParticle($this, 4), new DestroyBlockParticle($this, Block::get(Block::ICE)), 25, 0, 1.6, true);
-								++$this->charge;
-								AI::lookAt($this, $this->target);
-								AI::setRate($this, 10);
-								$this->charge = 0;
-								$this->mode = 0;
 								$this->walk = true;
+								$this->walkSpeed = -0.025;
+								$this->float = -1;
+								$this->charge = 1;
+								$this->beamYaw = 0;
+							break;
+							case 1:
+								AI::setRate($this, 50);
+								AI::lookAt($this, $this->target);
+								$this->walk = false;
+								$this->walkSpeed = 0.01;
+								$this->yaw += 75;
+								$this->charge = 2;
+							break;
+							case 2:
+								AI::setRate($this, 30);
+								AI::lookAt($this, $this->target);
+								$this->walk = true;
+								$this->walkSpeed = 0.2;
+								$this->float = mt_rand(0, 1);
+								$this->charge = 0;
 							break;
 						}
 					break;
@@ -324,6 +327,26 @@ class Sentakuki extends Humanoid implements Enemy{
 				$this->yaw += mt_rand(-30, 30);
 			}
 
+		}else if($this->getHealth() > 0 && $this->mode === 2){
+			switch($this->charge){
+				case 0:
+					;
+				break;
+				case 1:
+					//$this->level->addSound(new GhastSound($this, 2));
+					$p = AI::getFrontVector($this, true)->multiply(2)->add($this);
+					$this->level->addParticle(new DestroyBlockParticle($this, Block::get(8)));
+				break;
+				case 2:
+					//$p = AI::getFrontVector($this, true)->multiply(2)->add($this);
+					AI::chargerShot($this, 35, new TerrainParticle($this, Block::get(8)), new DestroyBlockParticle($this, Block::get(8)), 3, 0, 1.6, false);
+					$this->yaw -= $this->beamYaw;
+					$this->beamYaw += 0.35;
+					if($this->beamYaw > 2.5){
+						$this->beamYaw = 2.5;
+					}
+				break;
+			}
 		}
 		if($this->walk){
 			AI::walkFront($this, 0.25);
@@ -342,7 +365,6 @@ class Sentakuki extends Humanoid implements Enemy{
 		$victim = $source->getEntity();
 		$victim->heal(new EntityRegainHealthEvent($victim, 0, EntityRegainHealthEvent::CAUSE_MAGIC));
 		if($victim instanceof Player){
-			$victim->getLevel()->addParticle(new DestroyBlockParticle($victim, Block::get(Block::ICE)));
 			if(mt_rand(0, 9) < 2){
 				$ef1 = Effect::getEffect(Effect::SLOWNESS);
 				$ef1->setDuration(260);

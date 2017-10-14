@@ -58,7 +58,7 @@ class Kamakiri extends Humanoid implements Enemy{
 
 	//最大HPを取得
 	public static function getHP(){
-		return 150;
+		return 120;
 	}
 
 	//ドロップするアイテムIDの配列を取得 [[ID, data, amount, percent], [ID, data, amount, percent], ...]
