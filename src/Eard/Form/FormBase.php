@@ -89,7 +89,7 @@ class FormBase implements Form {
 
 	/**
 	*	プレイヤーに送るFormの用意をする
-	*	1000番は予約済みなので使うな
+	*	999番は予約済みなので使うな
 	*	@param Int 送りたいページのFormId (FormIdはsend内に記載)
 	*/
 	public function send(int $id){
@@ -140,7 +140,7 @@ class FormBase implements Form {
 		$this->cache = [$b1jump, $b2jump ? $b2jump : $b1jump];
 
 		$this->lastSendData = $data;
-		$this->show(1000, $data);
+		$this->show(999, $data);
 	}
 
 	/**
@@ -165,7 +165,7 @@ class FormBase implements Form {
 		}
 		*/
 
-		if($id !== 1000){
+		if($id !== 999){
 			$this->lastFormId = (int) $id;
 		}
 
