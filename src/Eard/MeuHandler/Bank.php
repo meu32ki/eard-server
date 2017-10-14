@@ -54,7 +54,7 @@ class Bank {
 			while($row = $result->fetch_assoc()){
 				$data = unserialize(base64_decode($row['data']));
 				//DBカラム「data」なので注意(DB上の負担はふくまれない)
-				if($data[1] < $today){
+				if($data[0] < $today){
 					$uniqueNo = $row['no'];
 					$playerData = Account::getByUniqueNo($uniqueNo);
 
@@ -77,7 +77,7 @@ class Bank {
 					//所持金があれば、それを返済に回して解決
 					if($meu->sufficient($amount)){
 						self::writeUp($playerData);
-						$meu->setAmount($meu_amount - $amount);//信用創造で生まれたお金を消す
+						self::returnLoan($playerData, $amount);
 						self::incomeToGovernment($playerData, $data[4]);
 						return true;
 					}
@@ -86,17 +86,19 @@ class Bank {
 					//銀行預金＋所持金があれば、それを返済に。
 					if($amount <= $balance + $meu_amount){
 						$amount = $amount - $balance;
-						self::repay($playerData, $balance, 0, $data_1);
+						self::repay($playerData, $balance, 3, $data_1);//金利分が預金にあるとは限らない
 						if($amount){//まだ債務が残っている場合
-							$meu->setAmount($amount_0);//信用創造で生まれたお金を消す
+							self::returnLoan($playerData, $amount);
 						}
+						self::writeUp($playerData);
+						self::incomeToGovernment($playerData, $data[4]);//金利分を政府に
 						return true;
 					}
 
 
 					//それでも十分ではなかった場合、ライセンスの引き下げ
 					$now = time();
-					foreach(Account::get($playerData->getPlayer())->getAllLicense() as $license){
+					foreach($playerData->getAllLicenses() as $license){
   					$license->setRank(0);
   					$license->setValidTime($now);
 					}
@@ -112,13 +114,26 @@ class Bank {
 	}
 
 	/**
+	*	所持金から返済
+	*	@param Account
+	*	@param int
+	*	@return bool
+	*/
+	public static function returnLoan(Account $playerData, int $amount){
+		$meu = $playerData->getMeu()->spilit($amount);
+		$meu->setAmount(0);
+		return $playerData->addHistory($amount, "銀行: 返済");
+}
+
+
+	/**
 	*	返済期限を延長する
 	*	@param Account
 	*	@param int
 	*	@param array
 	*	@return bool
 	*/
-	public static function updateData(Account $playerData, array $data): bool{
+	public static function updateData(Account $playerData, string $data): bool{
 		$uniqueNo = $playerData->getUniqueNo();
 		$sql = "UPDATE bank SET data = '{$data}' WHERE no = {$uniqueNo} AND type = 1";
 		return DB::get()->query($sql);
@@ -271,8 +286,9 @@ class Bank {
 
 	/*
 	*	返済期限、金利を取得する
+	* 0 = array, 1 = base64encodeされたもの
 	*/
-	public static function getData(int $n, int $amount): string{
+	public static function getData(int $n, int $amount, int $type = 1){
 		switch($n){
 			case 0: $date = strtotime( "+1 week" ); break;
 			case 1: $date = strtotime( "+1 month" ); break;
@@ -286,7 +302,8 @@ class Bank {
 			round($amount * (1 + self::$rates[$n])),	//実質的な負担
 			round($amount * self::$rates[$n])					//金利収入
 		];
-		return base64_encode(serialize($data));
+		if($type) return base64_encode(serialize($data));
+		else return $data;
 	}
 
 	/**
@@ -309,12 +326,21 @@ class Bank {
 		$amount_1 = $amount;//（金利は含まない）
 
 		$newdata = '0';
+		$rtype = 0;
+
+		if($type == 3){//所持金からの借金返済
+			$type = 0;
+			$rtype = 1;
+		}
+
 		if(!$type){
 			//一括払いと指定しても、分割払いをしていた場合
 			if($data[3] < 5){
 				$type = 1;//分割払いの処理へ回す
 			}else{//一括払いの処理
-				$amount_0 = $amount * (1 + $data[2]);//金利分を上乗せして計算
+				if(!$rtype){
+					$amount_0 = $amount * (1 + $data[2]);//金利分を上乗せして計算
+				}
 			}
 		}
 
@@ -336,7 +362,7 @@ class Bank {
 		$uniqueNo = $playerData->getUniqueNo();
 		if(in_array($data[3], [0, 5]) || $type == 0){//最終返済時の金利収入処理
 			$amount_1 = $data[0];//DBの資産項目を0に
-			self::incomeToGovernment($playerData, $data[5]);
+			if(!$rtype) self::incomeToGovernment($playerData, $data[5]);//所持金からの場合は除く
 		}
 
 		$newdata = base64_encode(serialize($newdata));
@@ -391,7 +417,7 @@ class Bank {
 		}
 
 		//2時間いないと作れない
-		if($playerData->getTotalTime() < 60 * 60 * 2){
+	if($playerData->getTotalTime() < 60 * 60 * 2){
 			return false;
 		}
 
