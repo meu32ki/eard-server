@@ -144,6 +144,9 @@ class GovernmentForm extends FormBase {
 					return false;
 				}
 
+				// 4以上なら、与えられる権限が増える
+				$timelist = 4 <= $targetrank ? ["1時間", "6時間", "1日", "1週間(7日)"] : ["1時間", "6時間", "1日", "1週間(7日)", "1か月(30日)", "無期限"];
+
 				$data = [
 					'type'    => "custom_form",
 					'title'   => $title,
@@ -165,7 +168,7 @@ class GovernmentForm extends FormBase {
 						[
 							'type' => "dropdown",
 							'text' => "期間 (権限なしの場合はこの項目は無関係)",
-							'options' => ["1時間", "6時間", "1日", "1週間"]
+							'options' => $timelist
 						],
 						[
 							'type' => "label",
@@ -202,12 +205,12 @@ class GovernmentForm extends FormBase {
 				}
 
 				$auth = $this->lastData[2];
-				$timelist = [3600, 3600*6, 3600*24, 3600*24*7];
-				$time = $timelist[$this->lastData[3]] + time();
+				$timelist = [3600, 3600*6, 3600*24, 3600*24*7, 3600*24*30, -1];
+				$time = ($realtime = $timelist[$this->lastData[3]]) === -1 ? $realtime + time() : $realtime;
 				if(!$auth){
 					// 権限はく奪
 					if(!$targetData->removeLicense(License::GOVERNMENT_WORKER)){
-						$this->sendErrorModal($title, "ライセンス削除できへんかったで", 1);
+						$this->sendErrorModal($title, "ライセンス削除できへんかったで。なんかおかしいんとちゃうか。", 1);
 					}else{
 						Government::removeWorker($name);
 						$this->sendSuccessModal($title, "§f完了しました。\n{$name}は政府関係者ではなくなりました", 2, 1);
@@ -217,7 +220,7 @@ class GovernmentForm extends FormBase {
 					$license = License::get(License::GOVERNMENT_WORKER, $time, $auth);
 					if($targetData->addLicense($license) !== 1){
 						if($playerData->getLicense(License::GOVERNMENT_WORKER)) Government::addWorker($name);
-						$this->sendErrorModal($title, "ライセンス追加できへんかったで", 1);
+						$this->sendErrorModal($title, "ライセンス追加できへんかったで。すでにライセンス持ってる感じするで。", 1);
 					}else{
 						$authlist = $this->getAuthList();
 						Government::addWorker($name);
@@ -270,6 +273,17 @@ class GovernmentForm extends FormBase {
 					"§8§l3 §6".$ranktxt[3],
 					"§8§l4 §c".$ranktxt[4],
 					"§8§l5 §d".$ranktxt[5],
+				];
+			break;
+			case 6:
+				$authlist = [
+					"§8§l0 §b権限なし",
+					"§8§l1 §a".$ranktxt[1],
+					"§8§l2 §e".$ranktxt[2],
+					"§8§l3 §6".$ranktxt[3],
+					"§8§l4 §c".$ranktxt[4],
+					"§8§l5 §d".$ranktxt[5],
+					"§8§l5 §0".$ranktxt[6],
 				];
 			break;
 		}

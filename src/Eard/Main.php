@@ -166,10 +166,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 										case 1: $out = "上げました"; break;
 									}
 									$s->sendMessage(Chat::SystemToPlayer($out));
-
-									if($result === 1){
-										$player->sendMessage(Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！ 有効期限：{$license->getValidTimeText()}"));
-									}
 								}else{
 									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
 								}
