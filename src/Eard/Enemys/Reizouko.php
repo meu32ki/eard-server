@@ -85,36 +85,38 @@ class Reizouko extends Humanoid implements Enemy{
 			*/
 			[100, 2,
 				[
-					[Item::RAW_MUTTON, 0, 1],
-					[Item::FEATHER, 0, 1],//骨粉
+					[Item::RAW_BEEF, 0, 1],
+					[Item::REDSTONE, 0, 1],//骨粉
 				],
 			],
-			[75, 1,
+			[75, 3,
 				[
-					[Item::PUMPKIN_SEEDS, 0, 1],
-					[Item::MELON_SEEDS, 0, 1],
-					[Item::SEEDS, 0, 1],
-					[Item::FEATHER, 0, 1],
+					[Item::ROTTEN_FLESH, 0, 1],
+					[Item::RAW_BEEF, 0, 1],
+					[Item::ICE, 0, 1],
+					[Item::COOKED_FISH, 0, 1],
+					[Item::REDSTONE, 0, 1],
 				],
 			],
 			[15, 1,
 				[
-					[Item::CHAIN_HELMET, 0, 1],
-					[Item::CHAIN_CHESTPLATE, 0, 1],
-					[Item::CHAIN_LEGGINGS, 0, 1],
-					[Item::CHAIN_BOOTS, 0, 1],
+					[Item::EGG, 0, 1],
+					[Item::POISONOUS_POTATO, 0, 1],
+					[Item::MUSHROOM_STEW, 0, 1],
+					[Item::PUFFER_FISH, 0, 1],
+					[Item::ICE, 0, 1],
 				],
 			],
 			[5, 1,
 				[
 					[Item::IRON_INGOT , 0, 1],
-					[Item::MAGMA_CREAM , 0, 1],
+					[Item::COOKED_SALMON , 0, 1],
 				],
 			],
 			[3, 1,
 				[
 					[Item::GOLD_INGOT , 0, 1],
-					[Item::MAGMA_CREAM , 0, 1],
+					[Item::RABBIT_STEW , 0, 1],
 				],
 			],
 			[2, 1,
@@ -128,10 +130,11 @@ class Reizouko extends Humanoid implements Enemy{
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::GOLD_INGOT , 0, 1],
-				[Item::MAGMA_CREAM , 0, 1],
-				[Item::MAGMA_CREAM , 0, 1],
-				[Item::GOLD_NUGGET , 0, 3],
+				[Item::ICE, 0, 1],				
+				[Item::GOLD_INGOT, 0, 1],
+				[Item::COOKED_FISH, 0, 1],
+				[Item::COOKED_SALMON, 0, 1],
+				[Item::GOLD_NUGGET, 0, 3],
 			]
 		];
 	}
@@ -156,20 +159,20 @@ class Reizouko extends Humanoid implements Enemy{
 		//コピペ用全種類を置いておく
 		return [
 			//雨なし
-			Biome::HELL => true, 
+			//Biome::HELL => true, 
 			Biome::END => true,
-			Biome::DESERT => true,
-			Biome::DESERT_HILLS => true,
-			Biome::MESA => true,
-			Biome::MESA_PLATEAU_F => true,
-			Biome::MESA_PLATEAU => true,
+			//Biome::DESERT => true,
+			//Biome::DESERT_HILLS => true,
+			//Biome::MESA => true,
+			//Biome::MESA_PLATEAU_F => true,
+			//Biome::MESA_PLATEAU => true,
 			//雨あり
-			Biome::OCEAN => true,
-			Biome::PLAINS => true,
+			//Biome::OCEAN => true,
+			//Biome::PLAINS => true,
 			//Biome::MOUNTAINS => true,
 			//Biome::FOREST => true,
 			//Biome::TAIGA => true,
-			Biome::SWAMP => true,
+			//Biome::SWAMP => true,
 			//Biome::RIVER => true,
 			Biome::ICE_PLAINS => true,
 			//Biome::SMALL_MOUNTAINS => true,
