@@ -34,6 +34,7 @@ class EnemyRegister{
 	const TYPE_UMIMEDAMA = 18;
 	const TYPE_REIZOUKO = 19;
 	const TYPE_KAMAKIRI = 20;
+	const TYPE_SENTAKUKI = 21;
 
 	private static $instance = null;
 	public static $register = [];
@@ -60,6 +61,7 @@ class EnemyRegister{
 		self::register(Umimedama::class, Umimedama::getEnemyType());
 		self::register(Reizouko::class, Reizouko::getEnemyType());
 		self::register(Kamakiri::class, Kamakiri::getEnemyType());
+		self::register(Sentakuki::class, Sentakuki::getEnemyType());
 
 		//NPC
 		Entity::registerEntity(NPC::class, true);

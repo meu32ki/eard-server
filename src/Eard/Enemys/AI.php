@@ -496,6 +496,28 @@ abstract class AI{
 		}
 	}
 
+	//攻撃対象の座標までのパーティクル
+	public static function lineParticle(Level $level, Vector3 $pos1, Vector3 $pos2, $particle){
+		$x1 = $pos1->x+0.5;
+		$y1 = $pos1->y+1.5;
+		$z1 = $pos1->z+0.5;
+		$x2 = $pos2->x;
+		$y2 = $pos2->y+1;
+		$z2 = $pos2->z;
+		$maxdist = max(abs($x2-$x1), abs($y2-$y1), abs($z2-$z1));
+		$xdist = ($x2-$x1)/$maxdist;
+		$ydist = ($y2-$y1)/$maxdist;
+		$zdist = ($z2-$z1)/$maxdist;
+
+		for($times = 0; $times <= $maxdist; $times += 0.5){
+			$p = clone $particle;
+			$p->x = $x1+$xdist*$times;
+			$p->y = $y1+$ydist*$times;
+			$p->z =	$z1+$zdist*$times;
+			$level->addParticle($p);
+		}
+	}
+
 	public static function sendDamageText(Player $player, Vector3 $pos, $damage){
 		$damage *= -1;
 		if($damage == 0){
