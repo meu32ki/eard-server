@@ -211,10 +211,10 @@ class Unagi extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('Unagi')),
-				new StringTag("geometryName", 'geometry.Biome2.nether_banished'),
+				new StringTag("geometryName", 'geometry.unagi'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Unagi')),
-				new StringTag("Name", 'Biome2_Biome2NetherBanished')
+				new StringTag("Name", 'unagi')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
@@ -243,7 +243,7 @@ class Unagi extends Humanoid implements Enemy{
 		$this->walk = true;
 		$this->walkSpeed = 0.2;
 		$this->float = true;
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		//$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
 		//$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
