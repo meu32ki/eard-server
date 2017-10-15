@@ -133,7 +133,7 @@ class Government implements MeuHandler {
 	public static function paidPerHour($playerData){
 		$license = $playerData->getLicense(License::GOVERNMENT_WORKER);
 		$rank = $license instanceof License ? $license->getRank() : 0;
-		return 1500 + 500 * ($rank - 1);
+		return 1000 + 500 * ($rank - 1);
 	}
 
 /*

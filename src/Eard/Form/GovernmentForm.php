@@ -268,7 +268,7 @@ class GovernmentForm extends FormBase {
 							$content = "§f給与を受け取りました。明細は以下の通りです。\n".
 										"\n".
 										"§f仕事時間: §7{$paidtime}秒 = §e{$paidtimetext}\n".
-										"§f時給: §71500μ + 500 x {$license->getRank()}(ランク) = §e{$paidPerHour}μ\n".
+										"§f時給: §71000μ + 500 x ({$license->getRank()} - 1)(ランク) = §e{$paidPerHour}μ\n".
 										"§f合計: §7{$paidPerHour}μ x {$paidtimetext} = §e{$paidamount}μ\n".
 										"";
 						}else{
