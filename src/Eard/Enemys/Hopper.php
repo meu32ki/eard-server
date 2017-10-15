@@ -229,13 +229,13 @@ class Hopper extends Humanoid implements Enemy{
 				}
 				AI::setRate($this, 20);
 				AI::jump($this, 0.25, 0, AI::DEFAULT_JUMP*3);
-				AI::rangeAttack($this, 2.5, 3);
+				AI::rangeAttack($this, 2.2, 2);
 				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
 				$this->charge = false;
 			}else{
 				$this->motionX = 0;
 				$this->motionZ = 0;
-				AI::rangeAttack($this, 2.5, 3);
+				AI::rangeAttack($this, 2.5, 4);
 				$this->getLevel()->addParticle(new DestroyBlockParticle($this, Block::get(2)));
 				AI::setRate($this, 20);
 				$this->charge = true;
@@ -257,4 +257,6 @@ class Hopper extends Humanoid implements Enemy{
 	public function getName() : string{
 		return self::getEnemyName();
 	}
+
+	public $cooltime, $charge, $target, $mode;
 }

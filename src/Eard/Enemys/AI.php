@@ -69,6 +69,8 @@ use pocketmine\math\Vector3;
 
 use pocketmine\networkprotocol\AnimatePacket;
 
+use Eard\MeuHandler\Account;
+
 /**AIとして使う関数を簡単に呼び出せるように置いておく場所
 　* abstractだけど継承して使うものではない
  */
@@ -103,6 +105,25 @@ abstract class AI{
 		$tick = $value;
 		$enemy->cooltime = $now + $value / 20;
 		return true;
+	}
+
+	public static function removeBadEffect($entity){
+		foreach($entity->getEffects() as $effect){
+			if($effect->isBad()){
+				$entity->removeEffect($effect->getId());
+			}
+		}
+	}
+
+	public static function allEffectExtension($entity, $tick){
+		foreach($entity->getEffects() as $effect){
+			if($effect->getDuration()+$tick < INT32_MAX){
+				$effect->setDuration($effect->getDuration()+$tick);
+			}else{
+				$effect->setDuration(INT32_MAX-1);
+			}
+			$entity->addEffect($effect);
+		}
 	}
 
 	public static function canLook($enemy, $player){
@@ -390,24 +411,77 @@ abstract class AI{
 		return new Vector3($sx, $sy, $sz);
 	}
 
+	/**
+	 * レーザーサイト的な
+	 * @param Entity  $enemy
+	 * @param int     $range
+	 */
+	public static function chargerRight($enemy, $range){
+		$yaw = $enemy->yaw;
+		$pitch = $enemy->pitch;
+		$yaw_rand = 0;
+		$x = $enemy->x;
+		$y = $enemy->y+1.5;
+		$z = $enemy->z;
+		$rad_y = ($yaw+$yaw_rand)/180*M_PI;
+		$rad_p = ($pitch-180)/180*M_PI;
+		$xx = sin($rad_y)*cos($rad_p);
+		$yy = sin($rad_p);
+		$zz = -cos($rad_y)*cos($rad_p);
+		$level = Server::getInstance()->getDefaultLevel();
+		$no_break = true;
+		$r = 0;
+		for($p = 0; $p <= $range; $p++){
+			$sx = $x+$xx*$p;
+			$sy = $y+$yy*$p;
+			$sz = $z+$zz*$p;
+			$bid = $level->getBlockIdAt(floor($sx), floor($sy), floor($sz));
+			if(Humanoid::canThrough($bid)){
+				$r = $p;
+				$level->addParticle(new FlameParticle(new Vector3($sx, $sy, $sz)));
+			}else{
+				$r = $p;
+				$no_break = false;
+				break;
+			}
+		}
+	}
+
 	public static function addGuideParticle(Player $from, Vector3 $to){
+		$playerData = Account::get($from);
+		$sizes = [0.75, 1, 1.25];
+		$size = $sizes[$playerData->getArrowSize()];
+		$heights = [0.5, 1.25, 3];
+		$height = $heights[$playerData->getArrowHeight()];
+
 		$level = $from->getLevel();
-		$fromPos = $from->getPosition()->add(0, 0.5, 0);
+		$fromPos = $from->getPosition()->add(0, $height, 0);
 		$particle = new FlameParticle($fromPos);
 		$yaw = self::getLookYaw($from, $to);
 		$xx = -sin($yaw/180*M_PI)*0.5;
 		$zz =  cos($yaw/180*M_PI)*0.5;
-		for($r = -2; $r <= 5; $r += 0.5){
+		for($r = round(-2*$size); $r <= 5*$size; $r += 0.5){
 			$p = clone $particle;
 			$p->x += $xx*$r;
 			$p->z += $zz*$r;
 			$level->addParticle($p, [$from]);
 		}
+		if($playerData->getShowDistanceSetting()){
+			$dis = round( sqrt( (($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2) ), 1);
+			$text = new FloatingTextParticle(
+				$p,
+				"",
+				"§f目的地まであと {$dis}m"
+			);
+			$level->addParticle($text, [$from]);
+			$task = new DeleteText($text, $from);
+			Server::getInstance()->getScheduler()->scheduleDelayedTask($task, 20);
+		}
 		$m_xx = -sin(($yaw+140)/180*M_PI)*0.5;
 		$m_zz =  cos(($yaw+140)/180*M_PI)*0.5;
 		$p_xx = -sin(($yaw-140)/180*M_PI)*0.5;
 		$p_zz =  cos(($yaw-140)/180*M_PI)*0.5;
-		for($c = 0.5; $c <= 2.5; $c += 0.5){
+		for($c = 0.5; $c <= 2.5*$size; $c += 0.5){
 			$p = clone $particle;
 			$p->x += $xx*$r;
 			$p->z += $zz*$r;
@@ -419,6 +493,28 @@ abstract class AI{
 			$p2->z += $p_zz*$c;
 			$level->addParticle($p1, [$from]);
 			$level->addParticle($p2, [$from]);
+		}
+	}
+
+	//攻撃対象の座標までのパーティクル
+	public static function lineParticle(Level $level, Vector3 $pos1, Vector3 $pos2, $particle){
+		$x1 = $pos1->x+0.5;
+		$y1 = $pos1->y+1.5;
+		$z1 = $pos1->z+0.5;
+		$x2 = $pos2->x;
+		$y2 = $pos2->y+1;
+		$z2 = $pos2->z;
+		$maxdist = max(abs($x2-$x1), abs($y2-$y1), abs($z2-$z1));
+		$xdist = ($x2-$x1)/$maxdist;
+		$ydist = ($y2-$y1)/$maxdist;
+		$zdist = ($z2-$z1)/$maxdist;
+
+		for($times = 0; $times <= $maxdist; $times += 0.5){
+			$p = clone $particle;
+			$p->x = $x1+$xdist*$times;
+			$p->y = $y1+$ydist*$times;
+			$p->z =	$z1+$zdist*$times;
+			$level->addParticle($p);
 		}
 	}
 
@@ -450,6 +546,6 @@ class DeleteText extends Task{
 
 	public function onRun($tick){
 		$this->particle->setInvisible();
-		$this->player->getLevel()->addParticle($this->particle, [$this->player]);
+		if($this->player instanceof Player) $this->player->getLevel()->addParticle($this->particle, [$this->player]);
 	}
 }

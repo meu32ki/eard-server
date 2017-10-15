@@ -194,7 +194,7 @@ class Buriki extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('humanoid')),
-				new StringTag("geometryName", 'geometry.humanoid'),
+				new StringTag("geometryName", 'geometry.humanoid.custom:geometry.humanoid'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Buriki')),
 				new StringTag("Name", 'Standard_Custom')

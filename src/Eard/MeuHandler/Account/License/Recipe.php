@@ -141,17 +141,6 @@ class Recipe {
 			break;
 		}
 		switch (true) {
-			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
-				$recipe += [
-					298 => [],
-					299 => [],
-					300 => [],
-					301 => [],
-					306 => [],
-					307 => [],
-					308 => [],
-					309 => [],
-				];
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER, 2): // 服飾2
 				$recipe += [
 					310 => [],
@@ -163,70 +152,68 @@ class Recipe {
 					316 => [],
 					317 => [],																
 				];
+			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
+				$recipe += [
+					298 => [],
+					299 => [],
+					300 => [],
+					301 => [],
+					306 => [],
+					307 => [],
+					308 => [],
+					309 => [],
+				];
 			break;
 
 		}
 		switch (true) {
-			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
+			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
 				$recipe += [
-					1 => [
+					35 => [
+						15 => true,
+						14 => true,
+						13 => true,
+						12 => true,
+						11 => true,
+						10 => true,
+						9 => true,
+						8 => true,
+						7 => true,
 						6 => true,
+						5 => true,
 						4 => true,
-						2 => true
-						],
-					43 => [
 						3 => true,
 						2 => true
 						],
-					54 => [],
-					61 => [],
-					67 => [],
-					69 => [],
-					70 => [],
-					72 => [],
-					75 => [],
-					76 => [],
-					77 => [],
-					80 => [],
-					85 => [
+					43 => [
+						7 => true,
+						6 => true
+						],
+					48 => [],
+					49 => [],
+					121 => [],
+					155 => [
+						0 => true
+						],
+					165 => [],
+					168 => [
 						2 => true,
 						1 => true,
 						0 => true
 						],
-					91 => [],
-					96 => [],
-					101 => [],
-					102 => [],
-					107 => [],
-					112 => [],
-					113 => [
-						2 => true,
-						1 => true
-						],
-					147 => [],
-					148 => [],
-					158 => [
-						2 => true,
-						1 => true,
-						0 => true
-						],
-					180 => [],
-					182 => [
-						0 => true
-						],
-					183 => [],
-					184 => [],
-					291 => [],
-					321 => [],
-					323 => [],
-					324 => [],
-					339 => [],
-					340 => [],
-					355 => [
-						0 => true
-						],
-					427 => [],
-					428 => [],																						
+					169 => [],
+					173 => [],
+					266 => [],
+					276 => [],
+					277 => [],
+					278 => [],
+					279 => [],
+					283 => [],
+					284 => [],
+					285 => [],
+					286 => [],
+					293 => [],
+					294 => [],								
 				];
 			case $playerData->hasValidLicense(License::PROCESSOR, 2): // 加工2
 				$recipe += [
@@ -303,9 +290,87 @@ class Recipe {
 					430 => [],
 					431 => [],													
 				];
-			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
+			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
 				$recipe += [
-					35 => [
+					1 => [
+						6 => true,
+						4 => true,
+						2 => true
+						],
+					43 => [
+						3 => true,
+						2 => true
+						],
+					54 => [],
+					61 => [],
+					67 => [],
+					69 => [],
+					70 => [],
+					72 => [],
+					75 => [],
+					76 => [],
+					77 => [],
+					80 => [],
+					85 => [
+						2 => true,
+						1 => true,
+						0 => true
+						],
+					91 => [],
+					96 => [],
+					101 => [],
+					102 => [],
+					107 => [],
+					112 => [],
+					113 => [
+						2 => true,
+						1 => true
+						],
+					147 => [],
+					148 => [],
+					158 => [
+						2 => true,
+						1 => true,
+						0 => true
+						],
+					180 => [],
+					182 => [
+						0 => true
+						],
+					183 => [],
+					184 => [],
+					291 => [],
+					321 => [],
+					323 => [],
+					324 => [],
+					339 => [],
+					340 => [],
+					355 => [
+						0 => true
+						],
+					427 => [],
+					428 => [],																						
+				];
+			break;
+		}
+		switch (true) {
+			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
+				$recipe += [
+					22 => [],
+					41 => [],
+					42 => [],
+					57 => [],
+					89 => [],
+					133 => [],
+					152 => [],
+					155 => [
+						2 => true,
+						1 => true
+						],
+					156 => [],
+					208 => [],
+					213 => [],
+					355 => [
 						15 => true,
 						14 => true,
 						13 => true,
@@ -319,58 +384,9 @@ class Recipe {
 						5 => true,
 						4 => true,
 						3 => true,
-						2 => true
-						],
-					43 => [
-						7 => true,
-						6 => true
-						],
-					48 => [],
-					49 => [],
-					121 => [],
-					155 => [
-						0 => true
-						],
-					165 => [],
-					168 => [
-						2 => true,
-						1 => true,
-						0 => true
-						],
-					169 => [],
-					173 => [],
-					266 => [],
-					276 => [],
-					277 => [],
-					278 => [],
-					279 => [],
-					283 => [],
-					284 => [],
-					285 => [],
-					286 => [],
-					293 => [],
-					294 => [],								
-				];
-			break;
-		}
-		switch (true) {
-			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
-				$recipe += [
-					24 => [
 						2 => true,
 						1 => true
-						],
-					98 => [
-						3 => true,
-						1 => true,
-						0 => true
-						],
-					109 => [],
-					179 => [
-						2 => true,
-						1 => true
-						],
-					390 => [],								
+						],					
 				];
 			case $playerData->hasValidLicense(License::HANDIWORKER, 2): // 細工師2
 				$recipe += [
@@ -465,39 +481,23 @@ class Recipe {
 						0 => true
 						],													
 				];
-			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
+			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
 				$recipe += [
-					22 => [],
-					41 => [],
-					42 => [],
-					57 => [],
-					89 => [],
-					133 => [],
-					152 => [],
-					155 => [
+					24 => [
 						2 => true,
 						1 => true
 						],
-					156 => [],
-					208 => [],
-					213 => [],
-					355 => [
-						15 => true,
-						14 => true,
-						13 => true,
-						12 => true,
-						11 => true,
-						10 => true,
-						9 => true,
-						8 => true,
-						7 => true,
-						6 => true,
-						5 => true,
-						4 => true,
+					98 => [
 						3 => true,
+						1 => true,
+						0 => true
+						],
+					109 => [],
+					179 => [
 						2 => true,
 						1 => true
-						],					
+						],
+					390 => [],								
 				];
 			break;
 		}
@@ -592,6 +592,10 @@ class Recipe {
 
 	//いじらないで
 	public static function packetFilter(CraftingDataPacket $pk, Player $player){
+		$recipeType = $pk->getVarInt();
+		if($recipeType === CraftingDataPacket::ENTRY_FURNACE || $recipeType === CraftingDataPacket::ENTRY_FURNACE_DATA){
+			return true;
+		}
 		$fil = self::getRecipe($player);
 		$F = function ($recipe) use ($fil){
 			if(isset($fil[$recipe->getResult()->getId()])){

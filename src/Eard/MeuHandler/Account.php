@@ -13,7 +13,7 @@ use Eard\DBCommunication\DB;
 use Eard\Event\ChatManager;
 use Eard\Form\Form;
 use Eard\MeuHandler\Account\Mail;
-use Eard\MeuHandler\Account\itemBox;
+use Eard\MeuHandler\Account\ItemBox;
 use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
 use Eard\Utils\DataIO;
@@ -44,6 +44,7 @@ class Account implements MeuHandler {
 		[], // 8 支払い履歴
 		[ [], [] ], // 9 クエストデータ
 		[], // 10 せってい
+		[ null, null, [], []], // 11 目的地設定 [ 現在の目的地(生活区域), 現在の目的地(資源区域区域), [登録した住所(生活区域) "登録名" => 住所, ...], [登録した住所(資源区域) "登録名" => 住所, ...]]
 	];
 
 	/*
@@ -84,7 +85,7 @@ class Account implements MeuHandler {
 			if(!isset(self::$accounts[$name])){
 				// 20170907 設置破壊のたびにnewでok。2分ごとにunsetされる。
 				$account = new Account();
-				if(!$isfromweb) $account->loadData();
+				if(!$isfromweb) $account->loadData($name);
 				self::$accounts[$name] = $account;
 				return $account;
 			}
@@ -265,6 +266,88 @@ class Account implements MeuHandler {
 	}
 	private $nowQuest = null;
 
+
+/* Navi
+*/
+	/**
+	* 道案内のデータを保存するやつ
+	* $data[11] = [
+	*		案内中のとこ,
+	*		[ //生活区域の登録情報
+	*			"登録名" => 住所,
+	*			"登録名" => 住所,...
+	*		],
+	*		[ //資源区域の登録情報
+	*			"登録名" => 住所,
+	*			"登録名" => 住所,...
+	*		],
+	*	]
+	*/
+
+	/**
+	*	案内中の場所かプレイヤー名を返す
+	*	@param bool $isLivingArea
+	*	@return null or String $playerName or array[$sectionNoX, $sectionNoZ]
+	*/
+	public function getNavigating(bool $isLivingArea){
+		$area = ($isLivingArea)? 0: 1;
+		return $this->data[11][$area];
+	}
+
+	/**
+	*	ここに案内しろ
+	*	@param null | String $playerName | array[$sectionNoX, $sectionNoZ]
+	*	@param bool $isLivingArea
+	*/
+	public function setNavigating($target, bool $isLivingArea){
+		$area = ($isLivingArea)? 0: 1;
+		$this->data[11][$area] = $target;
+	}
+
+	/**
+	*	住所を登録する
+	*	@param String $key
+	*	@param $target array[$sectionNoX, $sectionNoZ]
+	*	@param bool $isLivingArea
+	*	@param bool $overWrite 上書きを許可するかどうか
+	*	@return bool $result
+	*/
+	public function registerNavigationPoint(String $key, array $target, bool $isLivingArea, bool $overWrite = false){
+		$area = ($isLivingArea)? 2: 3;
+		if(isset($this->data[11][$area][$key]) && !$overWrite){
+			//同じ名前は登録できない
+			return false;
+		}
+		$this->data[11][$area][$key] = $target;
+		return true;
+	}
+
+	/**
+	*	登録した住所を削除する
+	*	@param String $key
+	*	@param bool $isLivingArea
+	*	@return bool $result
+	*/
+	public function diffNavigationPoint(String $key, bool $isLivingArea){
+		$area = ($isLivingArea)? 2: 3;
+		if(!isset($this->data[11][$area][$key])){
+			//無かった
+			return false;
+		}
+		unset($this->data[11][$area][$key]);
+		return true;
+	}
+
+	/**
+	*	登録した住所のリストを取得する
+	*	@param bool $isLivingArea
+	*	@return bool $result
+	*/
+	public function getNavigatingList(bool $isLivingArea){
+		$area = ($isLivingArea)? 2: 3;
+		return $this->data[11][$area];
+	}
+
 /* Chat
 */
 	/**
@@ -387,9 +470,14 @@ class Account implements MeuHandler {
 				// すでに持ってたら
 				$oldrank = $oldone->getRank();
 				$newrank = $license->getRank();
+
+				// ゲットしたとき用
+				$gottext = Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！ 有効期限：{$license->getValidTimeText()}");
+
 				if($oldrank < $newrank){
 					// 新しくもらったほうがランク高いなら、追加
 					$this->licenses[$licenseNo] = $license;
+					if($this->isOnline()) $this->getPlayer()->sendMessage($gottext);
 					return 1;
 				}elseif($oldrank == $newrank){
 					// 同じなら、まだ追加できる可能性がある
@@ -397,6 +485,7 @@ class Account implements MeuHandler {
 					$newtime = $license->getValidTime();
 					if(0 <= $oldtime && $oldtime <= $newtime){ // 古いライセンスの有効期限が無期限でなければ、延長
 						$this->licenses[$licenseNo] = $license;
+						if($this->isOnline()) $this->getPlayer()->sendMessage($gottext);
 						return 1;
 					}else{
 						// 無期限か、新しいほうが有効期限が短ければ
@@ -424,6 +513,15 @@ class Account implements MeuHandler {
 	*/
 	public function getLicense($licenseNo){
 		return isset($this->licenses[$licenseNo]) ? $this->licenses[$licenseNo] : null;
+	}
+
+	public function removeLicense($licenseNo){
+		if($this->getLicense($licenseNo)){
+			unset($this->licenses[$licenseNo]);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	/**
@@ -511,10 +609,12 @@ class Account implements MeuHandler {
 				$this->data[2][3] += 1; //日数
 			}
 			$this->data[2][1] = $timeNow;//最終ログイン時間
-			$this->data[2][2] += ($timeNow - $this->inTime);//鯖の中にいた累計時間
+			if($timeNow && $this->inTime){
+				$this->data[2][2] += ($timeNow - $this->inTime);//鯖の中にいた累計時間
+			}
 		}
 		public function getFirstLoginTime(){
-			return $this->data[2][1];	
+			return $this->data[2][0];	
 		}
 		public function getLastLoginTime(){
 			return $this->data[2][1];	
@@ -707,6 +807,39 @@ class Account implements MeuHandler {
 		return $this->data[10][1] ?? false;
 	}
 
+	/**
+	*	Naviでの矢印の大きさ
+	*/
+	public function setArrowSize(int $size){
+		return $this->data[10][2] = $size;
+	}
+	public function getArrowSize(){
+		return $this->data[10][2] ?? 1;
+	}
+
+	/**
+	*	Naviでの矢印の高さ
+	*/
+	public function setArrowHeight(int $height){
+		return $this->data[10][3] = $height;
+	}
+	public function getArrowHeight(){
+		return $this->data[10][3] ?? 0;
+	}
+
+	/**
+	*	目的地までの距離を表示するか
+	*/
+	public function setShowDistanceSetting($flag){
+		$this->data[10][4] = (int) $flag;
+	}
+	/**
+	*	trueなら表示する
+	*/
+	public function getShowDistanceSetting(){
+		return $this->data[10][4] ?? true;
+	}
+
 
 	private $data = [];
 
@@ -743,7 +876,7 @@ class Account implements MeuHandler {
 		}else{
 			$name = strtolower($name);
 			$sql = "SELECT * FROM data WHERE `name` = '{$name}';";
-			echo $sql;
+			//echo $sql;
 		}
 		
 		$db = DB::get();
@@ -800,6 +933,7 @@ class Account implements MeuHandler {
 					}
 
 					// 土地系旧形式からの移行用
+					/*
 					if($data = $this->getAddress()){
 						$sectionNoX = $data[0];
 						$sectionNoZ = $data[1];
@@ -810,6 +944,16 @@ class Account implements MeuHandler {
 							}
 							$this->data[4] = $newdata;
 						}
+					}*/
+
+					// 累計ログイン時間がおかしいとき用
+					if(1507270000 < $this->data[2][2]){
+						$this->data[2][2] = 10;
+					} 
+
+					// 読み込み時がログイン時間として
+					if(!$isfromweb){
+						$this->onLoadTime();
 					}
 
 					MainLogger::getLogger()->notice("§aAccount: {$name} data has been loaded");
@@ -881,6 +1025,7 @@ class Account implements MeuHandler {
 		// ライセンス
 		if($this->licenses){
 			// var_dump($this->licenses);
+			$this->data[5] = [];
 			foreach($this->licenses as $licenseNo => $license){
 				if(!$licenseNo || !$license){ // ライセンス追加ミスった時のためのほけんで
 					unset($this->data[5][$licenseNo]);
@@ -903,7 +1048,7 @@ class Account implements MeuHandler {
     	}
     	return true;
     }
-	public function dumpData(){
+	public function dump(){
 		print_r($this->data);
 	}
 

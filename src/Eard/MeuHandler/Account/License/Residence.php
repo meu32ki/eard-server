@@ -59,7 +59,7 @@ class Residence extends License {
 	}
 
     public function getFullName(){
-        return $this->getName()." ".$this->getRankText();
+        return $this->getRank() ? $this->getName()." ".$this->getRankText() : $this->getName();
     }
 
 	public function getImgPath(){
@@ -76,6 +76,6 @@ class Residence extends License {
 		4 => "上流",
 		5 => "富裕"
 	];
-	public $name = "生活";
+	public $name = "在住";
 
 }

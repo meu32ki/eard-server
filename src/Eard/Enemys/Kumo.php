@@ -39,7 +39,7 @@ use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
 class Kumo extends Humanoid implements Enemy{
-	protected $gravity = 0.03;
+	protected $gravity = 0.003;
 	public static $ground = false;
 	public $rainDamage = false;
 

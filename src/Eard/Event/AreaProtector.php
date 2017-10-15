@@ -102,6 +102,11 @@ class AreaProtector{
 		return ceil( $xorz / (self::$section + 1) ) - 1;
 	}
 
+	// return int | xorz;
+	public static function uncalculateSectionNo($sectionNoXorZ){
+		return  (self::$section + 1) * ($sectionNoXorZ + 1) - ceil(self::$section / 2);
+	}
+
 	public static function isOnGrid($xorz){
 		return $xorz % (self::$section + 1) == 0;
 	}
@@ -201,9 +206,17 @@ class AreaProtector{
 		}
 	}
 
-	// return string
+	/**
+	*	codeふたつ入れたら住所返してくれる
+	*	@return string
+	*/
 	public static function getSectionCode($sectionNoX, $sectionNoZ){
 		$ar = range('A', 'Z');
+
+		/*
+			英字のほうは、マイナスをつけないといけない
+			数字のほうは、マイナスはついてる
+		*/
 
 		$left = abs($sectionNoX);
 		$out = "";
@@ -218,6 +231,59 @@ class AreaProtector{
 		return "{$minus}{$sectionA}{$sectionNoZ}";
 	}
 
+
+	/**
+	*	住所入れたらcodeふたつにしてかえしてくれる
+	*	@return array
+	*/
+	public static function getCoordinateFromSectionCode(string $code){
+		$code = strtolower($code);
+		// 英語、日本語以外が入っている
+		if(preg_match("/[^-0-9a-z]+/", $code)){
+			return [0,0];
+		}
+
+		$codear = str_split($code);
+		$ar = array_flip(range('a', 'z')); // 英語から数字に変換する用
+		$flag = true; // trueのときはcodeXの処理中、falseのときはcodeZを処理中
+		$codeX = 0;
+		$minus = 1;
+		$codeZ = 1;
+		$alpha = []; // 英語検証用配列 英語が出てきたかどうか
+		$degit = false; // 数字が出てきたかどうか
+		foreach($codear as $index => $string){
+			if($string === "-"){
+				if($index === 0){
+					$minus = -1;// 先頭がマイナスで始まっていたら
+				}else{
+					$codeZ = -1;
+				}
+			}elseif(ctype_alpha($string)){
+				// 英語なら
+				$alpha[] = $string; // あとのしょりにまわす
+			}else{
+				// 数字なら
+				$codeZ = $codeZ * (int) substr($code, $index); // それより後ろを切り出す
+				$degit = true;
+				break;
+			}
+		}
+
+		// 英語数字がそれぞれ含まれていたか 含まれていない場合は住所形式が正しくない
+		if(!$degit or !$alpha){
+			return [0,0];
+		}
+
+		// 英語部分の判定
+		$powed = count($alpha) - 1; // "AAZ"の場合は2,1,0とかける "DB"のばあいは1,0とかける
+		// "AAZ" は 26*26*1 + 26*1 + 1*25
+		foreach($alpha as $string){
+			$codeX += ($ar[$string] + 1) * pow(26, $powed);
+			//echo ($ar[$string] + 1) * pow(26, $powed), " ";
+			$powed-=1;
+		}
+		return [$minus * $codeX, $codeZ];
+	}
 
 	public static function getSectionCodeFromCoordinate($x, $z){
 		$sectionNoX = self::calculateSectionNo(round($x));
@@ -302,12 +368,7 @@ class AreaProtector{
 			$playerData = Account::get($player);
 			if($ownerNo === 100000){
 				// 政府の土地
-				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, License::RANK_BEGINNER)){
-					return true;
-				}else{
-					$player->sendPopup(self::makeWarning("公共の土地(政府の土地)での設置破壊はできません。"));
-					return false;					
-				}
+				return Government::getInstance()->allowEdit($playerData, $sectionNoX, $sectionNoZ);
 			}else{
 				// 一般の土地
 				$no = $playerData->getUniqueNo();
@@ -321,7 +382,7 @@ class AreaProtector{
 						if($ownerData = Account::getByUniqueNo($ownerNo)){
 							$playerName = $playerData->getName();
 							if(!$ownerData->allowEdit($playerName, $sectionNoX, $sectionNoZ)){
-								$player->sendPopup(self::makeWarning("その土地での設置破壊はできません。"));
+								$player->sendPopup(self::makeWarning("[{$ownerData->getName()}の土地] 設置破壊権限がありません。"));
 								$player->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName)." 土地の編集権限 ".$ownerData->getSectionEdit($sectionNoX, $sectionNoZ).""));	
 								return false;
 							}
@@ -331,7 +392,7 @@ class AreaProtector{
 					return true;
 				}else{
 					//0 …所有者なし
-					$player->sendPopup(self::makeWarning("公共の土地(売地)での設置破壊はできません。"));						
+					$player->sendPopup(self::makeWarning("[売地] 設置破壊はできません。"));						
 					return false;
 				}
 			}
@@ -345,17 +406,22 @@ class AreaProtector{
 	public static function Use(Account $playerData, $x, $y, $z, $blockId){
 		if(!self::canActivateInLivingProtected($blockId)){
 			// 使用できないブロックの場合
-			if( 0 < ($ownerNo = self::getOwnerFromCoordinate($x, $z)) && $ownerNo !== 100000){ // 政府の土地ではなんでも使える
+			$ownerNo = self::getOwnerFromCoordinate($x, $z);
+			$sectionNoX = self::calculateSectionNo($x);
+			$sectionNoZ = self::calculateSectionNo($z);
+			if($ownerNo === 100000){
+				// 政府の土地
+				return Government::getInstance()->allowUse($playerData, $sectionNoX, $sectionNoZ);
+			}elseif( 0 < $ownerNo){
+				// 一般の土地
 				// その土地の所有者を確認し
 				if($ownerData = Account::getByUniqueNo($ownerNo)){
 					// 所有者のデータを手に入れる
 					if($ownerData !== $playerData){
-						$sectionNoX = self::calculateSectionNo($x);
-						$sectionNoZ = self::calculateSectionNo($z);
 						$playerName = $playerData->getName();
 						if(!$ownerData->allowUse($playerName, $sectionNoX, $sectionNoZ)){
 							$blockname = ItemName::getNameOf($blockId);
-							$playerData->getPlayer()->sendPopup(self::makeWarning("そのブロックの使用はできません。"));
+							$playerData->getPlayer()->sendPopup(self::makeWarning("[{$ownerData->getName()}の土地] 実行権限がありません。"));
 							$playerData->getPlayer()->sendMessage(Chat::SystemToPlayer("あなたの権限 ".$ownerData->getAuth($playerName).", 土地の実行権限 ".$ownerData->getSectionUse($sectionNoX, $sectionNoZ).""));		
 							return false;
 						}
@@ -518,7 +584,7 @@ class AreaProtector{
 				--self::$leftSection;
 
 				//オフラインリストに名前を保存
-				Account::$namelist[$uniqueNo] = $playerData->getPlayer()->getName();
+				Account::$index[$uniqueNo] = $playerData->getName();
 
 				//購入時にセーブ
 				$playerData->addSection($sectionNoX, $sectionNoZ);
@@ -541,9 +607,6 @@ class AreaProtector{
 		//新規セクションデーター
 		$sectionData = self::getNewSectionData($uniqueNo, $player->getY());
 		self::$sections[$sectionNoX][$sectionNoZ] = $sectionData;
-
-		// オフラインリストに一応名前保存
-		// Account::$namelist[$uniqueNo] = "政府";
 
 		self::saveSectionFile($sectionNoX, $sectionNoZ, self::getSectionData($sectionNoX, $sectionNoZ));
 
@@ -593,8 +656,8 @@ class AreaProtector{
 		if($address === null){//自宅なし
 			return $price;
 		}
-		$adX = self::calculateSectionNo($address[0]);
-		$adZ = self::calculateSectionNo($address[1]);
+		$adX = $address[0];
+		$adZ = $address[1];
 		/* 引数変更で削除
 		$secX = self::calculateSectionNo($x);
 		$secZ = self::calculateSectionNo($z);*/

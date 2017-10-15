@@ -21,6 +21,7 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\SpellParticle;
 use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\particle\RedstoneParticle;
+use pocketmine\level\generator\normal\eardbiome\Biome;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -39,7 +40,7 @@ use pocketmine\item\Item;
 use pocketmine\block\Block;
 
 use pocketmine\math\Vector3;
-class Deffenian extends Humanoid implements Enemy{
+class Ayzer extends Humanoid implements Enemy{
 
 	//名前を取得
 	public static function getEnemyName(){
@@ -48,7 +49,7 @@ class Deffenian extends Humanoid implements Enemy{
 
 	//エネミー識別番号を取得
 	public static function getEnemyType(){
-		return EnemyRegister::TYPE_DEFFENIAN;
+		return EnemyRegister::TYPE_AYZER;
 	}
 
 	//最大HPを取得
@@ -81,23 +82,84 @@ class Deffenian extends Humanoid implements Enemy{
 			*/
 			[100, 1,
 				[
-					[Item::GUNPOWDER, 0, 1],
+					[Item::SLIMEBALL, 0, 1],
 				],
-			]
+			],
+			[100, 1,
+				[
+					[Item::SUGAR, 0, 1],
+				],
+			],
+			[80, 3,
+				[
+					[Item::SLIMEBALL, 0, 1],
+					[Item::SLIMEBALL, 0, 1],
+					[Item::SLIMEBALL, 0, 1],
+					[Item::SLIMEBALL, 0, 1],
+					[Item::SLIMEBALL, 0, 1],
+					[Item::SUGAR, 0, 1],
+					[Item::SUGAR, 0, 1],
+					[Item::SUGAR, 0, 1],
+					[Item::SUGAR, 0, 1],
+					[Item::SUGAR, 0, 1],
+					[Item::DYE, 4, 1],//ラピスラズリ
+					[Item::REDSTONE, 0, 1],
+					[Item::GOLDEN_NUGGET, 0, 1]
+				],
+			],
+			[50, 2,
+				[
+					[Item::ENDER_PEARL, 0, 1],
+					[Item::DYE, 4, 3],//ラピスラズリ
+					[Item::REDSTONE, 0, 2],
+					[Item::GOLDEN_NUGGET, 0, 3],
+					[Item::IRON_INGOT, 0, 2],
+				],
+			],
+			[5, 1,
+				[
+					[Item::ENDER_PEARL, 0, 2],
+					[Item::DYE, 4, 3],//ラピスラズリ
+					[Item::REDSTONE, 0, 2],
+					[Item::GOLDEN_NUGGET, 0, 3],
+					[Item::IRON_INGOT, 0, 2],
+					[Item::EMERALD, 0, 1],
+					[Item::DIAMOND, 0, 1]
+				],
+			],
+			
 		];
 	}
 
 	public static function getMVPTable(){
 		return [100, 1,
 			[
-				[Item::IRON_INGOT, 0, 1]
+				[Item::ENDER_PEARL, 0, 2],
+				[Item::ENDER_PEARL, 0, 1],
+				[Item::ENDER_PEARL, 0, 1],
+				[Item::ENDER_PEARL, 0, 1],
+				[Item::DYE, 4, 3],//ラピスラズリ
+				[Item::DYE, 4, 2],//ラピスラズリ
+				[Item::REDSTONE, 0, 2],
+				[Item::REDSTONE, 0, 2],
+				[Item::REDSTONE, 0, 2],
+				[Item::REDSTONE, 0, 2],
+				[Item::GOLDEN_NUGGET, 0, 3],
+				[Item::GOLDEN_NUGGET, 0, 2],
+				[Item::GOLDEN_NUGGET, 0, 2],
+				[Item::GOLDEN_NUGGET, 0, 2],
+				[Item::IRON_INGOT, 0, 2],
+				[Item::IRON_INGOT, 0, 1],
+				[Item::IRON_INGOT, 0, 1],
+				[Item::EMERALD, 0, 1],
+				[Item::DIAMOND, 0, 1]
 			]
 		];
 	}
 
 	//召喚時のポータルのサイズを取得
 	public static function getSize(){
-		return 2.5;
+		return 2;
 	}
 
 	//召喚時ポータルアニメーションタイプを取得
@@ -124,21 +186,21 @@ class Deffenian extends Humanoid implements Enemy{
 			Biome::MESA_PLATEAU => true,
 			//雨あり
 			Biome::OCEAN => true,
-			Biome::PLAINS => true,
-			Biome::MOUNTAINS => true,
-			Biome::FOREST => true,
-			Biome::TAIGA => true,
-			Biome::SWAMP => true,
-			Biome::RIVER => true,
+			//Biome::PLAINS => true,
+			//Biome::MOUNTAINS => true,
+			//Biome::FOREST => true,
+			//Biome::TAIGA => true,
+			//Biome::SWAMP => true,
+			//Biome::RIVER => true,
 			Biome::ICE_PLAINS => true,
-			Biome::SMALL_MOUNTAINS => true,
-			Biome::BIRCH_FOREST => true,
+			//Biome::SMALL_MOUNTAINS => true,
+			//Biome::BIRCH_FOREST => true,
 		];
 	}
 
 	//スポーンする頻度を返す(大きいほどスポーンしにくい)
 	public static function getSpawnRate() : int{
-		return 5;
+		return 65;
 	}
 	
 	public static function summon($level, $x, $y, $z){
@@ -161,7 +223,7 @@ class Deffenian extends Humanoid implements Enemy{
 				new StringTag("geometryData", EnemyRegister::loadModelData('Golem')),
 				new StringTag("geometryName", 'skin.Redstone.golem'),
 				new StringTag("capeData", ''),
-				new StringTag("Data", EnemyRegister::loadSkinData('Deffenian')),
+				new StringTag("Data", EnemyRegister::loadSkinData('Ayzer')),
 				new StringTag("Name", 'Redstone_Redstone_Golem')
 			]),
 		]);
@@ -169,7 +231,7 @@ class Deffenian extends Humanoid implements Enemy{
 		if(!is_null($custom_name)){
 			$nbt->CustomName = new StringTag("CustomName", $custom_name);
 		}
-		$entity = new Deffenian($level, $nbt);
+		$entity = new Ayzer($level, $nbt);
 		$entity->setMaxHealth(self::getHP());
 		$entity->setHealth(self::getHP());
 		AI::setSize($entity, self::getSize());
@@ -188,6 +250,7 @@ class Deffenian extends Humanoid implements Enemy{
 		$this->charge = 0;
 		$this->beamYaw = 0;
 		$this->mode = 0;
+		$this->walkSpeed = 0.2;
 	}
 
 	public function onUpdate(int $tick): bool{

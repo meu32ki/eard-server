@@ -33,6 +33,7 @@ use Eard\Utils\Chat;
 use Eard\Utils\Twitter;
 use Eard\DBCommunication\Earmazon;
 use Eard\Form\LicenseForm;
+use Eard\Form\NaviForm;
 
 # Enemys
 use Eard\Enemys\EnemyRegister;
@@ -72,6 +73,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# クエスト登録
 		QuestManager::init();
+
+		# ナビゲーション
+		NaviForm::init();
 
 		#ツイートOAuth登録
 		Twitter::init();
@@ -125,17 +129,13 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		$user = $s->getName();
 		switch($cmd->getName()){
 			case "test": // テスト用に変更とかして使う
-				$player = Server::getInstance()->getPlayer("meu32ki");
+				$player = $s; //Server::getInstance()->getPlayer("meu32ki");
 				$playerData = Account::get($player);
-				new LicenseForm($playerData);
+				$playerData->dump();
 				return true;
 			break;
 			case "t":
-				if(count($a) != 2) return false;
-				$player = Server::getInstance()->getPlayer("meu32ki");
-				$playerData = Account::get($player);
-				$playerData->getFormObject()->Receive($a[0], $a[1]);
-				return true;
+
 			break;
 			case "li": // らいせんすかんけい
 				if(isset($a[0])){
@@ -170,10 +170,6 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 										case 1: $out = "上げました"; break;
 									}
 									$s->sendMessage(Chat::SystemToPlayer($out));
-
-									if($result === 1){
-										$player->sendMessage(Chat::SystemToPlayer("あなたは §f{$license->getFullName()}§7 のライセンスを手に入れました！ 有効期限：{$license->getValidTimeText()}"));
-									}
 								}else{
 									$s->sendMessage(Chat::SystemToPlayer("プレイヤーおらへんで"));
 								}
@@ -441,10 +437,10 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 			$dir = dirname($path);
 			$name = $player->getName();
 			$fullPath = $dir.'/Enemys/skins/'.$name.'.txt';
-			$skinData = $player->getSkinData();
+			$skinData = $player->getSkin()->getSkinData();
 			$encode_skin = urlencode($skinData);
 			file_put_contents($fullPath, $encode_skin);
-			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkinId());
+			Command::broadcastCommandMessage($player, "Skin ID:".$player->getSkin()->getSkinId());
 			return true;
 		}
 		return false;

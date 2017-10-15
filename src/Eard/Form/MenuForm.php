@@ -42,6 +42,7 @@ class MenuForm extends FormBase {
 						["エリア転送",18],
 						["ステータス照会",3],
 						["ライセンス",6],
+						["GPS (目的地設定)",22],
 						//["チャットモード変更",20],
 						//["μを送る", 45],
 					];
@@ -89,6 +90,14 @@ class MenuForm extends FormBase {
 				$day = $playerData->getTotalLoginDay();
 				$address = ($ad = $playerData->getAddress()) ? AreaProtector::getSectionCode($ad[0], $ad[1]) : "自宅なし";
 
+				// 所持ライセンス一覧
+				$licensestext = "";
+				foreach($playerData->getAllLicenses() as $lno => $license){
+					if($license->isValidTime()) $licensestext .= $license->getFullName()." ";
+				}
+				$licensestext = substr($licensestext, 0, -1);
+				if(!$licensestext) $licensestext = "なし";
+
 				// 必要データ
 				$buttons = [
 					['text' => "所持金の使用履歴を見る"],
@@ -101,7 +110,9 @@ class MenuForm extends FormBase {
 					'type'    => "form",
 					'title'   => "メニュー > ステータス確認",
 					'content' => "§f所持金: §7{$meu} §f在住ライセンス: §7{$ltext}\n".
-								"§fプレイ時間: §7{$time} {$day}日目 §f住所: §7{$address}\n",
+								"§f住所: §7{$address} §fプレイ時間: §7{$time} {$day}日目\n".
+								"§f現在有効化しているライセンス: §7{$licensestext}\n".
+								"\n\n",
 					'buttons' => $buttons
 				];
 			break;
@@ -119,6 +130,7 @@ class MenuForm extends FormBase {
 					}else{
 						if(!(Account::getByUniqueNo($ownerNo) instanceof Account) ){
 							$this->sendInternalErrorModal("FormId 4\nownerNo取得不可もしくはownerのデータ取得不可", 1);
+							return false;
 						}
 						$ownerName = $ownerNo ? Account::getByUniqueNo($ownerNo)->getName() : "なし";
 					}
@@ -130,6 +142,9 @@ class MenuForm extends FormBase {
 				$posprice = $ownerNo ? "" : " §f土地価格: §7".AreaProtector::getTotalPrice($playerData, $sectionNoX, $sectionNoZ);
 
 				// ボタン作る
+				$buttons[] = ['text' => "目的地設定"];
+				$cache[] = 21;
+
 				if(!$ownerNo){
 					// 所有者がいない
 					$buttons[] = ['text' => "この土地を買う"];
@@ -152,7 +167,7 @@ class MenuForm extends FormBase {
 				$data = [
 					'type'    => "form",
 					'title'   => "メニュー > GPS (座標情報)",
-					'content' => "住所 {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
+					'content' => "§f現在地住所: {$address} (§f座標 §7x:§f{$x} §7y:§f{$y} §7z:§f{$z})\n".
 								"§f所有者: §7{$ownerName}{$posprice}\n",
 					'buttons' => $buttons
 				];
@@ -292,11 +307,14 @@ class MenuForm extends FormBase {
 				if(!$sections){
 					$this->sendErrorModal($title, "あなたの土地がありません", 1);
 				}else{
+					$player = $playerData->getPlayer();
+					$currentaddress = AreaProtector::getSectionCodeFromCoordinate(round($player->x), round($player->z));
 					$buttons = [];
 					foreach($sections as $index => $d){
 						$ar = explode(":", $index);
 						$address = AreaProtector::getSectionCode((int) $ar[0], (int) $ar[1]);
-						$buttons[] = ['text' => "§l{$address} §r§7(編集".$d[0].",実行".$d[1].")"];
+						$here = $address === $currentaddress ? "§b現在地 §8" : "";
+						$buttons[] = ['text' => "§l{$here}{$address} §r§7(編集".$d[0].",実行".$d[1].")"];
 						$cache[] = 13;
 					}
 
@@ -569,6 +587,12 @@ class MenuForm extends FormBase {
 						}
 					}
 				}
+			break;
+			case 21:
+			case 22:
+				// 目的地設定へ移動
+				$this->close();
+				new NaviForm($playerData, $id === 21);
 			break;
 		}
 

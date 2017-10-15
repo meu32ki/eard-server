@@ -16,7 +16,7 @@ class EnemyRegister{
 	const TYPE_DUMMY = 0;//ここで識別番号を定義
 	const TYPE_HOPPER = 1;
 	const TYPE_CROSSER = 2;
-	const TYPE_DEFFENIAN = 3;
+	const TYPE_AYZER = 3;
 	const TYPE_MANGLER = 4;
 	const TYPE_LAYZER = 5;
 	const TYPE_STINGER = 6;
@@ -32,6 +32,9 @@ class EnemyRegister{
 	const TYPE_KINMEKKI = 16;
 	const TYPE_MUKURO_TONBO = 17;
 	const TYPE_UMIMEDAMA = 18;
+	const TYPE_REIZOUKO = 19;
+	const TYPE_KAMAKIRI = 20;
+	const TYPE_SENTAKUKI = 21;
 
 	private static $instance = null;
 	public static $register = [];
@@ -40,7 +43,7 @@ class EnemyRegister{
 		self::register(Dummy::class, Dummy::getEnemyType());
 		self::register(Hopper::class, Hopper::getEnemyType());
 		self::register(Crosser::class, Crosser::getEnemyType());
-		self::register(Deffenian::class, Deffenian::getEnemyType());
+		self::register(Ayzer::class, Ayzer::getEnemyType());
 		self::register(Mangler::class, Mangler::getEnemyType());
 		self::register(Layzer::class, Layzer::getEnemyType());
 		self::register(Stinger::class, Stinger::getEnemyType());
@@ -56,6 +59,9 @@ class EnemyRegister{
 		self::register(Kinmekki::class, Kinmekki::getEnemyType());
 		self::register(Mukurotonbo::class, Mukurotonbo::getEnemyType());
 		self::register(Umimedama::class, Umimedama::getEnemyType());
+		self::register(Reizouko::class, Reizouko::getEnemyType());
+		self::register(Kamakiri::class, Kamakiri::getEnemyType());
+		self::register(Sentakuki::class, Sentakuki::getEnemyType());
 
 		//NPC
 		Entity::registerEntity(NPC::class, true);

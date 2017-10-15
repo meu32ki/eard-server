@@ -15,29 +15,34 @@ class BankForm extends FormBase {
 	public function send(int $id){
 		$playerData = $this->playerData;
 		$cache = [];
-		$account = Bank::getInstance()->getBankAccount($playerData);
 		$bank = Bank::getInstance();
+		$account = $bank->getBankAccount($playerData);
+
+		if(!$id){
+			$this->close();
+		}
+
+		if(!$account){
+			$data = [
+				'type'    => "modal",
+				'title'   => "銀行 > お預入れ",
+				'content' => "§f銀行口座がまだ開設されていないようです。\n".
+							"新たに口座を開設しますか？\n".
+							"\n".
+							"【条件】\n".
+							"§fデポジット: §7500μ 以上\n".
+							"§f生活ライセンス: §7一般 以上\n".
+							"§f滞在時間:§7 2時間 以上\n".
+							"\n",
+				'button1' => "はい",
+				'button2' => "いいえ",
+			];
+			$cache = [3, 0];
+			break;
+		}
 
 		switch($id){
 			case 1:
-
-			if(!$account){
-				$data = [
-					'type'    => "modal",
-					'title'   => "銀行",
-					'content' => "§f銀行口座がまだ開設されていないようです。\n".
-								"新たに口座を開設しますか？\n".
-								"<<条件>>\n".
-								"§fデポジット: §7500μ 以上\n".
-								"§f生活ライセンス: §7一般 以上\n".
-								"§f滞在時間:§7 2時間 以上\n".
-								"\n",
-					'button1' => "はい",
-					'button2' => "いいえ",
-				];
-				$cache = [3, 0];
-				break;
-			}
 				// メニュー一覧
 				$buttons = [
 					['text' => "お預入れ"],
@@ -48,7 +53,7 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
-        $data = [
+				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
 					'content' => "§fご希望のお取引を選択してください。\n",
@@ -449,16 +454,12 @@ class BankForm extends FormBase {
 			break;
 		}
 
-			$player = $playerData->getPlayer();
-
 		// みせる
 		if($cache){
 			// sendErrorMoralのときとかは動かないように
 			$this->lastSendData = $data;
 			$this->cache = $cache;
 			$this->show($id, $data);
-		}else{
-			// echo "formIdが1000と表示されていれば送信済みでもそれいがいならcacheが設定されていないので送られてない\n";
 		}
 	}
 

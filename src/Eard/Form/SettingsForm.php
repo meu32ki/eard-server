@@ -35,6 +35,23 @@ class SettingsForm implements Form {
 			'text' => "戦闘時発生ダメージ表示",
 			'default' => (bool) $playerData->getShowDamageSetting(),
 		];
+		$content[] = [
+			'type' => "toggle",
+			'text' => "目的地までの距離表示",
+			'default' => (bool) $playerData->getShowDistanceSetting(),
+		];
+		$content[] = [
+			'type' => "step_slider",
+			'text' => "目的地設定での矢印の大きさ",
+			'steps' => ["小", "中", "大"],
+			'default' => (int) $playerData->getArrowSize(),
+		];
+		$content[] = [
+			'type' => "step_slider",
+			'text' => "目的地設定での矢印の高さ",
+			'steps' => ["下", "中", "上"],
+			'default' => (int) $playerData->getArrowHeight(),
+		];
 
 		// おおもとのデータ
 		$data = [
@@ -63,6 +80,9 @@ class SettingsForm implements Form {
 
 		$playerData->setAttackSetting($data[0]);
 		$playerData->setShowDamageSetting($data[1]);
+		$playerData->setShowDistanceSetting($data[2]);
+		$playerData->setArrowSize((int) $data[3]);
+		$playerData->setArrowHeight((int) $data[4]);
 		return true;
 	}
 }
