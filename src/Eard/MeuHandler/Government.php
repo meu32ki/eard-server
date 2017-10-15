@@ -89,6 +89,14 @@ class Government implements MeuHandler {
 	}
 
 /*
+	土地系
+*/
+
+	public function getAddress(){
+		return self::$address;
+	}
+
+/*
 	workerdata
 */
 
@@ -97,17 +105,35 @@ class Government implements MeuHandler {
 	}	
 
 	public static function isWorker($name){
-		return self::$workerdata[strtolower($name)] ?? false;
+		return isset(self::$workerdata[strtolower($name)]);
 	}	
 
 	public static function addWorker($name){
-		self::$workerdata[strtolower($name)] = true;
+		self::$workerdata[strtolower($name)] = time();
 		return true;
 	}
 
 	public static function removeWorker($name){
 		unset(self::$workerdata[strtolower($name)]);
 		return true;
+	}
+
+	public static function getWorkerTime($name){
+		return self::$workerdata[strtolower($name)] ?? 0;
+	}
+
+	public static function setWorkerTime($name, $time){
+		self::$workerdata[strtolower($name)] = $time;
+		return true;
+	}
+
+	/*
+	*	政府関係者の時給
+	*/
+	public static function paidPerHour($playerData){
+		$license = $playerData->getLicense(License::GOVERNMENT_WORKER);
+		$rank = $license instanceof License ? $license->getRank() : 0;
+		return 1500 + 500 * ($rank - 1);
 	}
 
 /*
@@ -144,6 +170,10 @@ class Government implements MeuHandler {
 	*	@return bool
 	*/
 	public static function giveMeu(Account $playerData, $amount, $reason){
+		if(!$amount){
+			return false;
+		}
+
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
 			// お金の同期、変動していたら読み込む
@@ -173,6 +203,10 @@ class Government implements MeuHandler {
 	*	@return bool
 	*/
 	public static function receiveMeu(Account $playerData, $amount, $reason){
+		if(!$amount){
+			return false;
+		}
+
 		$uniqueNo = $playerData->getUniqueNo();
 		if($uniqueNo < 100000){ //会社にはおくれない
 			// お金の同期、変動していたら読み込む
@@ -230,11 +264,13 @@ class Government implements MeuHandler {
 		if($data){
 			self::$CentralBankFirst = $data[0];
 			self::$CentralBankMeu = Meu::get($data[1], self::getInstance());
+			self::$address = $data[2];
 			MainLogger::getLogger()->notice("§aGovernment: data has been loaded");
 		}else{
 			//初回用
 			self::$CentralBankFirst = 1000 * 10000;
 			self::$CentralBankMeu = Meu::get(1000 * 10000, self::getInstance());
+			self::$address = [1,1];
 			MainLogger::getLogger()->notice("§eGovernment: No data found. Set the amount of Meu");
 		}
 
@@ -251,7 +287,8 @@ class Government implements MeuHandler {
 			// よきんでーた
 			$data = [
 				self::$CentralBankFirst,
-				$bankMeu->getAmount()
+				$bankMeu->getAmount(),
+				self::$address,
 			];
 			$result = DataIO::saveIntoDB('Government', $data);
 			if($result){
@@ -280,7 +317,7 @@ class Government implements MeuHandler {
 	}
 
 	private static $CentralBankFirst, $CentralBankMeu;
-	private static $authdata, $workerdata = [];
+	private static $authdata, $workerdata, $address = [];
 	public static $instance = null;
 
 
