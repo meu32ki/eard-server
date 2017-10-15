@@ -546,7 +546,7 @@ class Account implements MeuHandler {
 		$residence = $this->getLicense(License::RESIDENCE);
 
 		// residenceを持っており、かつ上流以上であれば
-		$maxCost = ( $residence instanceof License && 4 <= $residence->getRank() ) ? 5 : 6;
+		$maxCost = ( $residence instanceof License && 4 <= $residence->getRank() ) ? 6 : 5;
 
 		// 今現在持っており、有効なライセンスのコストの総計
 		$newLicenseNo = $license->getLicenseNo();
