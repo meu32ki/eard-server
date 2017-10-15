@@ -17,6 +17,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\Event\BlockObject\BlockMenu;
+use Eard\Form\EarmazonForm;
 
 
 /****
@@ -508,29 +509,11 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 
 		case 100: // 管理画面
+			$playerData = Account::get($player);
+			new EarmazonForm($playerData);
 			$ar = [
-				["管理画面", false],
-				["販売アイテムを追加", 101]
-			];
-			break;
-		case 101:
-			$data = $view->getData();
-			$itemid = isset($data[0]) ? $data[0] : 0;
-			$itemmeta = isset($data[1]) ? $data[1] : 0;
-			$itemamount = isset($data[2]) ? $data[2] : 1;
-			$itemprice = isset($data[3]) ? $data[3] : 100;
-			$itemname = ItemName::getNameOf($itemid, $itemmeta);
-			$ar = [
-				["管理画面 販売アイテム追加", false],
-				["追加アイテム: {$itemname}\n{$itemid}:{$itemmeta}", 102],
-				["追加数量: {$itemamount}", 105],
-				["販売価格: {$itemprice}", 106],
-			];
-			break;
-		case 102:
-			$ar = [
-				["管理画面 販売アイテム追加>アイテム検索", false],
-				[],
+				["{$thisname}", false],
+				["ページがありません",1]
 			];
 			break;
 		default: 
