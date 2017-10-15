@@ -259,8 +259,8 @@ class MenuForm extends FormBase {
 									"{$money}".
 									"\n".
 									"よろしいですか？",
-						'button1' => "はい",
-						'button2' => "いいえ",
+						'button1' => "§bはい",
+						'button2' => "§cいいえ",
 					];
 					$cache = [$id == 7 ? 9 : 10, 4];
 				}
@@ -580,8 +580,8 @@ class MenuForm extends FormBase {
 								'content' => "§f「惑星Eard > {$p->getName()}」へ行きます。".
 											"${msg}\n".
 											"§fよろしいですか？",
-								'button1' => "やめる",
-								'button2' => "行く",
+								'button1' => "§cやめる",
+								'button2' => "§b行く",
 							];
 							$cache = [1, 18];
 						}
