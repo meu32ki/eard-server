@@ -19,6 +19,6 @@ class Handiworker extends CostableUpgradeable {
         2 => 3,
         3 => 5
     ];
-	public $name = "服飾";
+	public $name = "細工師";
 
 }
