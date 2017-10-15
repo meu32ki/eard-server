@@ -23,6 +23,7 @@ use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
+use Eard\MeuHandler\Bank;
 use Eard\Event\Event;
 use Eard\Event\AreaProtector;
 use Eard\Event\BlockObject\BlockObjectManager;
@@ -79,6 +80,9 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		#ツイートOAuth登録
 		Twitter::init();
 
+		#銀行における債務の未弁済確認
+		Bank::init();
+
 		# (http://korado.s602.xrea.com/service/pngconverter.php)で変換したスキンデータを使うときに必要
 		//EnemyRegister::reEncode('gallacy');
 	}
@@ -105,7 +109,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		# Eard関連
 		Government::save();
 		BlockObjectManager::saveAllObjects();
-		BlockObjectManager::save();	
+		BlockObjectManager::save();
 		Account::save();
 		AreaProtector::save();
 
@@ -118,7 +122,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 		AreaProtector::reset();
 		Account::reset();
 		Earmazon::reset();
-		BlockObjectManager::reset();	
+		BlockObjectManager::reset();
 	}
 
 	public function onCommand(CommandSender $s, Command $cmd, string $label, array $a): bool{
@@ -171,7 +175,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								}
 							}else{
 								$s->sendMessage(Chat::SystemToPlayer("パラメータ不足 /li give <player> <licenceNo> [time] [rank]"));
-							}							
+							}
 						break;
 						case "confirm":
 							$playerData = Account::get($s);
@@ -343,7 +347,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 						break;
 					}
 				}
-				return false;				
+				return false;
 			break;
 			case "co": // Connection
 				if(isset($a[0])){
@@ -448,4 +452,3 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 	}
 	public static $instance = null;
 }
-
