@@ -91,9 +91,8 @@ class EarmazonForm extends FormBase {
 					return false;
 				}
 
-				$this->amount = $amount;
-				$this->price = $price;
-
+				$this->amount = (int) $amount;
+				$this->price = (int) $price;
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$content = "ID:{$this->id} Damage:{$this->meta} 「{$itemName}」 を 1個 {$price}μ で {$amount}個 買取発注をかけます。よろしいですか？";
 				$this->sendModal($title, $content, "よろしい",4, "よろしくない",2);
@@ -150,8 +149,8 @@ class EarmazonForm extends FormBase {
 					return false;
 				}
 
-				$this->amount = $amount;
-				$this->price = $price;
+				$this->amount = (int) $amount;
+				$this->price = (int) $price;
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$content = "ID:{$this->id} Damage:{$this->meta} 「{$itemName}」 を 1個 {$price}μ で {$amount}個 販売します。よろしいですか？";
 				$this->sendModal($title, $content, "よろしい",7, "よろしくない",5);
@@ -209,8 +208,8 @@ class EarmazonForm extends FormBase {
 					$itemName = ItemName::getNameOf($id,$damage);
 					$content = "§fアイテム「{$itemName}」を選択しました。";
 
-					$this->id = $id;
-					$this->meta = $damage;
+					$this->id = (int) $id;
+					$this->meta = (int) $damage;
 					$this->sendModal($title, $content, "OK、わかった",1, "いや、指定しなおそう",101);
 				}
 			break;
