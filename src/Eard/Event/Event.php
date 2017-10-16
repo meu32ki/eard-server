@@ -356,7 +356,7 @@ class Event implements Listener{
 							}
 						break;
 						case 2:
-							if($e->getItem()->isShovel() && !AreaProtector::Edit($player, $x, $y, $z)){
+							if(($e->getItem()->isShovel() or $e->getItem()->getId()===Item::DYE) && !AreaProtector::Edit($player, $x, $y, $z)){
 								$e->setCancelled(true);
 								break;
 							}
