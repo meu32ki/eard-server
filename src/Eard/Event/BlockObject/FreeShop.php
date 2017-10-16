@@ -190,12 +190,9 @@ class FreeShop implements BlockObject {
 	}
 
 	public function getData(){
-		if(!$this->inventory){
-			$this->inventory = new ChestIO($player);
-			$this->inventory->setItemArray($this->itemArray);
-			$this->inventory->setName($this->getShopName());
+		if($this->inventory){
+			$this->itemArray = $this->inventory->getItemArray();
 		}
-		$this->itemArray = $this->inventory->getItemArray();
 		$data = [
 			$this->ownerName,
 			$this->itemArray,
