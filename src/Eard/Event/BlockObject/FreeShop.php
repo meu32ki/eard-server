@@ -142,6 +142,7 @@ class FreeShop implements BlockObject {
 			}
 			$player->sendMessage(Chat::SystemToPlayer($message));
 		}
+		return false;
 	}
 
 	/**
