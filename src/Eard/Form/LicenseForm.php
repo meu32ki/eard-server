@@ -183,7 +183,7 @@ class LicenseForm extends FormBase {
 					$newlicense->upgrade();
 					if(!$playerData->canAddNewLicense($newlicense)){
 						$this->sendErrorModal(
-							"ライセンス > {$newlicense->getName()} > {$title}",
+							"ライセンス > {$newlicense->getName()} > ランクアップ",
 							"現在、ライセンスをランクアップした際のコストが足らないため、ランクアップできないようです。\nこのライセンスをランクアップしたい場合、他のライセンスの無効化やランクダウンをして、コストが足りるように調整する必要があります。", 2
 						);
 					}else{
