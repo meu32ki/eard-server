@@ -346,7 +346,7 @@ class Event implements Listener{
 								case 458: // ビートルート
 								case 392: // じゃがいも
 								case 391: // にんじん
-									if(AreaProtector::Edit($player, $x, $y, $z)){
+									if(!AreaProtector::Edit($player, $x, $y, $z)){
 										$e->setCancelled(true);
 									}else if(!$playerData->hasValidLicense(License::FARMER)){
 										$player->sendMessage(Chat::SystemToPlayer("§e「農家」ライセンスがないので使用できません。"));
