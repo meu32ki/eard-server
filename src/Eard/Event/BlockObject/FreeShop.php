@@ -151,7 +151,7 @@ class FreeShop implements BlockObject {
 	*	@return bool
 	*/
 	public function StartBreak(Player $player){
-
+		return false;
 	}
 
 	/**
@@ -164,11 +164,17 @@ class FreeShop implements BlockObject {
 	public function Break(Player $player){
 		$name = $player->getName();
 		if($name === $this->ownerName){
+			if(!$this->inventory){
+				$this->inventory = new ChestIO($player);
+				$this->inventory->setItemArray($this->itemArray);
+				$this->inventory->setName($this->getShopName());
+			}
 			$this->itemArray = $this->inventory->getItemArray();
 			if(isset($this->itemArray[0])){
 				$player->sendMessage(Chat::SystemToPlayer("§c商品が入っているため破壊できません"));
 				return true;
 			}
+			return false;
 		}else{
 			$player->sendMessage(Chat::SystemToPlayer("§c他人のショップは破壊できません"));
 			return true;
