@@ -546,6 +546,6 @@ class DeleteText extends Task{
 
 	public function onRun($tick){
 		$this->particle->setInvisible();
-		if($this->player instanceof Player) $this->player->getLevel()->addParticle($this->particle, [$this->player]);
+		if($this->player->getLevel() !== null) $this->player->getLevel()->addParticle($this->particle, [$this->player]);
 	}
 }
