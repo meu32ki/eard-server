@@ -39,6 +39,7 @@ class HelpForm extends FormBase {
 				$pos = $player->getPosition()->add(AI::getFrontVector($player))->floor();
 				$pos->y = $player->getLevel()->getHighestBlockAt($pos->x, $pos->z);
 				$player->teleport($pos->add(0.5, 1, 0.5));
+				$this->close();
 			break;
 			case 3:
 				$data = [
@@ -156,6 +157,7 @@ class HelpForm extends FormBase {
 					$inventry->addItem($item);
 					$player->sendMessage(Chat::SystemToPlayer("携帯を受け取りました"));
 				}
+				$this->close();
 			break;
 		}
 
