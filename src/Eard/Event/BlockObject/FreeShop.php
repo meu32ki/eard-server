@@ -190,6 +190,11 @@ class FreeShop implements BlockObject {
 	}
 
 	public function getData(){
+		if(!$this->inventory){
+			$this->inventory = new ChestIO($player);
+			$this->inventory->setItemArray($this->itemArray);
+			$this->inventory->setName($this->getShopName());
+		}
 		$this->itemArray = $this->inventory->getItemArray();
 		$data = [
 			$this->ownerName,
@@ -231,6 +236,11 @@ class FreeShop implements BlockObject {
 	*	@return String | bool
 	*/
 	public function getItemNameList($separator = "、"){
+		if(!$this->inventory){
+			$this->inventory = new ChestIO($player);
+			$this->inventory->setItemArray($this->itemArray);
+			$this->inventory->setName($this->getShopName());
+		}
 		$list = $this->inventory->getItemArray();
 		if(!isset($list[0])){
 			return false;//なんもはいってない
