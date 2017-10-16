@@ -39,6 +39,12 @@ class Recipe {
 		FishingHook::setFishes($fishes);
 	}
 
+	//ライセンス変更時とかに実行するやつ
+	public static function updateRecipe($player){
+		Server::getInstance()->getCraftingManager()->buildCraftingDataCache();
+		$player->dataPacket(Server::getInstance()->getCraftingManager()->getCraftingDataPacket());
+	}
+
 	//こいつでプレイヤーごとにクラフトできるやつ返して
 	public static function getRecipe($player){
 		$playerData = Account::get($player);
@@ -52,6 +58,7 @@ class Recipe {
 			みたいに書くとダメージ値ごとに設定できる
 			全部許可したい場合は空の配列渡して
 			*/
+
 			5 => [
 				2 => true,
 				1 => true,

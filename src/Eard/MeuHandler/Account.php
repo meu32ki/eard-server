@@ -16,6 +16,7 @@ use Eard\MeuHandler\Account\Mail;
 use Eard\MeuHandler\Account\ItemBox;
 use Eard\MeuHandler\Account\License\License;
 use Eard\MeuHandler\Account\License\Costable;
+use Eard\MeuHandler\Account\License\Recipe;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 use Eard\Quests\Quest;
@@ -152,6 +153,7 @@ class Account implements MeuHandler {
 		$player->removeEffect(Effect::HASTE);
 		$player->removeEffect(Effect::DAMAGE_RESISTANCE);
 		$player->setMaxHealth(20);
+		Recipe::updateRecipe($player);
 		switch (true) {
 			case $this->hasValidLicense(License::MINER, 2):
 				$player->addEffect(Effect::getEffect(Effect::HASTE)->setAmplifier(1)->setDuration(INT32_MAX-1));
