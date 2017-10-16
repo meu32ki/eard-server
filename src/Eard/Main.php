@@ -187,6 +187,18 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 							$out = !$out ? "あなたは何もライセンスを持っていません" : "\n{$out}";
 							$s->sendMessage(Chat::SystemToPlayer($out));
 						break;
+						case "resetalllicenses"://デバッグ用危ないからhelpには出さない
+							$playerData = Account::get($s);
+							$licenses = $playerData->getAllLicenses();
+							$out = "";
+							foreach($licenses as $license){
+								$out .= "削除済み : {$license->getFullName()} {$license->getValidTimeText()}\n";
+								$playerData->removeLicense($license->getLicenseNo());
+							}
+							$out = !$out ? "あなたは何もライセンスを持っていません" : "\n{$out}";
+							$playerData->applyEffect();
+							$s->sendMessage(Chat::SystemToPlayer($out));
+						break;
 						default:
 							$s->sendMessage(Chat::SystemToPlayer("パラメータがおかしい /li [give|confirm]"));
 						break;
