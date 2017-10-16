@@ -265,6 +265,8 @@ class FreeShop implements BlockObject {
 		if(self::$buyCheck[$this->indexNo][$name]+4 < $now){//前回のタップから4秒以上経過
 			self::$buyCheck[$this->indexNo][$name] = $now;
 			return 0;
+		}elseif(!$this->getItemNameList()){//商品が入っているかチェック
+			return 0;
 		}elseif(Account::get($player)->getMeu()->getAmount() < $price){//所持金不足のチェック
 			self::$buyCheck[$this->indexNo][$name] = 0;
 			return -1;
