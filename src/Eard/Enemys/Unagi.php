@@ -211,7 +211,7 @@ class Unagi extends Humanoid implements Enemy{
 			]),
 			"Skin" => new CompoundTag("Skin", [
 				new StringTag("geometryData", EnemyRegister::loadModelData('Unagi')),
-				new StringTag("geometryName", 'geometry.unagi'),
+				new StringTag("geometryName", 'geometry.unagi2'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Unagi')),
 				new StringTag("Name", 'unagi')
@@ -315,6 +315,9 @@ class Unagi extends Humanoid implements Enemy{
 					//$p = AI::getFrontVector($this, true)->multiply(2)->add($this);
 					AI::chargerShot($this, 35, new TerrainParticle($this, Block::get(8)), new DestroyBlockParticle($this, Block::get(8)), 8, 0, 1.6, true);
 					$this->pitch -= 3;
+					if($this->pitch < -30){
+						$this->pitch = -30;
+					}
 				break;
 			}
 		}
