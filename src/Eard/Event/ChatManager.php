@@ -80,7 +80,7 @@ class ChatManager {
 			case self::CHATMODE_VOICE:
 				if($targets = self::searchTarget($player)){ // $targets = Player[]
 					// 周囲に誰かいる
-					$msg = Chat::Format($player->getDisplayName(), "§a周囲", $message);
+					$msg = Chat::Format($player->getDisplayName(), "§a周囲", "§f".$message);
 					$consoleMsg = $msg;
 					foreach($targets as $e){
 						$e->sendMessage($msg);
@@ -95,7 +95,7 @@ class ChatManager {
 				break;
 			// 全体、みずいろ
 			case self::CHATMODE_ALL:
-				$msg = Chat::Format($player->getDisplayName(), "§b全体", $message);
+				$msg = Chat::Format($player->getDisplayName(), "§b全体", "§f".$message);
 				Server::getInstance()->broadcastMessage($msg);
 				break;
 			// 個人、オレンジ色
@@ -103,7 +103,7 @@ class ChatManager {
 				if(!isset($target)) $target = $playerData->getChatTarget();
 				if($target && $target->isOnline()){
 					//　指定したターゲットがいまだイオンラインであったら
-					$msg = Chat::Format($player->getDisplayName(), "§6個人(".$target->getDisplayName().")", $message);
+					$msg = Chat::Format($player->getDisplayName(), "§6個人(".$target->getDisplayName().")", "§f".$message);
 					$consoleMsg = $msg;
 					$target->sendMessage($msg);
 					$player->sendMessage($msg);
