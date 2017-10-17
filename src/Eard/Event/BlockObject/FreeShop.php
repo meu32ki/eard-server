@@ -127,7 +127,7 @@ class FreeShop implements BlockObject {
 						$message = "このショップは準備中のため、購入出来ません";
 					}else{
 						$inv = $player->getInventory();
-						if(!$inv->canAddItem($item)){
+						if(!$inv->canAddItem(Item::get(0))){
 							$message = "持ち物がいっぱいです";
 						}else{
 							$meu = Account::get($player)->getMeu()->spilit($price);
