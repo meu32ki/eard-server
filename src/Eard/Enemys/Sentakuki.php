@@ -93,7 +93,7 @@ class Sentakuki extends Humanoid implements Enemy{
 			[75, 5,
 				[
 					[Item::RAW_FISH, 0, 1],
-					[Item::LETHER, 0, 1],
+					[Item::LEATHER, 0, 1],
 					[Item::IRON_INGOT, 0, 1],
 					[Item::CLOWN_FISH, 0, 1],
 					[Item::REDSTONE, 0, 1],
