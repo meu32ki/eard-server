@@ -15,7 +15,7 @@ use Eard\MeuHandler\Account\License\License;
 class EarmazonForm extends FormBase {
 
 	const NEXT = 5;
-	const SEARCH = 101;
+	const SEARCH = 100;
 
 	/*
 		アイテムを選択して、そのアイテムをどうするかを決めてって感じ。
@@ -31,7 +31,9 @@ class EarmazonForm extends FormBase {
 
 				$buttons[] = ['text' => "アイテム選択"];
 				$cache[] = self::SEARCH;
-				$gwrank = $playerData->getLicense(License::GOVERNMENT_WORKER)->getRank();
+
+				$license = $playerData->getLicense(license::GOVERNMENT_WORKER);
+				$gwrank = $license instanceof License ? $license->getRank() : 0;
 				if($this->id != 0){
 					switch($gwrank){
 						case 6: //長官
@@ -53,7 +55,8 @@ class EarmazonForm extends FormBase {
 						break;
 					}
 					$itemName = ItemName::getNameOf($this->id, $this->meta);
-					$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+					$quantity = Earmazon::getStorageAmount($this->id, $this->meta);
+					$content = "§e「{$itemName}」 §7ID:§f{$this->id} §7Damage:§f{$this->meta} §7Qty:§f{$quantity}";
 				}else{
 					$content = "";
 				}
@@ -70,7 +73,8 @@ class EarmazonForm extends FormBase {
 */
 			case 2:
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
-				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+				$quantity = Earmazon::getStorageAmount($this->id, $this->meta);
+				$content = "§e「{$itemName}」 §7ID:§f{$this->id} §7Damage:§f{$this->meta} §7Qty:§f{$quantity}";
 				$data = [
 					'type'    => "custom_form",
 					'title'   => "Earmazon管理 > 買取アイテム追加",
@@ -128,11 +132,12 @@ class EarmazonForm extends FormBase {
 */
 			case 3:
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
-				if(Earmazon::getStorageAmount($this->id, $this->meta) <= 0){
+				$quantity = Earmazon::getStorageAmount($this->id, $this->meta);
+				if($quantity <= 0){
 					$this->sendErrorModal("Earmazon管理 > 販売アイテム追加", "{$itemName}の在庫がありません。\n次官以上の権限者が在庫を追加するか、買取アイテムを追加して集めてください。", 1);
 					return false;
 				}
-				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+				$content = "§e「{$itemName}」 §7ID:§f{$this->id} §7Damage:§f{$this->meta} §7Qty:§f{$quantity}";
 				$data = [
 					'type'    => "custom_form",
 					'title'   => "Earmazon管理 > 販売アイテム追加",
@@ -190,7 +195,8 @@ class EarmazonForm extends FormBase {
 */
 			case 4:
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
-				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+				$quantity = Earmazon::getStorageAmount($this->id, $this->meta);
+				$content = "§e「{$itemName}」 §7ID:§f{$this->id} §7Damage:§f{$this->meta} §7Qty:§f{$quantity}";
 				$data = [
 					'type'    => "custom_form",
 					'title'   => "Earmazon管理 > 在庫を追加",
@@ -241,7 +247,8 @@ class EarmazonForm extends FormBase {
 			case 5:
 				$title = "Earmazon管理 > 在庫から引き出す";
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
-				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+				$quantity = Earmazon::getStorageAmount($this->id, $this->meta);
+				$content = "§e「{$itemName}」 §7ID:§f{$this->id} §7Damage:§f{$this->meta} §7Qty:§f{$quantity}";
 				$data = [
 					'type'    => "custom_form",
 					'title'   => $title,
@@ -275,7 +282,7 @@ class EarmazonForm extends FormBase {
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$e_amount = Earmazon::getStorageAmount($this->id, $this->meta);
 				if(Earmazon::getStorageAmount($this->id, $this->meta) < $amount){
-					$this->sendErrorModal($title, "在庫不足。\n「{$itemName}」の在庫は{$e_amount}しかありません。", 5);
+					$this->sendErrorModal($title, "在庫不足。\n「{$itemName}」の在庫は{$e_amount}個しかありません。", 5);
 					return false;
 				}
 				$this->amount = (int) $amount;
@@ -309,10 +316,22 @@ class EarmazonForm extends FormBase {
 	アイテム検索
 */
 			case self::SEARCH:
+				$data = [
+					'type'    => "form",
+					'title'   => "Earmazon管理 > アイテム選択",
+					'content' => "",
+					'buttons' => [
+						['text' => "IDから探す"],
+						['text' => "カテゴリから探す"],
+					]
+				];
+				$cache = [self::SEARCH+1, self::SEARCH+2];
+			break;
+			case self::SEARCH+1:
 				// さがすやつ
 				$data = [
 					'type'    => "custom_form",
-					'title'   => "Earmazon管理 > アイテム選択",
+					'title'   => "Earmazon管理 > アイテム選択 > IDから探す",
 					'content' => [
 						[
 							'type' => "label",
@@ -326,7 +345,7 @@ class EarmazonForm extends FormBase {
 						],
 						[
 							'type' => "input",
-							'text' => "DAMAGE",
+							'text' => "Damage",
 							'placeholder' => "半角数字で入力",
 							'default' => $this->meta != 0 ? (string) $this->meta : ""
 						],
@@ -338,9 +357,9 @@ class EarmazonForm extends FormBase {
 				];
 				$cache = [self::SEARCH+self::NEXT];
 			break;
-			case self::SEARCH+self::NEXT:
+			case self::SEARCH+1+self::NEXT:
 				// 探したアイテム判定
-				$title = "Earmazon管理 > アイテム選択";
+				$title = "Earmazon管理 > アイテム選択 > ID指定";
 				$data = $this->lastData;
 				$id = $data[1] ?? 0;
 				$damage = $data[2] ?? 0;
@@ -352,11 +371,72 @@ class EarmazonForm extends FormBase {
 
 					$this->id = (int) $id;
 					$this->meta = (int) $damage;
-					$this->sendModal($title, $content, "OK、わかった",1, "いや、指定しなおそう",self::SEARCH);
+					$this->sendModal($title, $content, "§bOK、わかった",1, "§cいや、指定しなおそう",self::SEARCH);
 				}
 			break;
-			case self::SEARCH+self::NEXT*2:
-				// 決定
+
+			case self::SEARCH+2:
+				// かてごりからさがすやつ
+				$data = [
+					'type'    => "form",
+					'title'   => "Earmazon管理 > アイテム選択 > カテゴリから探す",
+					'content' => "",
+					'buttons' => [
+						['text' => "一般ブロック"],
+						['text' => "装飾用ブロック"],
+						['text' => "鉱石系"],
+						['text' => "設置ブロック"],
+						['text' => "草花"],
+						['text' => "RS系統"],
+						['text' => "素材"],
+						['text' => "ツール"],
+						['text' => "食べ物"],
+						['text' => "戻る"]
+					]
+				];
+				$cache = [self::SEARCH+2+self::NEXT*2];
+			break;
+			case self::SEARCH+2+self::NEXT*2:
+				if($this->lastData === 9){ // 「もどる」
+					$this->send(self::SEARCH);
+					return false;
+				}
+
+				$categoryNo = $this->lastData + 1;
+				$this->categoryNo = $categoryNo;
+
+				$listofitem = ItemName::getListByCategory($categoryNo);
+				$ar = ["一般ブロック","装飾用ブロック","鉱石系","設置ブロック","草花","RS系統","素材","ツール","食べ物"];
+				$categoryText = $ar[$this->lastData];
+
+				// ぼたんつくる
+				$buttons = [];
+				$page = self::SEARCH+2+self::NEXT*3;
+				foreach($listofitem as $d){
+					$name = (isset($d[0]) && isset($d[1])) ? "§l".ItemName::getNameOf($d[0],$d[1])."§r ( {$d[0]}:{$d[1]} )" : "";
+					$buttons[] = ['text' => $name];
+					$cache[] = $page;
+				}
+				$buttons[] = ['text' => "戻る"];
+				$cache[] = self::SEARCH+2;
+
+				$data = [
+					'type'    => "form",
+					'title'   => "アイテム選択 > カテゴリから探す > {$categoryText}",
+					'content' => "",
+					'buttons' => $buttons
+				];
+			break;
+			case self::SEARCH+2+self::NEXT*3:
+				$listofitem = ItemName::getListByCategory($this->categoryNo);
+				$this->id = $listofitem[$this->lastData][0];
+				$this->meta = $listofitem[$this->lastData][1];
+
+				$title = "アイテム選択 > カテゴリから探す";
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
+				$content = "§fアイテム「{$itemName}」を選択しました。";
+				$this->sendModal($title, $content, "§bOK、わかった",1, "§cいや、指定しなおそう",self::SEARCH);
+
 			break;
 		}
 
@@ -373,4 +453,6 @@ class EarmazonForm extends FormBase {
 
 	public $id, $meta = 0;
 	public $amount, $price = 0;
+
+	private $categoryNo = 0;
 }

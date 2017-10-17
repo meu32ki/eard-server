@@ -513,7 +513,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 			new EarmazonForm($playerData);
 			$ar = [
 				["{$thisname}", false],
-				["ページがありません",1]
+				["トップへ戻れください",1]
 			];
 			break;
 		default: 

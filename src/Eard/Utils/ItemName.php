@@ -30,7 +30,8 @@ class ItemName{
 
 		foreach(self::$listByName as $name => $i){
 			$listById[$i[0]][$i[1]] = $name;
-			$listByCat[$i[0]][$i[1]] = isset($i[2]) ? $i[2] : 0;
+			$listByCat[$i[0]][$i[1]] = $i[2];
+			$listByCategory[$i[2]][] = [$i[0], $i[1]];
 			if($i[3]){
 				if( isset($listByLicense[$i[3]]) ){
 					$listByLicense[$i[3]] .= $name.", ";
@@ -42,6 +43,7 @@ class ItemName{
 		self::$listById = $listById;
 		self::$listByCat = $listByCat;
 		self::$listByLicense = $listByLicense;
+		self::$listByCategory = $listByCategory;
 		// print_r($listById);
 	}
 
@@ -66,8 +68,12 @@ class ItemName{
 		return 0;
 	}
 
+	public static function getListByCategory($categoryNo){
+		return self::$listByCategory[$categoryNo] ?? [];
+	}
+
 	/**
-	*	@return int
+	*	@return string
 	*/
 	public static function getAllItemNameCanBeCreatedBy($realLicenseNo){
 		if( isset(self::$listByLicense[$realLicenseNo]) ){
@@ -848,4 +854,5 @@ class ItemName{
 	private static $listById = [];
 	private static $listByCat = [];
 	private static $listByLicense = [];
+	private static $listByCategory = [];
 }
