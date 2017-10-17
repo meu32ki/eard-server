@@ -114,6 +114,8 @@ class Event implements Listener{
 		$e->setJoinMessage(Chat::getJoinMessage($player->getDisplayName()));
 		Connection::getPlace()->recordLogin($player->getName()); //　オンラインテーブルに記録
 		Account::get($player)->applyEffect();
+
+		$player->sendMessage(Chat::SystemToPlayer("§eスニーク状態で、素手でどこかを長押しすると「ヘルプ」が出るぞ！困ったら使ってみよう！"));
 	}
 
 
