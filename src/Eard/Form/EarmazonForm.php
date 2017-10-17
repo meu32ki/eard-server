@@ -8,6 +8,7 @@ use pocketmine\item\Item;
 
 # Eard
 use Eard\DBCommunication\Earmazon;
+use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\MeuHandler\Account\License\License;
 
@@ -27,6 +28,11 @@ class EarmazonForm extends FormBase {
 		switch($id){
 			case 1:
 				// メニュー
+				if($this->id == 0){
+					$this->send(self::SEARCH);
+					return false;
+				}
+
 				$buttons = [];
 
 				$buttons[] = ['text' => "アイテム選択"];
@@ -109,7 +115,7 @@ class EarmazonForm extends FormBase {
 				$amount = $data[1] ?? 0;
 				$price = $data[2] ?? 0;
 				if(!$price || !$amount){
-					$this->sendErrorModal($title, "数量と価格を入力してください。", 2);
+					$this->sendErrorModal($title, "数量と価格を入力してください。", 1);
 					return false;
 				}
 
@@ -121,11 +127,16 @@ class EarmazonForm extends FormBase {
 			break;
 			case 2+self::NEXT*2:
 				$title = "Earmazon管理 > 買取アイテム追加";
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$result = Earmazon::addSellUnit($this->id, $this->meta, $this->amount, $this->price, false);
 				$content = $result ? "追加した" : "追加できなかった";
-				$this->amount = 0;
-				$this->meta = 0;
 				$this->sendModal($title, $content, "OK",1);
+
+				$msg = Chat::Format("§8Earmazon", "§bお知らせ", "§eEarmazonで§a「{$itemName}」§eの買取が§a{$this->price}μ§eで始まりました！");
+				Server::getInstance()->broadcastMessage($msg);
+
+				$this->amount = 0;
+				$this->price = 0;
 			break;
 /*
 	販売アイテム
@@ -172,7 +183,7 @@ class EarmazonForm extends FormBase {
 				$amount = $data[1] ?? 0;
 				$price = $data[2] ?? 0;
 				if(!$price || !$amount){
-					$this->sendErrorModal($title, "数量と価格を入力してください。", 3);
+					$this->sendErrorModal($title, "数量と価格を入力してください。", 1);
 					return false;
 				}
 
@@ -180,15 +191,19 @@ class EarmazonForm extends FormBase {
 				$this->price = (int) $price;
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$content = "ID:{$this->id} Damage:{$this->meta} 「{$itemName}」 を 1個 {$price}μ で {$amount}個 販売します。よろしいですか？";
-				$this->sendModal($title, $content, "よろしい",3+self::NEXT, "よろしくない",3);
+				$this->sendModal($title, $content, "よろしい",3+self::NEXT*2, "よろしくない",3);
 			break;
 			case 3+self::NEXT*2:
 				$title = "Earmazon管理 > 販売アイテム追加";
 				$result = Earmazon::addBuyUnit($this->id, $this->meta, $this->amount, $this->price, false);
 				$content = $result ? "追加した" : "追加できなかった";
-				$this->amount = 0;
-				$this->meta = 0;
 				$this->sendModal($title, $content, "OK",1);
+
+				$msg = Chat::Format("§8Earmazon", "§bお知らせ", "§eEarmazonで§a「{$itemName}」§eの販売が§a{$this->price}μ§eで始まりました！");
+				Server::getInstance()->broadcastMessage($msg);
+
+				$this->amount = 0;
+				$this->price = 0;
 			break;
 /*
 	在庫を追加
@@ -224,7 +239,7 @@ class EarmazonForm extends FormBase {
 				$data = $this->lastData;
 				$amount = $data[1] ?? 0;
 				if(!$amount){
-					$this->sendErrorModal($title, "数量を入力してください。", 4);
+					$this->sendErrorModal($title, "数量を入力してください。", 1);
 					return false;
 				}
 
@@ -235,10 +250,11 @@ class EarmazonForm extends FormBase {
 			break;
 			case 4+self::NEXT*2:
 				$title = "Earmazon管理 > 在庫を追加";
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
 				$result = Earmazon::addIntoStorage($this->id, $this->meta, $this->amount);
 				$content = $result ? "追加した" : "追加できなかった";
 				$this->amount = 0;
-				$this->meta = 0;
+				$this->price = 0;
 				$this->sendModal($title, $content, "OK",1);
 			break;
 /*
@@ -276,7 +292,7 @@ class EarmazonForm extends FormBase {
 				$data = $this->lastData;
 				$amount = (int) $data[1] ?? 0;
 				if(!$amount){
-					$this->sendErrorModal($title, "数量を入力してください。", 5);
+					$this->sendErrorModal($title, "数量を入力してください。", 1);
 					return false;
 				}
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
@@ -355,7 +371,7 @@ class EarmazonForm extends FormBase {
 						],
 					]
 				];
-				$cache = [self::SEARCH+self::NEXT];
+				$cache = [self::SEARCH+1+self::NEXT];
 			break;
 			case self::SEARCH+1+self::NEXT:
 				// 探したアイテム判定
@@ -364,7 +380,7 @@ class EarmazonForm extends FormBase {
 				$id = $data[1] ?? 0;
 				$damage = $data[2] ?? 0;
 				if(!$id){
-					$this->sendErrorModal($title, "IDを入力してください", self::SEARCH);
+					$this->sendErrorModal($title, "IDを入力してください", 1);
 				}else{
 					$itemName = ItemName::getNameOf((int) $id,(int) $damage);
 					$content = "§fアイテム「{$itemName}」を選択しました。";
