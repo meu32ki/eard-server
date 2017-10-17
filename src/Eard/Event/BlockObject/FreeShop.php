@@ -126,17 +126,21 @@ class FreeShop implements BlockObject {
 					if($ownerMeu === null){
 						$message = "このショップは準備中のため、購入出来ません";
 					}else{
-						$meu = Account::get($player)->getMeu()->spilit($price);
-						$ownerMeu->merge($meu, "個人ショップ: {$player->getName()}への売却・μ受取", "個人ショップ: {$ownerName}からの購入・μ支払い");
-						$items = $this->inventory->getContents();
 						$inv = $player->getInventory();
-						foreach($items as $slot => $item){
-							$inv->addItem($item);
+						if(!$inv->canAddItem(Item::get(0))){
+							$message = "持ち物がいっぱいです";
+						}else{
+							$meu = Account::get($player)->getMeu()->spilit($price);
+							$ownerMeu->merge($meu, "個人ショップ: {$player->getName()}への売却・μ受取", "個人ショップ: {$ownerName}からの購入・μ支払い");
+							$items = $this->inventory->getContents();
+							foreach($items as $slot => $item){
+								$inv->addItem($item);
+							}
+							$this->inventory->clearAll();
+							$this->itemArray = [];
+							$this->soldout = true;
+							$message = "商品を購入しました";
 						}
-						$this->inventory->clearAll();
-						$this->itemArray = [];
-						$this->soldout = true;
-						$message = "商品を購入しました";
 					}
 				break;				
 			}
