@@ -4,6 +4,7 @@ namespace Eard\Form;
 
 # basic
 use pocketmine\Server;
+use pocketmine\item\Item;
 
 # Eard
 use Eard\DBCommunication\Earmazon;
@@ -82,13 +83,13 @@ class EarmazonForm extends FormBase {
 							'type' => "input",
 							'text' => "数量 (この個数分だけ買取します)",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->amount != 0 ? $this->amount : ""
+							'default' => $this->amount != 0 ? (string) $this->amount : ""
 						],
 						[
 							'type' => "input",
 							'text' => "価格 (1つあたりこの値段で買取します)",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->price != 0 ? $this->price : ""
+							'default' => $this->price != 0 ? (string) $this->price : ""
 						],
 						[
 							'type' => "label",
@@ -127,6 +128,10 @@ class EarmazonForm extends FormBase {
 */
 			case 3:
 				$itemName = ItemName::getNameOf($this->id, $this->meta);
+				if(Earmazon::getStorageAmount($this->id, $this->meta) <= 0){
+					$this->sendErrorModal("Earmazon管理 > 販売アイテム追加", "{$itemName}の在庫がありません。\n次官以上の権限者が在庫を追加するか、買取アイテムを追加して集めてください。", 1);
+					return false;
+				}
 				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
 				$data = [
 					'type'    => "custom_form",
@@ -140,13 +145,13 @@ class EarmazonForm extends FormBase {
 							'type' => "input",
 							'text' => "数量 (この個数分だけ販売します)",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->amount != 0 ? $this->amount : ""
+							'default' => $this->amount != 0 ? (string) $this->amount : ""
 						],
 						[
 							'type' => "input",
 							'text' => "価格 (1つあたりこの値段で販売します)",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->price != 0 ? $this->price : ""
+							'default' => $this->price != 0 ? (string) $this->price : ""
 						],
 						[
 							'type' => "label",
@@ -198,7 +203,7 @@ class EarmazonForm extends FormBase {
 							'type' => "input",
 							'text' => "数量 (この個数分だけ販売します)",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->amount != 0 ? $this->amount : ""
+							'default' => $this->amount != 0 ? (string) $this->amount : ""
 						],
 						[
 							'type' => "label",
@@ -235,15 +240,70 @@ class EarmazonForm extends FormBase {
 */
 			case 5:
 				$title = "Earmazon管理 > 在庫から引き出す";
-				$this->sendErrorModal($title, "内容がないよう。", 1);
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
+				$content = "§7ID:§f{$this->id} §7Damage:§f{$this->meta} §e「{$itemName}」";
+				$data = [
+					'type'    => "custom_form",
+					'title'   => $title,
+					'content' => [
+						[
+							'type' => "label",
+							'text' => $content
+						],
+						[
+							'type' => "input",
+							'text' => "数量 (この個数分だけ引き出します)",
+							'placeholder' => "半角数字で入力",
+							'default' => $this->amount != 0 ? (string) $this->amount : ""
+						],
+						[
+							'type' => "label",
+							'text' => ""
+						],
+					]
+				];
+				$cache = [5+self::NEXT];
 			break;
 			case 5+self::NEXT*1:
 				$title = "Earmazon管理 > 在庫から引き出す";
-				$this->sendErrorModal($title, "内容がないよう。", 1);
+				$data = $this->lastData;
+				$amount = (int) $data[1] ?? 0;
+				if(!$amount){
+					$this->sendErrorModal($title, "数量を入力してください。", 5);
+					return false;
+				}
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
+				$e_amount = Earmazon::getStorageAmount($this->id, $this->meta);
+				if(Earmazon::getStorageAmount($this->id, $this->meta) < $amount){
+					$this->sendErrorModal($title, "在庫不足。\n「{$itemName}」の在庫は{$e_amount}しかありません。", 5);
+					return false;
+				}
+				$this->amount = (int) $amount;
+				$content = "ID:{$this->id} Damage:{$this->meta} 「{$itemName}」 を {$amount}個 引き出します。よろしいですか？";
+				$this->sendModal($title, $content, "よろしい",5+self::NEXT*2, "よろしくない", 5);
 			break;
 			case 5+self::NEXT*2:
 				$title = "Earmazon管理 > 在庫から引き出す";
-				$this->sendErrorModal($title, "内容がないよう。", 1);
+				$itemName = ItemName::getNameOf($this->id, $this->meta);
+				$e_amount = Earmazon::getStorageAmount($this->id, $this->meta);
+				if(Earmazon::getStorageAmount($this->id, $this->meta) < $this->amount){ //途中で誰かが引き出す可能性があるため
+					$this->sendErrorModal($title, "在庫不足。\n「{$itemName}」の在庫は{$e_amount}しかありません。\n途中で誰かが引き出した、または購入したようです。", 5);
+					return false;
+				}
+				$inv = $playerData->getItemBox();
+				$item = Item::get($this->id, $this->meta, $this->amount);
+				if(!$inv->canAddItem($item)){
+					$this->sendErrorModal($title, "アイテムボックスがいっぱいなようです。", 5);
+					return false;
+				}
+				// ストレージから減らす
+				if(!Earmazon::removeFromStorage($this->id, $this->meta, $this->amount)){
+					$this->sendErrorModal($title, "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を減らす処理に失敗しました。", 5);
+					Earmazon::addIntoBuyUnit($unitno, $amount); // 販売リストの点数戻す
+					return false;
+				}
+				$inv->addItem($item);
+				$this->sendModal($title, "アイテムの引き出しが完了しました。\n引き続き惑星Eardの開拓にご協力よろしくお願いします。", "わかりました", 1);
 			break;
 /*
 	アイテム検索
@@ -262,13 +322,13 @@ class EarmazonForm extends FormBase {
 							'type' => "input",
 							'text' => "ID",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->id != 0 ? $this->id : ""
+							'default' => $this->id != 0 ? (string) $this->id : ""
 						],
 						[
 							'type' => "input",
 							'text' => "DAMAGE",
 							'placeholder' => "半角数字で入力",
-							'default' => (string) $this->meta != 0 ? $this->meta : ""
+							'default' => $this->meta != 0 ? (string) $this->meta : ""
 						],
 						[
 							'type' => "label",
