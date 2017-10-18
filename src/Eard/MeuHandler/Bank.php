@@ -42,6 +42,15 @@ class Bank {
 		return self::$instance;
 	}
 
+	public static function setup(){
+		$sql = "INSERT INTO bank (id, type, balance, data) VALUES (100001, 0, 0, ''), (100001, 1, 0, '')";
+		$result = $db->query($sql);
+		if($result){
+			return true;
+		}
+		return false;
+	}
+
 	public static function init(){
 		$sql = "SELECT * FROM bank WHERE type = 1 AND balance > 0;";
 		$db = DB::get();
