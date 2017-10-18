@@ -41,7 +41,6 @@ class AreaProtector{
 	public static function canPlaceInResource($id){
 		switch($id){
 			case Item::FURNACE:
-			case Item::WORKBENCH:
 			case Item::SHULKER_BOX:
 				return false;
 			break;
