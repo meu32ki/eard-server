@@ -10,6 +10,7 @@ use Eard\Enemys\AI;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\MeuHandler\Account\License\License;
+use Eard\DBCommunication\Connection;
 
 
 class HelpForm extends FormBase {
@@ -20,19 +21,25 @@ class HelpForm extends FormBase {
 		$cache = [];
 		switch($id){
 			case 1:
+				$buttons = [];
+				$cache = [];
+				if(Connection::getPlace()->isLivingArea()){
+					$buttons[] = ['text' => "§l§c脱出する\n§r§8高い壁が登れないときに使用奨励"];
+					$cache[] = 2;
+				}
+				$buttons += [
+					['text' => "§l§c携帯を受け取る\n§r§8なくしたときに使用奨励"],
+					['text' => "ライセンス"],
+					['text' => "生活区域と資源区域"],
+					['text' => "携帯"],
+				];
+				$cache += [10,3,8,9];
 				$data = [
 					'type'    => "form",
 					'title'   => "ヘルプ",
 					'content' => "Eardの遊び方について解説しています\n",
-					'buttons' => [
-						['text' => "§l§c脱出する\n§r§8高い壁が登れないときに使用奨励"],
-						['text' => "§l§c携帯を受け取る\n§r§8なくしたときに使用奨励"],
-						['text' => "ライセンス"],
-						['text' => "生活区域と資源区域"],
-						['text' => "携帯"],
-					]
+					'buttons' => $buttons
 				];
-				$cache = [2,10,3,8,9];
 			break;
 			case 2:
 				$player = $playerData->getPlayer();

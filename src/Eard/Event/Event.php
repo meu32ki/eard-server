@@ -274,11 +274,11 @@ class Event implements Listener{
 		if($e->getAction() == 3 or $e->getAction() == 0){
 			if($x && $y && $z){ // 空中でなければ
 				if($e->getItem()->getId() == 0){
-					if(Connection::getPlace()->isLivingArea()){
-						if($player->isSneaking()){
+//					if(Connection::getPlace()->isLivingArea()){ 資源でスマホ紛失したら詰む=>HelpFormを書き換え
+					if($player->isSneaking()){
 							new HelpForm($playerData);
-						}
 					}
+					//}
 				}
 				BlockObjectManager::startBreak($x, $y, $z, $player); // キャンセルとかはさせられないので、表示を出すだけ。
 			}
