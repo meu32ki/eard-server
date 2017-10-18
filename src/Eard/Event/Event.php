@@ -27,6 +27,7 @@ use pocketmine\event\player\PlayerItemConsumeEvent;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\ItemSpawnEvent;
 
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -591,6 +592,13 @@ class Event implements Listener{
 		$e->setDeathMessage($msg);
 	}
 
+
+	public function Drop(ItemSpawnEvent $e){
+		$ent = $e->getEntity();
+		if($ent->getItem()->getId() === Item::HORSE_ARMOR_LEATHER){
+			$e->getEntity()->close();
+		}
+	}
 
 
 	public function Damaged(EntityDamageEvent $e){
