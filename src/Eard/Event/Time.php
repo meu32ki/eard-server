@@ -11,6 +11,7 @@ use Eard\DBCommunication\Connection;
 use Eard\MeuHandler\Account;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
+use Eard\Event\BlockObject\BlockObjectManager;
 
 
 class Time {
@@ -46,6 +47,14 @@ class Time {
 			if($nowMinutes % 5 == 0){
 				// save 
 				Account::save();
+
+				// 地形セーブ
+				foreach(Server::getInstance()->getLevels() as $level){
+					$level->save(true);
+				}
+
+				// オブジェクトセーブ
+				BlockObjectManager::saveAllObjects();
 			}
 		}
 	}
