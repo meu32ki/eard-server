@@ -13,7 +13,7 @@ use Eard\Utils\ItemName;
 use Eard\MeuHandler\Account\License\License;
 
 
-class EarmazonForm extends FormBase {
+class EarmazonAdminForm extends FormBase {
 
 	const NEXT = 5;
 	const SEARCH = 100;

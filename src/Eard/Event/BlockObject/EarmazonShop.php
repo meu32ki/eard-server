@@ -17,7 +17,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\Event\BlockObject\BlockMenu;
-use Eard\Form\EarmazonForm;
+use Eard\Form\EarmazonAdminForm;
 
 
 /****
@@ -510,7 +510,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 
 		case 100: // 管理画面
 			$playerData = Account::get($player);
-			new EarmazonForm($playerData);
+			new EarmazonAdminForm($playerData);
 			$ar = [
 				["{$thisname}", false],
 				["トップへ戻れください",1]
