@@ -759,8 +759,8 @@ class AreaProtector{
 	public static $section = 7; // 区画の大きさ
 	public static $sections = []; // データ領域
 
-	public static $digDefault = 48;
-	public static $pileDefault = 64;
+	public static $digDefault = 36;
+	public static $pileDefault = 48;
 
 
 	public static $affordableSection = 0;
