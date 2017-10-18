@@ -614,8 +614,8 @@ class Event implements Listener{
 					new PopupForm(Account::get($damager), $victimData);
 					$e->setCancelled(true);
 				}else{
-
-					if(!$victimData->getAttackSetting()){
+					$damagerData = Account::get($damager);
+					if(!$victimData->getAttackSetting() or !$damagerData->getAttackSetting()){
 						$damager->sendMessage(Chat::SystemToPlayer("§c警告: 殴れません"));
 						MainLogger::getLogger()->info(Chat::System($damager->getName(), "§c警告: 殴れません"));
 						$e->setCancelled(true);
