@@ -52,6 +52,7 @@ use Eard\Form\HelpForm;
 use Eard\Form\SettingsForm;
 use Eard\Form\GovernmentForm;
 use Eard\Form\PopupForm;
+use Eard\Form\FreemarketForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -315,9 +316,6 @@ class Event implements Listener{
 
 			// 手持ちアイテム
 			switch($itemId){
-				case 280:
-					//AI::addGuideParticle($player, $player->getSpawn()); //この関数を使うと矢印が出る
-				break;
 				case 259: // うちがね
 					if(!$playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER)){
 						$player->sendMessage(Chat::SystemToPlayer("§e「危険物取扱」ライセンスがないので使用できません。"));
@@ -340,6 +338,10 @@ class Event implements Listener{
 					switch($blockId){
 						case 58: // クラフティングテーブル
 							//$e->setCancelled(false);
+						break;
+						case 120: //エンドポータル
+							new FreemarketForm($playerData);
+							$e->setCancelled(true);
 						break;
 						case 60: // こうち
 							switch($itemId){
