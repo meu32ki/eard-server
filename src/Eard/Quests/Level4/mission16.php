@@ -26,7 +26,7 @@ class mission16 extends Quest{
 	}
 
 	public static function getReward(){
-		return 4000;
+		return 2500;
 	}
 
 	public function sendReward($player){
