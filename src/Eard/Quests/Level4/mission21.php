@@ -23,11 +23,11 @@ class mission21 extends Quest{
 	}
 
 	public static function getTarget(){
-		return [Item::PUMPKIN_PIE, 0];
+		return [Item::PAPER, 0];
 	}
 
 	public static function getReward(){
-		return Item::get(Item::FLOWER_POT, 0, 8);
+		return Item::get(Item::ENDER_PEARL, 0, 5);
 	}
 
 	public function sendReward($player){
