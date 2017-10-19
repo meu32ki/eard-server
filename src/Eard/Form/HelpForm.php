@@ -22,18 +22,17 @@ class HelpForm extends FormBase {
 		switch($id){
 			case 1:
 				$buttons = [];
-				$cache = [];
 				if(Connection::getPlace()->isLivingArea()){
 					$buttons[] = ['text' => "§l§c脱出する\n§r§8高い壁が登れないときに使用奨励"];
 					$cache[] = 2;
 				}
-				$buttons += [
+				array_merge($buttons, [
 					['text' => "§l§c携帯を受け取る\n§r§8なくしたときに使用奨励"],
 					['text' => "ライセンス"],
 					['text' => "生活区域と資源区域"],
 					['text' => "携帯"],
-				];
-				$cache += [10,3,8,9];
+				]);
+				array_merge($cache, [10,3,8,9]);
 				$data = [
 					'type'    => "form",
 					'title'   => "ヘルプ",
