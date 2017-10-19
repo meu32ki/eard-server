@@ -7,7 +7,7 @@ use pocketmine\item\Potion;
 
 class mission18 extends Quest{
 	const QUESTID = 18;
-	const NORM = 1;
+	const NORM = 5;
 	public $achievement = 0;
 
 	public static function getName(){

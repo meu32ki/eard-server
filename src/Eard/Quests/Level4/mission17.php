@@ -6,7 +6,7 @@ use Eard\Enemys\EnemyRegister;
 
 class mission17 extends Quest{
 	const QUESTID = 17;
-	const NORM = 1;
+	const NORM = 3;
 	public $achievement = 0;
 
 	public static function getName(){
