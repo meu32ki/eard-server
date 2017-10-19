@@ -14,13 +14,14 @@ use Eard\MeuHandler\Account;
 use Eard\Quests\Level1\Level1;
 use Eard\Quests\Level1\Level2;
 use Eard\Quests\Level1\Level3;
+use Eard\Quests\Level1\Level4;
 /***
 *
 *	クエスト管理するやつ
 */
 class QuestManager{
 
-	const LEVELS = 3;
+	const LEVELS = 4;
 
 	public static function init(){
 		for($i = 1; $i <= self::LEVELS; $i++){

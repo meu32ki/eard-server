@@ -160,7 +160,7 @@ class Recipe {
 					317 => [],																
 				]);
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
-				$recipe = array_merge_recursive($recipe [
+				$recipe = array_merge_recursive($recipe, [
 					298 => [],
 					299 => [],
 					300 => [],
