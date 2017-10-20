@@ -22,27 +22,27 @@ class BankForm extends FormBase {
 			$this->close();
 		}
 
-		if(!$account){
-			$data = [
-				'type'    => "modal",
-				'title'   => "銀行 > お預入れ",
-				'content' => "§f銀行口座がまだ開設されていないようです。\n".
-							"新たに口座を開設しますか？\n".
-							"\n".
-							"【条件】\n".
-							"§fデポジット: §7500μ 以上\n".
-							"§f生活ライセンス: §7一般 以上\n".
-							"§f滞在時間:§7 2時間 以上\n".
-							"\n",
-				'button1' => "はい",
-				'button2' => "いいえ",
-			];
-			$cache = [3, 0];
-			break;
-		}
-
 		switch($id){
 			case 1:
+				if(!$account){
+					$data = [
+						'type'    => "modal",
+						'title'   => "銀行 > お預入れ",
+						'content' =>
+								"§f銀行口座がまだ開設されていないようです。\n".
+								"新たに口座を開設しますか？\n".
+								"\n".
+								"【条件】\n".
+								"§fデポジット: §7500μ 以上\n".
+								"§f生活ライセンス: §7一般 以上\n".
+								"§f滞在時間:§7 2時間 以上\n".
+								"\n",
+							'button1' => "はい",
+							'button2' => "いいえ",
+						];
+						$cache = [3, 0];
+						break;
+					}
 				// メニュー一覧
 				$buttons = [
 					['text' => "お預入れ"],
@@ -53,10 +53,13 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
+				$balance = $bank->getBalance($playerData);//残高を確認
 				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
-					'content' => "§fご希望のお取引を選択してください。\n",
+					'content' =>
+								"§fご希望のお取引を選択してください。\n".
+								"§f現在の残高は §2{$balance}μ §fです。\n",
 					'buttons' => $buttons
 				];
 			break;
@@ -113,7 +116,7 @@ class BankForm extends FormBase {
 					'title'   => "銀行 > 新規口座開設",
 					'content' =>
 						"\n§f{$playerData->getName()}さんの口座が開設されました。\n".
-						"現在の残金は{$amount}μです。",
+						"現在の残高は {$amount}μ です。",
 					'buttons' => [
 						['text' => '戻る']
 					]
@@ -147,7 +150,8 @@ class BankForm extends FormBase {
 						'type'    => "form",
 						'title'   => "銀行 > お預入れ",
 						'content' =>
-							"\n§f{$amount}μが預金されました。\n",
+							"\n§f{$amount}μが預金されました。\n".
+							"詳細は「通帳」でご確認ください。",
 						'buttons' => [
 							['text' => '戻る']
 						]
@@ -194,7 +198,8 @@ class BankForm extends FormBase {
 					'type'    => "form",
 					'title'   => "銀行 > お引き出し",
 					'content' =>
-						"\n§f{$amount}μが引き出されました。\n",
+						"\n§f{$amount}μ が引き出されました。\n".
+						"詳細は「通帳」でご確認ください。",
 					'buttons' => [
 						['text' => '戻る']
 					]
@@ -415,7 +420,9 @@ class BankForm extends FormBase {
 			$data = [
 				'type'    => "form",
 				'title'   => "銀行 > ご返済 > 分割払い",
-				'content' => "§fここでは分割払い(5回払い)ができます\n",
+				'content' =>
+						"§fここでは分割払い(5回払い)ができます\n".
+						"※選択するとすぐに返済が始まります。ご注意ください。",
 				'buttons' => $buttons
 			];
 			break;
@@ -452,7 +459,7 @@ class BankForm extends FormBase {
 				];
 				$cache = [1];
 			break;
-		}
+	}
 
 		// みせる
 		if($cache){
