@@ -1,6 +1,9 @@
 <?php
 namespace Eard\MeuHandler;
 
+# Basic
+use pocketmine\utils\MainLogger;
+
 #Eard
 use Eard\DBCommunication\DB;
 use Eard\MeuHandler\Account;
@@ -70,12 +73,14 @@ class Bank {
 					$amount = $data[3];//実質負担（金利つき）
 
 					$balance = self::getBalance($playerData);//銀行預金残高
+					$name = $playerData->getName();//名前
 
 					//なるべく返済を促す
 					//銀行預金が十分あれば、それを返済に回す。
 					if($amount <= $balance){
 						$data_1 = self::getRepayData($data, $row['balance']);
 						self::repay($playerData, $row['balance'], 0, $data_1);
+						MainLogger::getLogger()->notice("§aBank: {$name}さんの返済処理(銀行預金から)");
 						return true;
 					}
 
@@ -88,6 +93,7 @@ class Bank {
 						self::writeUp($playerData);
 						self::returnLoan($playerData, $amount);
 						self::incomeToGovernment($playerData, $data[4]);
+						MainLogger::getLogger()->notice("§aBank: {$name}さんの返済処理(所持金から)");
 						return true;
 					}
 
@@ -101,6 +107,7 @@ class Bank {
 						}
 						self::writeUp($playerData);
 						self::incomeToGovernment($playerData, $data[4]);//金利分を政府に
+						MainLogger::getLogger()->notice("§aBank: {$name}さんの返済処理(銀行預金と所持金から)");
 						return true;
 					}
 
@@ -116,6 +123,7 @@ class Bank {
 					$amount = $amount - $data[4];//金利分を除く
 					//延長用のデータ
 					$data_2 = self::getData(0, $amount);//最新の金利が付与されることに注意
+					MainLogger::getLogger()->notice("§aBank: {$name}さんの返済期限を猶予");
 					return self::updateData($playerData, $data_2);
 				}
 			}
@@ -304,7 +312,7 @@ class Bank {
 	*/
 	public static function getData(int $n, int $amount, int $type = 1){
 		switch($n){
-			case 0: $date = strtotime( "+1 second" ); break;
+			case 0: $date = strtotime( "-1 week" ); break;
 			case 1: $date = strtotime( "+1 month" ); break;
 			case 2: $date = strtotime( "+2 month" ); break;
 		}

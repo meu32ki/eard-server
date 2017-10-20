@@ -53,7 +53,8 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
-				$balance = $bank->getBalance($playerData);//残高を確認
+				$balance = $account->getMeu()->getAmount();//残高を確認
+				
 				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
