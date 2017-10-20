@@ -8,6 +8,7 @@ use pocketmine\utils\MainLogger;
 use Eard\DBCommunication\DB;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\License\License;
+use Eard\Utils\DataIO;
 use Eard\MeuHandler\Government;
 
 
@@ -38,6 +39,15 @@ class Bank {
 		20170928
 	*/
 
+	//預金準備率
+	public static $ratio = 0.013;
+
+	//政策金利 [0] 1週間, [1] 1か月, [2] 2か月
+	public static $rates = [0.05, 0.08, 0.1];
+
+	//中央銀行当座預金の「調節した」残高
+	public static $CAB = 0;
+
 	public static function getInstance(){
 		if(!isset(self::$instance)){
 			self::$instance = new Bank;
@@ -55,6 +65,20 @@ class Bank {
 	}
 
 	public static function init(){
+
+		//データの読み込み
+		$BankData = DataIO::load("Bank");
+		if($BankData){
+			self::$ratio = $BankData[0];
+			self::$rates = $BankData[1];
+			self::$CAB = $BankData[2];
+		}else{//初回用
+			$BankData = [self::$ratio, self::$rates, self::$CAB];
+			DataIO::save("Bank", $BankData);
+		}
+		MainLogger::getLogger()->notice("§aBank: data has been loaded");
+
+		//返済処理
 		$sql = "SELECT * FROM bank WHERE type = 1 AND balance > 0;";
 		$db = DB::get();
 		if(!$db) return false;
@@ -127,6 +151,14 @@ class Bank {
 					return self::updateData($playerData, $data_2);
 				}
 			}
+		}
+	}
+
+	public static function save(){
+		$BankData = [self::$ratio, self::$rates, self::$CAB];
+		$result = DataIO::saveIntoDB('Bank', $BankData);
+		if($result){
+			MainLogger::getLogger()->notice("§aBank: data has been saved");
 		}
 	}
 
@@ -312,7 +344,7 @@ class Bank {
 	*/
 	public static function getData(int $n, int $amount, int $type = 1){
 		switch($n){
-			case 0: $date = strtotime( "-1 week" ); break;
+			case 0: $date = strtotime( "1 week" ); break;
 			case 1: $date = strtotime( "+1 month" ); break;
 			case 2: $date = strtotime( "+2 month" ); break;
 		}
@@ -776,6 +808,43 @@ class Bank {
 	}
 
 	/**
+	*	預金準備率を設定する。
+	*@param 準備率（百分率[%]で）
+	*/
+	public static function setRatio($amount): bool{
+		$amount = $amount / 100;
+		self::$ratio = $amount;
+		return true;
+	}
+
+	/**
+	*	政策金利を設定する。
+	*@param int 金利（百分率[%])
+	*@param array [0] 1週間, [1] 1か月, [2] 2か月
+	*/
+	public static function setRates($amount, $key): bool{
+		self::$rates[$key] = $amount / 100;
+		return true;
+	}
+
+	/**
+	*	中央銀行当座預金の残高を調整する。
+	*@param int 調節したい額
+	*@param int 0 => 増加, 1 => 減少させる
+	*/
+	public static function controlCAB(int $amount, int $type): bool{
+		if(!$type){//増加させる
+			self::$CAB = self::$CAB + $amount;
+			return self::deposit_Current($amount);
+		}else{
+			$cab = self::$CAB - $amount;
+			if($cab < 0) return false;
+			self::$CAB = $cab;
+			return self::withdraw_Current($amount);
+		}
+	}
+
+	/**
 	*	マネーストックを計算する。
 	* MS = [預金通貨] + [所持通貨]
 	* ただし政府は除く。
@@ -788,11 +857,6 @@ class Bank {
 	private static $bankMeu = null;
 	private static $instance = null;
 	private static $account;
-
-	//預金準備率
-	public static $ratio = 0.013;
-	//政策金利 [0] 1週間, [1] 1か月, [2] 2か月
-	public static $rates = [0.05, 0.08, 0.1];
 }
 
 
