@@ -223,6 +223,7 @@ class BankForm extends FormBase {
 							'type' => "input",
 							'text' =>
 									"\n".
+									"§f1000μ単位での借り入れが可能です。\n".
 									"§fご希望の金額を入力してください。\n".
 									"\n",
 									'placeholder' => "お借入れ額 (μ)"
@@ -245,6 +246,15 @@ class BankForm extends FormBase {
 				$this->sendErrorModal(
 					"銀行 > お借入れ",
 					"フォームには半角数字以外入力できません。", 1
+				);
+				break;
+			}
+
+			//1000μ単位であるか
+			if($amount % 1000 != 0){
+				$this->sendErrorModal(
+					"銀行 > お借入れ",
+					"フォームには1000μ単位で入力してください。", 1
 				);
 				break;
 			}
@@ -401,10 +411,14 @@ class BankForm extends FormBase {
 			break;
 			case 15:
 			$debit = $this->lists;
+			//分割初回の場合 -> 金利含む合計 , そうでない -> 残りの返済額合計
 			$total = ($debit[3] == 5) ? $debit[0] * (1 + $debit[2]) : $debit[4];
+			//除算した余りを計算
 			$remainder =  $total % $debit[3];
+			//余りを除いた計算
 			$per_time = round (($total - $remainder) / $debit[3]);
-			$first_time = ($remainder > 1) ? round($per_time + $remainder) : 0;
+			//余りが0より大きい場合 -> そのまま合計 ,  そうでない -> 0 (false)
+			$first_time = ($remainder > 0) ? round($per_time + $remainder) : 0;
 
 			if($first_time){
 				$buttons[] = ['text' => "初回 {$first_time}μ"];

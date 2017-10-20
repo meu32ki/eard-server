@@ -170,6 +170,11 @@ class Bank {
 	public static function canLend(Account $playerData, int $amount): bool{
 		$player = $playerData->getPlayer();
 
+		//1000μ単位か
+		if($amount % 1000 != 0){
+			return false;
+		}
+
 		// 普通預金口座が存在しているか
 		if(!self::existBankAccount($playerData)){
 			if($player){// オンラインだったら
@@ -299,7 +304,7 @@ class Bank {
 	*/
 	public static function getData(int $n, int $amount, int $type = 1){
 		switch($n){
-			case 0: $date = strtotime( "+1 week" ); break;
+			case 0: $date = strtotime( "+1 second" ); break;
 			case 1: $date = strtotime( "+1 month" ); break;
 			case 2: $date = strtotime( "+2 month" ); break;
 		}
@@ -776,8 +781,10 @@ class Bank {
 	private static $instance = null;
 	private static $account;
 
-	public static $ratio = 0.013;//預金準備率
-	public static $rates = [0.05, 0.08, 0.1];//政策金利
+	//預金準備率
+	public static $ratio = 0.013;
+	//政策金利 [0] 1週間, [1] 1か月, [2] 2か月
+	public static $rates = [0.05, 0.08, 0.1];
 }
 
 
