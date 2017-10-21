@@ -197,11 +197,11 @@ class Kamadouma extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("geometryData", EnemyRegister::loadModelData('batta')),
-				new StringTag("geometryName", 'skin.JourneyToTheWest.sha_wujing'),
+				new StringTag("geometryData", EnemyRegister::loadModelData('battamodel')),
+				new StringTag("geometryName", 'geometry.hopper02'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Kamadouma')),
-				new StringTag("Name", 'JTTW_JTTWShaWujing')
+				new StringTag("Name", 'kamadouma')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
@@ -228,7 +228,7 @@ class Kamadouma extends Humanoid implements Enemy{
 		$this->charge = 0;
 		$this->mode = 0;
 		$this->check = 0;
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		//$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}

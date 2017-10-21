@@ -200,11 +200,11 @@ class Mukurotonbo extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("geometryData", EnemyRegister::loadModelData('batta')),
-				new StringTag("geometryName", 'skin.JourneyToTheWest.sha_wujing'),
+				new StringTag("geometryData", EnemyRegister::loadModelData('mukurotonbo')),
+				new StringTag("geometryName", 'geometry.mukurotonbo02'),
 				new StringTag("capeData", ''),
 				new StringTag("Data", EnemyRegister::loadSkinData('Mukurotonbo')),
-				new StringTag("Name", 'JTTW_JTTWShaWujing')
+				new StringTag("Name", 'mukurotonbo')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
@@ -233,8 +233,8 @@ class Mukurotonbo extends Humanoid implements Enemy{
 		$this->walk = true;
 		$this->walkSpeed = 0.2;
 		$this->float = true;
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
-		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
+		//$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		//$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
