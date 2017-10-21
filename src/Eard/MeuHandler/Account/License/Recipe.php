@@ -4,9 +4,11 @@ namespace Eard\MeuHandler\Account\License;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Player;
 use pocketmine\entity\FishingHook;
-use pocketmine\item\Item;
 use pocketmine\item\Potion;
+use pocketmine\item\enchantment\Enchantment;
 use Eard\MeuHandler\Account;
+use Eard\Utils\EardItem as Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\Server;
 
@@ -120,7 +122,7 @@ class Recipe {
 				3 => true,
 				2 => true,
 				1 => true
-				],			
+				],
 		];
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
@@ -512,6 +514,34 @@ class Recipe {
 	}
 
 	public static function addOriginalRecipe(){
+
+/*		追加アイテムをクラフトできるようにするためのレシピ。あとで解禁
+		Server::getInstance()->getCraftingManager()->registerRecipe(
+			new ShapedRecipe(Item::get(297, 1, 1), 
+			["sss"], 
+			["s" => Item::get(Item::SUGAR, 0, 1)])
+		);
+
+		Server::getInstance()->getCraftingManager()->registerRecipe(
+			new ShapedRecipe(Item::get(297, 2, 1), 
+			["bbb"], 
+			["b" => Item::get(297, 1, 1)])
+		);
+
+		Server::getInstance()->getCraftingManager()->registerRecipe(
+			new ShapedRecipe(Item::get(265, 1, 1), 
+			[
+				"gig",
+				"iei",
+				"gig"
+			], 
+			[
+				"i" => Item::get(265, 0, 1),
+				"g" => Item::get(371, 0, 1),
+				"e" => Item::get(388, 0, 1),				
+			])
+		);*/
+
 /*		$wb = Item::get(Item::POTION, 0);//水のビン
 		$ab = Item::get(Item::POTION, 4);//奇妙なポーション
 		self::addPotionRecipe($wb, Potion::WEAKNESS, Item::get(Item::FERMENTED_SPIDER_EYE));//弱体化
@@ -588,7 +618,7 @@ class Recipe {
 		self::addPotionRecipe(Item::get(Item::POTION, Potion::INVISIBILITY_T, 1), Item::get(Item::FERMENTED_SPIDER_EYE, 0, 1), Item::get(Item::POTION, Potion::NIGHT_VISION_T, 1));
 	}
 
-	public static function addPotionRecipe(Item $result, Item $material, Item $bottle){
+	public static function addPotionRecipe($result, $material, $bottle){
 
 
 		// 20170928 1.2の書き換えにより
