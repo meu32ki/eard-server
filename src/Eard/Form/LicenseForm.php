@@ -111,22 +111,23 @@ class LicenseForm extends FormBase {
 							$cache[] = 8;
 						}
 
-						if($license->canUpgrade()){
-							/*
-							$currentRank = $license->getRank();
-							$upgradeRank = $currentRank + 1;
-							$upgradeLicense = License::get($slno, null, $upgradeRank);
-							*/
-							$buttons[] = ['text' => "ランクアップさせる"];
-							$cache[] = 4;
-						}
-						if($license->canDowngrade()){
-							$buttons[] = ['text' => "ランクダウンさせる"];
-							$cache[] = 5;
-						}
 					}else{
 						$buttons[] = ['text' => "有効化する"];
 						$cache[] = 7;
+					}
+
+					if($license->canUpgrade()){
+						/*
+						$currentRank = $license->getRank();
+						$upgradeRank = $currentRank + 1;
+						$upgradeLicense = License::get($slno, null, $upgradeRank);
+						*/
+						$buttons[] = ['text' => "ランクアップさせる"];
+						$cache[] = 4;
+					}
+					if($license->canDowngrade()){
+						$buttons[] = ['text' => "ランクダウンさせる"];
+						$cache[] = 5;
 					}
 
 					$buttons[] = ['text' => "戻る"];
