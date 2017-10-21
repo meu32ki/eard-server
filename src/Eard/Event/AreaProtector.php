@@ -150,7 +150,7 @@ class AreaProtector{
 			// 送るブロック用意
 			$id = 41; $meta = 0;
 			$blocks = [];
-			$key = 0;
+			$key = -1;
 			while($key < 2){
 				$sety = $y + $key;
 				//$sety = $y;

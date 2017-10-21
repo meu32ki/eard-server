@@ -392,6 +392,12 @@ class Event implements Listener{
 								$e->setCancelled(true);
 							}
 						break;
+						case 62: // 燃えているかまど
+							if(!$playerData->hasValidLicense(License::REFINER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
 						case 130: // エンダーチェスト
 							$inv = $playerData->getItemBox();
 							$player->addWindow($inv);

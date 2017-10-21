@@ -108,6 +108,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 
 		# Eard関連
 		Government::save();
+		Bank::save();
 		BlockObjectManager::saveAllObjects();
 		BlockObjectManager::save();
 		Account::save();

@@ -4,6 +4,7 @@ namespace Eard\Form;
 
 # Eard
 use Eard\DBCommunication\Connection;
+use Eard\MeuHandler\Government;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Bank;
 use Eard\MeuHandler\Account\License\License;
@@ -22,27 +23,27 @@ class BankForm extends FormBase {
 			$this->close();
 		}
 
-		if(!$account){
-			$data = [
-				'type'    => "modal",
-				'title'   => "銀行 > お預入れ",
-				'content' => "§f銀行口座がまだ開設されていないようです。\n".
-							"新たに口座を開設しますか？\n".
-							"\n".
-							"【条件】\n".
-							"§fデポジット: §7500μ 以上\n".
-							"§f生活ライセンス: §7一般 以上\n".
-							"§f滞在時間:§7 2時間 以上\n".
-							"\n",
-				'button1' => "はい",
-				'button2' => "いいえ",
-			];
-			$cache = [3, 0];
-			break;
-		}
-
 		switch($id){
 			case 1:
+				if(!$account){
+					$data = [
+						'type'    => "modal",
+						'title'   => "銀行 > お預入れ",
+						'content' =>
+								"§f銀行口座がまだ開設されていないようです。\n".
+								"新たに口座を開設しますか？\n".
+								"\n".
+								"【条件】\n".
+								"§fデポジット: §7500μ 以上\n".
+								"§f生活ライセンス: §7一般 以上\n".
+								"§f滞在時間:§7 2時間 以上\n".
+								"\n",
+							'button1' => "はい",
+							'button2' => "いいえ",
+						];
+						$cache = [3, 0];
+						break;
+					}
 				// メニュー一覧
 				$buttons = [
 					['text' => "お預入れ"],
@@ -53,10 +54,20 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
+				$balance = $account->getMeu()->getAmount();//残高を確認
+
+				//政府関係者であれば、管理画面を表示させる。
+				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, 2)){
+					$buttons[] = ['text' => "金融政策"];
+					$cache[] = 18;
+				}
+
 				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
-					'content' => "§fご希望のお取引を選択してください。\n",
+					'content' =>
+								"§fご希望のお取引を選択してください。\n".
+								"§f現在の残高は §2{$balance}μ §fです。\n",
 					'buttons' => $buttons
 				];
 			break;
@@ -113,7 +124,7 @@ class BankForm extends FormBase {
 					'title'   => "銀行 > 新規口座開設",
 					'content' =>
 						"\n§f{$playerData->getName()}さんの口座が開設されました。\n".
-						"現在の残金は{$amount}μです。",
+						"現在の残高は {$amount}μ です。",
 					'buttons' => [
 						['text' => '戻る']
 					]
@@ -147,7 +158,8 @@ class BankForm extends FormBase {
 						'type'    => "form",
 						'title'   => "銀行 > お預入れ",
 						'content' =>
-							"\n§f{$amount}μが預金されました。\n",
+							"\n§f{$amount}μが預金されました。\n".
+							"詳細は「通帳」でご確認ください。",
 						'buttons' => [
 							['text' => '戻る']
 						]
@@ -194,7 +206,8 @@ class BankForm extends FormBase {
 					'type'    => "form",
 					'title'   => "銀行 > お引き出し",
 					'content' =>
-						"\n§f{$amount}μが引き出されました。\n",
+						"\n§f{$amount}μ が引き出されました。\n".
+						"詳細は「通帳」でご確認ください。",
 					'buttons' => [
 						['text' => '戻る']
 					]
@@ -218,6 +231,7 @@ class BankForm extends FormBase {
 							'type' => "input",
 							'text' =>
 									"\n".
+									"§f1000μ単位での借り入れが可能です。\n".
 									"§fご希望の金額を入力してください。\n".
 									"\n",
 									'placeholder' => "お借入れ額 (μ)"
@@ -240,6 +254,15 @@ class BankForm extends FormBase {
 				$this->sendErrorModal(
 					"銀行 > お借入れ",
 					"フォームには半角数字以外入力できません。", 1
+				);
+				break;
+			}
+
+			//1000μ単位であるか
+			if($amount % 1000 != 0){
+				$this->sendErrorModal(
+					"銀行 > お借入れ",
+					"フォームには1000μ単位で入力してください。", 1
 				);
 				break;
 			}
@@ -396,10 +419,14 @@ class BankForm extends FormBase {
 			break;
 			case 15:
 			$debit = $this->lists;
+			//分割初回の場合 -> 金利含む合計 , そうでない -> 残りの返済額合計
 			$total = ($debit[3] == 5) ? $debit[0] * (1 + $debit[2]) : $debit[4];
+			//除算した余りを計算
 			$remainder =  $total % $debit[3];
+			//余りを除いた計算
 			$per_time = round (($total - $remainder) / $debit[3]);
-			$first_time = ($remainder > 1) ? round($per_time + $remainder) : 0;
+			//余りが0より大きい場合 -> そのまま合計 ,  そうでない -> 0 (false)
+			$first_time = ($remainder > 0) ? round($per_time + $remainder) : 0;
 
 			if($first_time){
 				$buttons[] = ['text' => "初回 {$first_time}μ"];
@@ -415,7 +442,9 @@ class BankForm extends FormBase {
 			$data = [
 				'type'    => "form",
 				'title'   => "銀行 > ご返済 > 分割払い",
-				'content' => "§fここでは分割払い(5回払い)ができます\n",
+				'content' =>
+						"§fここでは分割払い(5回払い)ができます\n".
+						"※選択するとすぐに返済が始まります。ご注意ください。",
 				'buttons' => $buttons
 			];
 			break;
@@ -452,7 +481,183 @@ class BankForm extends FormBase {
 				];
 				$cache = [1];
 			break;
-		}
+			case 18:
+
+			//$MB = 1000 * 10000;
+			//$GOV = Government::getMeu()->getAmount();
+			//$MS = $MB - $GOV;
+			$MS = Government::confirmBalance();
+			$DEP = $bank->getTotalAmount(0);
+			$LEND = $bank->getTotalAmount(1);
+			$MAX = $bank->getMax();
+			$RATIO = round($LEND / $MAX * 100);
+
+
+			$content =
+						"ここでは金融に関する様々な政策が実行できます。\n\n".
+						"【参考となる統計】\n".
+						"{$MS}\n".
+						"§f総預金μ : {$DEP}μ\n".
+						"§f借り入れ/限度 : {$LEND}μ / {$MAX}μ §7({$RATIO}％)§f\n";
+
+						$buttons = [
+							['text' => "法定準備率操作"],
+							['text' => "政策金利操作"],
+							['text' => "中央銀行当座預金残高操作"]
+						];
+						$cache = [19, 21, 23];
+
+			$data = [
+				'type'    => "form",
+				'title'   => "銀行 > 金融政策",
+				'content' => $content,
+				'buttons' => $buttons
+			];
+			break;
+			case 19:
+			$ratio = Bank::$ratio * 100;
+			$data = [
+				'type'    => "custom_form",
+				'title'   => "銀行 > 金融政策 > 法定準備率操作",
+				'content' => [
+					[
+						'type' => "input",
+						'text' =>
+								"\n".
+								"§f預金準備率を変更できます\n".
+								"§f現在の準備率は §7{$ratio}％ §fです。\n".
+								"\n",
+								'placeholder' => "法定準備率 (％)"
+							]
+						]
+				];
+			$cache = [20];
+			break;
+			case 20:
+				$amount = $this->lastData[0];
+				$r = $bank->setRatio($amount);
+				if($r){
+					$data = [
+						'type'    => "form",
+						'title'   => "銀行 > 金融政策 > 法定準備率操作",
+						'content' =>
+							"\n§f法定準備率を{$amount}％に設定しました\n",
+							'buttons' => [
+								['text' => '戻る']
+							]
+						];
+						$cache = [18];
+				}else{
+					$this->sendErrorModal(
+						"銀行 >金融政策 > 法定準備率操作",
+						"準備率設定に失敗しました。\n", 1
+					);
+				}
+			break;
+			case 21:
+				$rates = Bank::$rates;
+				$rate = [];
+				foreach ($rates as $key) {
+					$rate[] = $key * 100;
+				}
+
+				$data = [
+					'type'    => "custom_form",
+					'title'   => "銀行 > 金融政策 > 政策金利操作",
+					'content' => [
+								[
+									'type' => "dropdown",
+									'text' =>
+										"\n".
+										"§f政策金利を変更できます\n".
+										"§f現在の金利は「1週間」、「1か月」、「2か月」の順に\n".
+										"「§7{$rate[0]}％§f」、「§7{$rate[1]}％§f」、「§7{$rate[2]}％§f」です。\n".
+										"\n".
+										"期限",
+										//'placeholder' => "政策金利 (％)",
+										'options' => ["1週間", "1か月", "2か月"]
+								],
+								[
+									'type' => "input",
+									'text' => "",
+									'placeholder' => "政策金利 (％)"
+								]
+							]
+						];
+						$cache = [22];
+			break;
+			case 22:
+				$amount = $this->lastData[1];
+				$key = $this->lastData[0];
+				$r = $bank->setRates($amount, $key);
+				if($r){
+				$data = [
+					'type'    => "form",
+					'title'   => "銀行 > 金融政策 > 政策金利操作",
+					'content' =>
+						"\n§f政策金利を{$amount}％に設定しました\n",
+						'buttons' => [
+							['text' => '戻る']
+						]
+					];
+					$cache = [18];
+				}else{
+					$this->sendErrorModal(
+						"銀行 >金融政策 > 政策金利操作",
+						"準備率設定に失敗しました。\n", 1
+					);
+				}
+			break;
+			case 23:
+			$balance = $bank->getCorrentBalance();
+			$CAB = Bank::$CAB;
+			$data = [
+				'type'    => "custom_form",
+				'title'   => "銀行 > 金融政策 > 中央銀行当座預金残高操作",
+				'content' => [
+							[
+								'type' => "dropdown",
+								'text' =>
+									"\n".
+									"§f中央銀行当座預金の残高を増減できます。\n".
+									"§f現在の残高は {$balance}μ (内{$CAB}が追加されている)です。\n".
+									"\n",
+									'placeholder' => "増減",
+									'options' => ["増加させる", "減少させる"]
+							],
+							[
+								'type' => "input",
+								'text' => "",
+								'placeholder' => "値 (μ)"
+							]
+						]
+					];
+					$cache = [24];
+			break;
+			case 24:
+			$amount = $this->lastData[1];
+			$type = $this->lastData[0];
+			$r = $bank->controlCAB($amount, $type);
+			$balance = $bank->getCorrentBalance();
+			if($r){
+			$data = [
+				'type'    => "form",
+				'title'   => "銀行 > 金融政策 > 中央銀行当座預金残高操作",
+				'content' =>
+					"\n§f当座預金残高が{$balance}となりました。\n",
+					'buttons' => [
+						['text' => '戻る']
+					]
+				];
+				$cache = [18];
+			}else{
+				$this->sendErrorModal(
+					"銀行 >金融政策 > 中央銀行当座預金残高操作",
+					"準備率設定に失敗しました。\n", 1
+				);
+			}
+			break;
+	}
 
 		// みせる
 		if($cache){
