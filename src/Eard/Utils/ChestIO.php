@@ -33,8 +33,8 @@ class ChestIO extends BaseInventory {
 		Chestinventory ItemBox　Shop
 	*/
 	
-	public function __construct($player){
-		$this->maxStack = 27;
+	public function __construct($player, $size = 27){
+		$this->maxStack = $size;
 
 		//$inventoryType = InventoryType::get(InventoryType::CHEST);
 		//parent::__construct($player, $inventoryType, [], $this->maxStack, "ChestIO"); //BaseInventoryにメソッド

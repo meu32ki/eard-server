@@ -125,7 +125,7 @@ class Recipe {
 		switch (true) {
 			// 「精錬」「採掘士」は追加レシピなし
 			case $playerData->hasValidLicense(License::FARMER): // 農家
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					170 => [],
 					322 => [],
 					353 => [],
@@ -136,20 +136,20 @@ class Recipe {
 					400 => [],
 					413 => [],
 					459 => [],													
-				];
+				]);
 			break;
 		}
 		switch (true) {
 			case $playerData->hasValidLicense(License::DANGEROUS_ITEM_HANDLER): // 危険物取扱
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					46 => [],
 					259 => [],					
-				];
+				]);
 			break;
 		}
 		switch (true) {
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER, 2): // 服飾2
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					310 => [],
 					311 => [],
 					312 => [],
@@ -158,9 +158,9 @@ class Recipe {
 					315 => [],
 					316 => [],
 					317 => [],																
-				];
+				]);
 			case $playerData->hasValidLicense(License::APPAREL_DESIGNER): // 服飾1
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					298 => [],
 					299 => [],
 					300 => [],
@@ -169,13 +169,13 @@ class Recipe {
 					307 => [],
 					308 => [],
 					309 => [],
-				];
+				]);
 			break;
 
 		}
 		switch (true) {
 			case $playerData->hasValidLicense(License::PROCESSOR, 3): // 加工3
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					35 => [
 						15 => true,
 						14 => true,
@@ -221,9 +221,9 @@ class Recipe {
 					286 => [],
 					293 => [],
 					294 => [],								
-				];
+				]);
 			case $playerData->hasValidLicense(License::PROCESSOR, 2): // 加工2
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					5 => [
 						6 => true,
 						5 => true,
@@ -296,9 +296,9 @@ class Recipe {
 					429 => [],
 					430 => [],
 					431 => [],													
-				];
+				]);
 			case $playerData->hasValidLicense(License::PROCESSOR): // 加工1
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					1 => [
 						6 => true,
 						4 => true,
@@ -357,12 +357,12 @@ class Recipe {
 						],
 					427 => [],
 					428 => [],																						
-				];
+				]);
 			break;
 		}
 		switch (true) {
 			case $playerData->hasValidLicense(License::HANDIWORKER, 3): // 細工師3
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					22 => [],
 					41 => [],
 					42 => [],
@@ -394,9 +394,9 @@ class Recipe {
 						2 => true,
 						1 => true
 						],					
-				];
+				]);
 			case $playerData->hasValidLicense(License::HANDIWORKER, 2): // 細工師2
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					159 => [
 						15 => true,
 						14 => true,
@@ -487,9 +487,9 @@ class Recipe {
 						1 => true,
 						0 => true
 						],													
-				];
+				]);
 			case $playerData->hasValidLicense(License::HANDIWORKER): // 細工師1
-				$recipe += [
+				$recipe = array_merge_recursive($recipe, [
 					24 => [
 						2 => true,
 						1 => true
@@ -505,7 +505,7 @@ class Recipe {
 						1 => true
 						],
 					390 => [],								
-				];
+				]);
 			break;
 		}
 		return $recipe;
