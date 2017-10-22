@@ -54,7 +54,19 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
-				$balance = $account->getMeu()->getAmount();//残高を確認
+				$datum = array_reverse($account->getTransactionData());//通通データから残高を確認。
+
+				$balance = $datum[0][4];//残高
+
+				$content =
+				 	"§fご希望のお取引を選択してください。\n".
+					"§f※現在の残高は §e{$balance}μ §fです。\n";
+
+				$debit_data = $bank->exsitBankDebit($playerData);
+				if($debit_data){
+					$date = date("Y年m月j日", $debit_data[1]);
+					$content .= "※ §e{$debit_data[4]}μ §f分の債務があります。 (期限:{$date}まで)\n";
+				}
 
 				//政府関係者であれば、管理画面を表示させる。
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, 2)){
@@ -65,9 +77,7 @@ class BankForm extends FormBase {
 				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
-					'content' =>
-								"§fご希望のお取引を選択してください。\n".
-								"§f現在の残高は §2{$balance}μ §fです。\n",
+					'content' => $content,
 					'buttons' => $buttons
 				];
 			break;
@@ -221,13 +231,31 @@ class BankForm extends FormBase {
 			}
 			break;
 			case 8:
-			$canLend = $bank->exsitBankDebit($playerData);
-			if(!$canLend){
-				$data = [
-					'type'    => "custom_form",
-					'title'   => "銀行 > お借入れ",
-					'content' => [
-						[
+			$max = Bank::getMax();
+			$b = $max / 1000;
+			if($b > 0){//貸し出し可能金額が1000μ以上の場合
+				$list = [];
+				for ($i=1; $i <= $b; $i++) {
+					$t = $i * 1000;
+					$list[] = "{$t}μ";
+				}
+				$canLend = $bank->exsitBankDebit($playerData);
+				if(!$canLend){
+					$data = [
+						'type'    => "custom_form",
+						'title'   => "銀行 > お借入れ",
+						'content' => [
+							[
+								'type' => "dropdown",
+								'text' =>
+									"\n".
+									"§f§f1000μ単位での借り入れが可能です\n".
+									"§fご希望の金額を選択してください。\n".
+									"\n",
+									'placeholder' => "金額",
+									'options' => $list
+								]
+					/*	[
 							'type' => "input",
 							'text' =>
 									"\n".
@@ -235,20 +263,27 @@ class BankForm extends FormBase {
 									"§fご希望の金額を入力してください。\n".
 									"\n",
 									'placeholder' => "お借入れ額 (μ)"
-								]
+								]*/
 							]
 					];
-					$cache = [9];
+						$cache = [9];
+					}else{
+						$this->sendErrorModal(
+							"銀行 > お借入れ",
+							"未返済の借り入れがあります。", 1
+						);
+					}
 				}else{
 					$this->sendErrorModal(
 						"銀行 > お借入れ",
-						"未返済の借り入れがあります。", 1
+						"現在、銀行の貸し出し能力が限界に達しています。\n".
+						"申し訳ありませんが、金額を減らすか、もうしばらくしてから、再度お試しください。", 1
 					);
 				}
 
 			break;
 			case 9:
-			$amount = $this->lastData[0];
+			$amount = ($this->lastData[0] + 1) * 1000;
 
 			if(!preg_match("/^[0-9]+$/", $amount)){
 				$this->sendErrorModal(
