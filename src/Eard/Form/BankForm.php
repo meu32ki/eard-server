@@ -54,7 +54,19 @@ class BankForm extends FormBase {
 				];
 				$cache = [2, 6, 8, 12, 17];
 
-				$balance = Bank::getBalance($playerData);//残高を確認
+				$datum = array_reverse($account->getTransactionData());//通通データから残高を確認。
+
+				$balance = $datum[0][4];//残高
+
+				$content =
+				 	"§fご希望のお取引を選択してください。\n".
+					"§f※現在の残高は §e{$balance}μ §fです。\n";
+
+				$debit_data = $bank->exsitBankDebit($playerData);
+				if($debit_data){
+					$date = date("Y年m月j日", $debit_data[1]);
+					$content .= "※ §e{$debit_data[4]}μ §f分の債務があります。 (期限:{$date}まで)\n";
+				}
 
 				//政府関係者であれば、管理画面を表示させる。
 				if($playerData->hasValidLicense(License::GOVERNMENT_WORKER, 2)){
@@ -65,9 +77,7 @@ class BankForm extends FormBase {
 				$data = [
 					'type'    => "form",
 					'title'   => "銀行",
-					'content' =>
-								"§fご希望のお取引を選択してください。\n".
-								"§f現在の残高は §2{$balance}μ §fです。\n",
+					'content' => $content,
 					'buttons' => $buttons
 				];
 			break;
