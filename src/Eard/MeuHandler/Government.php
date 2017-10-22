@@ -242,11 +242,13 @@ class Government implements MeuHandler {
 		$left = self::$CentralBankMeu->getAmount();
 		$cab = Bank::getCAB();//中央銀行当座預金残高
 
-		if($left < 0) $firstBank = $firstBank + $cab + -$left; 	//政府が赤字
-		else $firstBank = $firstBank + $cab - $left;						//政府が黒字
+		if($left < 0) $firstBank = $firstBank + -$left; 	//政府が赤字
+		else $firstBank = $firstBank - $left;						//政府が黒字
 
 		$bank = Bank::getTotalAmount(1);//銀行の金融資産の合計(=信用創造で増えた分)
 		$inPublic = $firstBank + $bank;
+		$firstBank = $firstBank + $cab;//当座預金残高
+
 		$out = "マネタリーベースμ: {$firstBank}μ\nマネーストックμ: {$inPublic}μ\n政府金庫μ: {$left}μ";
 
 		if($firstBank > 0){
