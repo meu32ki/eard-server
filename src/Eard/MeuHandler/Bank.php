@@ -344,7 +344,7 @@ class Bank {
 	*/
 	public static function getData(int $n, int $amount, int $type = 1){
 		switch($n){
-			case 0: $date = strtotime( "1 week" ); break;
+			case 0: $date = strtotime( "yesterday" ); break;
 			case 1: $date = strtotime( "+1 month" ); break;
 			case 2: $date = strtotime( "+2 month" ); break;
 		}
