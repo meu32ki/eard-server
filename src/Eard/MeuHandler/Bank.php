@@ -854,6 +854,10 @@ class Bank {
 		return $deposit;
 	}
 
+	public static function getCAB(): int{
+		return self::$CAB;
+	}
+
 	private static $bankMeu = null;
 	private static $instance = null;
 	private static $account;

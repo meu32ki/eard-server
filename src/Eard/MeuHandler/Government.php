@@ -7,6 +7,7 @@ use pocketmine\utils\MainLogger;
 
 # Eard
 use Eard\MeuHandler\Account\License\License;
+use Eard\MeuHandler\Bank;
 use Eard\Utils\DataIO;
 use Eard\Utils\Chat;
 
@@ -52,7 +53,7 @@ class Government implements MeuHandler {
 			return true;
 		}else{
 			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 設置破壊権限がありません。"));
-			return false;					
+			return false;
 		}
 	}
 
@@ -63,7 +64,7 @@ class Government implements MeuHandler {
 			return true;
 		}else{
 			$playerData->getPlayer()->sendPopup(self::makeWarning("[政府の土地] 実行権限がありません。"));
-			return false;					
+			return false;
 		}
 	}
 
@@ -102,11 +103,11 @@ class Government implements MeuHandler {
 
 	public static function getAllWorker(){
 		return self::$workerdata;
-	}	
+	}
 
 	public static function isWorker($name){
 		return isset(self::$workerdata[strtolower($name)]);
-	}	
+	}
 
 	public static function addWorker($name){
 		self::$workerdata[strtolower($name)] = time();
@@ -228,12 +229,30 @@ class Government implements MeuHandler {
 		}
 	}
 
-
+	/*
+		マネタリーベース = 「現金」＋「中央銀行当座預金」
+		マネーストック = 「現金」＋「預金」
+		貨幣乗数 = 「マネーストック」÷「マネタリーベース」
+		※どちらとも政府と中央銀行は除くこと。
+		初期はマネタリーベースがゼロになる(=まだ発行されていないと考える)
+		銀行での貸し借りが活発になるほど、マネーストックは伸びていく。
+	*/
 	public static function confirmBalance(){
 		$firstBank = self::$CentralBankFirst;
 		$left = self::$CentralBankMeu->getAmount();
-		$inPublic = $firstBank - $left;
-		$out = "マネタリーベースμ: {$firstBank}μ\nマネーストックμ: {$inPublic}μ\n政府保有μ: {$left}μ";
+		$cab = Bank::getCAB();//中央銀行当座預金残高
+
+		if($left < 0) $firstBank = $firstBank + $cab + -$left; 	//政府が赤字
+		else $firstBank = $firstBank + $cab - $left;						//政府が黒字
+
+		$bank = Bank::getTotalAmount(1);//銀行の金融資産の合計(=信用創造で増えた分)
+		$inPublic = $firstBank + $bank;
+		$out = "マネタリーベースμ: {$firstBank}μ\nマネーストックμ: {$inPublic}μ\n政府金庫μ: {$left}μ";
+
+		if($firstBank > 0){
+			$multiplier = $inPublic / $firstBank;
+			$out .= "\n貨幣乗数 : {$multiplier}";
+		}
 		return $out;
 	}
 
