@@ -193,11 +193,11 @@ class Stinger extends Humanoid implements Enemy{
 				new FloatTag("", 0)
 			]),
 			"Skin" => new CompoundTag("Skin", [
-				new StringTag("geometryData", EnemyRegister::loadModelData('batta')),
-				new StringTag("geometryName", 'skin.JourneyToTheWest.sha_wujing'),
+				new StringTag("geometryData", EnemyRegister::loadModelData('hati')),
+				new StringTag("geometryName", 'geometry.bee02'),
 				new StringTag("capeData", ''),
-				new StringTag("Data", EnemyRegister::loadSkinData('Stinger')),
-				new StringTag("Name", 'JTTW_JTTWShaWujing')
+				new StringTag("Data", EnemyRegister::loadSkinData('Hati')),
+				new StringTag("Name", 'Hati')
 			]),
 		]);
 		$custom_name = self::getEnemyName();
@@ -226,8 +226,8 @@ class Stinger extends Humanoid implements Enemy{
 		$this->walk = true;
 		$this->walkSpeed = 0.1;
 		$this->float = true;
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
-		$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
+		//$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_GLIDING, true);
+		//$this->getInventory()->setChestplate(Item::get(Item::ELYTRA));
 		/*$item = Item::get(267);
 		$this->getInventory()->setItemInHand($item);*/
 	}
