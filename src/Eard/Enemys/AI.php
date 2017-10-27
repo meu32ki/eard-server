@@ -126,8 +126,8 @@ abstract class AI{
 		}
 	}
 
-	public static function canLook($enemy, $player){
-		if(!$player->hasEffect(Effect::INVISIBILITY)){
+	public static function canLook(Vector3 $enemy, Vector3 $player){
+		if($player instanceof Player && !$player->hasEffect(Effect::INVISIBILITY)){
 			return true;
 		}else{
 			return false;
@@ -135,7 +135,7 @@ abstract class AI{
 	}
 
 	//$entityにエイムを合わせる関数
-	public static function lookAt($enemy, $target, $oversee = false){
+	public static function lookAt(Vector3 $enemy, Vector3 $target, $oversee = false){
 		$x1 = $enemy->x;
 		$y1 = $enemy->y;
 		$z1 = $enemy->z;
