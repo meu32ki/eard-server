@@ -52,7 +52,6 @@ use Eard\Form\HelpForm;
 use Eard\Form\SettingsForm;
 use Eard\Form\GovernmentForm;
 use Eard\Form\PopupForm;
-use Eard\Form\ElevatorForm;
 use Eard\Form\FreemarketForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
@@ -344,10 +343,6 @@ class Event implements Listener{
 							new FreemarketForm($playerData);
 							$e->setCancelled(true);
 						break;
-						case 52: // スポナー (エレベーター)
-							$e->setCancelled(true);
-							new ElevatorForm($playerData, $block);
-						break;
 						case 60: // こうち
 							switch($itemId){
 								case 295: // むぎのたね
@@ -392,6 +387,11 @@ class Event implements Listener{
 							}
 						break;
 						case 61: // かまど
+							if(!$playerData->hasValidLicense(License::REFINER)){
+								$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));
+								$e->setCancelled(true);
+							}
+						break;
 						case 62: // 燃えているかまど
 							if(!$playerData->hasValidLicense(License::REFINER)){
 								$player->sendMessage(Chat::SystemToPlayer("§e「精錬」ライセンスがないので使用できません。"));

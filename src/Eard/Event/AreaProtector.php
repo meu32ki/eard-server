@@ -277,8 +277,8 @@ class AreaProtector{
 		$powed = count($alpha) - 1; // "AAZ"の場合は2,1,0とかける "DB"のばあいは1,0とかける
 		// "AAZ" は 26*26*1 + 26*1 + 1*25
 		foreach($alpha as $string){
-			$mergin = $powed ? 1 : 0; // 0...最後の場合は1引いた数を英語にする
-			$codeX += ($ar[$string] + $mergin) * pow(26, $powed);
+			$codeX += ($ar[$string] + 1) * pow(26, $powed);
+			//echo ($ar[$string] + 1) * pow(26, $powed), " ";
 			$powed-=1;
 		}
 		return [$minus * $codeX, $codeZ];
