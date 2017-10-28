@@ -235,7 +235,7 @@ class Main extends PluginBase implements Listener, CommandExecutor{
 								$meta = !$nometa ? $a[2] : 0;
 								$amount = !$nometa ? $a[3] : $a[2];
 								$price = !$nometa ? $a[4] : $a[3];
-								$result = Earmazon::addSellUnit($id, $meta, $amount, $price, false);
+								$result = Earmazon::addBuyUnit($id, $meta, $amount, $price, false);
 								$msg = $result ? "追加した" : "追加できなかった";
 								$s->sendMessage(Chat::SystemToPlayer($msg));
 							}else{
