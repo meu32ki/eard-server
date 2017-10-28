@@ -17,6 +17,7 @@ use Eard\MeuHandler\Account\License\License;
 use Eard\Utils\Chat;
 use Eard\Utils\ItemName;
 use Eard\Event\BlockObject\BlockMenu;
+use Eard\Form\EarmazonForm;
 use Eard\Form\EarmazonAdminForm;
 
 
@@ -41,7 +42,8 @@ class EarmazonShop implements BlockObject, ChatInput {
 	}
 
 	public function Tap(Player $player){
-		$this->MenuTap($player);
+		//$this->MenuTap($player);
+		new EarmazonForm(Account::get($player));
 		return true; //キャンセルしないと、手持ちがブロックだった時に置いてしまう
 	}
 
@@ -97,7 +99,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 				$view->setId($id, $meta);
 				// がんばれー
 
-				$playerData = Account::get($player);	
+				$playerData = Account::get($player);
 				$playerData->setChatMode(ChatManager::CHATMODE_VOICE);
 				if($no == 3){
 					$this->sendPageData(16, $player);
@@ -250,7 +252,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 						["{$thisname} 購入>検索", false],
 						["何かのエラー。", false],
 						["戻る", 27]
-					];					
+					];
 				}
 			}else{
 				// 起こりえない
@@ -277,7 +279,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 					["お買い上げありがとうございます。", false],
 					["またのご利用をお待ちしております。", false],
 					["購入トップへ戻る", 2]
-				];	
+				];
 				unset($this->input[$player->getName()]);
 			}else{
 				$ar = [
@@ -401,7 +403,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 						["{$thisname} 売却>検索", false],
 						["何かのエラー。", false],
 						["戻る", 57]
-					];					
+					];
 				}
 			}else{
 				// 起こりえない
@@ -414,7 +416,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 			// 57の場合はなにもしない
 			$ar = $this->makeList($player);
 			break;
-		case 58: case 59: case 60: case 61: 
+		case 58: case 59: case 60: case 61:
 		case 62: case 63: case 64: case 65: case 66:
 			$pricear = [1,2,3,4,8,16,32,48,64];
 			$amount = $pricear[$no - 58];
@@ -428,7 +430,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 					["査定は終了です。", false],
 					["またのご利用をお待ちしております。", false],
 					["戻る", 37]
-				];	
+				];
 				unset($this->input[$player->getName()]);
 			}else{
 				$ar = [
@@ -453,7 +455,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 				$itemid = $item->getId(); $itemmeta = $item->getDamage();
 				$unitData = Earmazon::searchSellUnitById($itemid, $itemmeta); // そのアイテムが、売れるか
 				if($unitData){ // 売れるようであれば
-					$highest = 0; // 
+					$highest = 0; //
 					$unit = [];
 					// uNitDataは複数あるのでそれをチェック 一番高い値段で売ろうと試みる
 					foreach($unitData as $u){ // leftamountのチェックはしてない
@@ -476,7 +478,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 			$itemtxt = "";
 			$cnt = 1;
 			foreach($itemtxts as $t){
-				$selector = $cnt % 2 == 0 ? "\n" : " "; 
+				$selector = $cnt % 2 == 0 ? "\n" : " ";
 				$itemtxt .= "{$t}{$selector}";
 				++$cnt;
 			}
@@ -516,7 +518,7 @@ class EarmazonShop implements BlockObject, ChatInput {
 				["トップへ戻れください",1]
 			];
 			break;
-		default: 
+		default:
 			$ar = [
 				["{$thisname}", false],
 				["ページがありません",1]

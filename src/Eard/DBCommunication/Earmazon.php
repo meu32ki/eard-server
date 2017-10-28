@@ -287,7 +287,7 @@ class Earmazon {
 	*/
 	public static function playerBuy($unitno, $amount, $playerData){
 		$unitData = self::getBuyUnit($unitno);
-		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;		
+		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;
 
 		// リストにあったものがまだ売れ残っているか
 		if(!$unitData){
@@ -303,7 +303,7 @@ class Earmazon {
 
 		// ストレージに在庫がない 販売リストの点数が切れた ら売れないよね
 		if($storageamount == -1){
-			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7そんなアイテムありません。"));			
+			if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7そんなアイテムありません。"));
 		}
 
 		if(!$storageamount or !$unitamount){
@@ -343,7 +343,7 @@ class Earmazon {
 			# 渡す処理
 
 			// payが足りているかの確認 プレイヤーからもらう処理
-			$pay = $price * $amount;	
+			$pay = $price * $amount;
 			$itemname = ItemName::getNameOf($id, $meta);
 			if(!Government::receiveMeu($playerData, $pay, "Earmazon: アイテム購入 {$itemname} x{$amount}")){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7お金が足りません。"));
@@ -523,7 +523,7 @@ class Earmazon {
 		if(!$category){
 			return false; //カテゴリーが0 = 販売禁止 のアイテムは売れない
 		}
-		
+
 		$flag = $tokka ? 1 : 0; // tokkaは、つけると上の辺に表示させるとかして
 		$db = DB::get();
 		$sql = "INSERT INTO earmazon_itemselllist (category, flag, id, meta, baseamount, leftamount, price, date) ".
@@ -546,7 +546,7 @@ class Earmazon {
 	*/
 	public static function playerSell($unitno, $amount, $playerData){
 		$unitData = self::getSellUnit($unitno);
-		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;		
+		$player = ($playerData->getPlayer() instanceof Player) ? $playerData->getPlayer() : null;
 
 		// リストにあったものがまだ売れ残っているか
 		if(!$unitData){
@@ -607,7 +607,7 @@ class Earmazon {
 
 			if(!$inv->contains($item)){
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§cエラー。§7売りに出すアイテムが手持ちに含まれていません。"));
-				return false; 
+				return false;
 			}
 
 			# 買取の処理
@@ -631,7 +631,7 @@ class Earmazon {
 				if($player) $player->sendMessage(Chat::Format("§7Earmazon", "§6個人", "§c出るべきでないエラー(報告してください)。§7ストレージの在庫を増やす処理に失敗しました。"));
 				self::addIntoBuyUnit($unitno, $amount);
 				Government::receiveMeu($playerData, $pay, "Earmazon: エラーのため返金");
-				return false;				
+				return false;
 			}
 
 			try{
