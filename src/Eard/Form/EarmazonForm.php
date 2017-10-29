@@ -45,7 +45,7 @@ class EarmazonForm extends FormBase {
 
         $data = [
 					'type'    => "form",
-					'title'   => "Earmazon",
+					'title'   => "§a§lEarmazon§r§8",
 					'content' => "",
 					'buttons' => $buttons
 				];
@@ -59,14 +59,14 @@ class EarmazonForm extends FormBase {
         $buttons = [
           ['text' => "IDとダメージ値から検索"],
           ['text' => "カテゴリーから検索"],
-          ['text' => "全アイテムを検索"],
+          ['text' => "買えるアイテム一覧表示"],
           ['text' => "戻る"]
         ];
         $cache = [3, 4, 27, 1];
 
         $data = [
           'type'    => "form",
-          'title'   => "Earmazon 購入>トップ",
+          'title'   => "§a§lEarmazon§r§8 購入 > トップ",
           'content' => "",
           'buttons' => $buttons
         ];
@@ -85,7 +85,7 @@ class EarmazonForm extends FormBase {
 
 				$data = [
 						'type'    => "custom_form",
-						'title'   => "Earmazon 購入>検索",
+						'title'   => "§a§lEarmazon§r§8 購入 > 検索",
 						'content' => [
 							[
 								'type' => "input",
@@ -114,7 +114,7 @@ class EarmazonForm extends FormBase {
 
       $data = [
         'type'    => "form",
-        'title'   => "Earmazon 購入>検索",
+        'title'   => "§a§lEarmazon§r§8 購入 > 検索",
         'content' => "",
         'buttons' => $buttons
       ];
@@ -202,7 +202,7 @@ class EarmazonForm extends FormBase {
 						if($buyableamount){
 							$itemname = ItemName::getNameOf($id_, $meta);
 
-							$title = "Earmazon 購入>確認";
+							$title = "§a§lEarmazon§r§8 購入 > 確認";
 							$content = "\n{$itemname} をいくつ買いますか？\n";
 							//$buttons[] = ['text' => "戻る"];
 							//$cache[] = 27;
@@ -218,7 +218,7 @@ class EarmazonForm extends FormBase {
 							}
 							$cache[] = 28;
 						}else{
-							$title = "Earmazon 購入>エラー";
+							$title = "§a§lEarmazon§r§8 購入 > エラー";
 							$content = "お金が足りないようです。(所持金: {$meuAmount}μ)";
 							$buttons[] = ['text' => "戻る"];
 							$cache[] = 27;
@@ -226,7 +226,7 @@ class EarmazonForm extends FormBase {
 
 						$view->setUnitNo($unitno);
 					}else{
-						$title = "Earmazon 購入>検索";
+						$title = "§a§lEarmazon§r§8 購入 > 検索";
 						$content = "何かのエラー。";
 						$buttons[] = ['text' => "戻る"];
 						$cache[] = 27;
@@ -272,7 +272,7 @@ class EarmazonForm extends FormBase {
 				// 購入処理
 				$result = Earmazon::playerBuy($view->no, $amount, $playerData);
 				if($result){
-					$title = "Earmazon 購入>完了";
+					$title = "§a§lEarmazon§r§8 購入 > 完了";
 					$content =
 						"お買い上げありがとうございます。\n".
 						"携帯から「アイテムボックス」をご確認ください。\n".
@@ -283,7 +283,7 @@ class EarmazonForm extends FormBase {
 					$cache = [2];
 					unset($this->input[$name]);
 				}else{
-					$title = "Earmazon 購入";
+					$title = "§a§lEarmazon§r§8 購入";
 					$content = "何かのエラー";
 					$buttons = [
 						['text' => "戻る"]
@@ -292,12 +292,11 @@ class EarmazonForm extends FormBase {
 				}
 
 				$data = [
-	        'type'    => "form",
-	        'title'   => $title,
-	        'content' => $content,
-	        'buttons' => $buttons
-	      ];
-
+					'type'    => "form",
+					'title'   => $title,
+					'content' => $content,
+					'buttons' => $buttons
+	    		];
 			break;
 
 
@@ -311,7 +310,7 @@ class EarmazonForm extends FormBase {
 				$buttons = [
 					['text' => "IDとダメージ値から検索"],
 					['text' => "カテゴリーから検索"],
-					['text' => "全アイテムを検索"],
+					['text' => "売れるアイテム一覧表示"],
 					['text' => "手持ちの売れるものを全部売る"],
 					['text' => "戻る"]
 				];
@@ -319,7 +318,7 @@ class EarmazonForm extends FormBase {
 
 				$data = [
 					'type'    => "form",
-					'title'   => "Earmazon 売却>トップ",
+					'title'   => "§a§lEarmazon§r§8 売却 > トップ",
 					'content' => "",
 					'buttons' => $buttons
 				];
@@ -334,7 +333,7 @@ class EarmazonForm extends FormBase {
             "数字と、メタ値がある場合は、「:」を使い入力してください。\n";
 				$data = [
 						'type'    => "custom_form",
-						'title'   => "Earmazon 売却>検索",
+						'title'   => "§a§lEarmazon§r§8 売却 > 検索",
 						'content' => [
 							[
 								'type' => "input",
@@ -365,7 +364,7 @@ class EarmazonForm extends FormBase {
 
 				$data = [
 					'type'    => "form",
-					'title'   => "Earmazon 売却>検索",
+					'title'   => "§a§lEarmazon§r§8 売却 > 検索",
 					'content' => "",
 					'buttons' => $buttons
 				];
@@ -397,7 +396,7 @@ class EarmazonForm extends FormBase {
 					if($unit){
 						$id = $unit[0]; $meta = $unit[1]; $leftamount = $unit[2]; $unitprice = $unit[3];
 						$itemname = ItemName::getNameOf($id, $meta);
-						$title = "Earmazon 売却>確認";
+						$title = "§a§lEarmazon§r§8 売却 > 確認";
 						$content = "\n{$itemname} をいくつ売りますか？\n";
 
 
@@ -434,7 +433,7 @@ class EarmazonForm extends FormBase {
 
 						$view->setUnitNo($unitno);
 					}else{
-						$title = "Earmazon 売却>検索";
+						$title = "§a§lEarmazon§r§8 売却 > 検索";
 						$content = "何かのエラー";
 						$buttons = [
 							['text' => "戻る"]
@@ -482,7 +481,7 @@ class EarmazonForm extends FormBase {
 					// 売却処理
 					$result = Earmazon::playerSell($view->no, $amount, $playerData);
 					if($result){
-						$title = "Earmazon 売却>完了";
+						$title = "§a§lEarmazon§r§8 売却 > 完了";
 						$content =
 							"査定は終了です。\n".
 							"またのご利用をお待ちしております。\n";
@@ -492,7 +491,7 @@ class EarmazonForm extends FormBase {
 						$cache = [37];
 						unset($this->input[$name]);
 					}else{
-						$title = "Earmazon 売却>エラー";
+						$title = "§a§lEarmazon§r§8 売却 > エラー";
 						$content = "何かのエラー";
 						$buttons = [
 							['text' => "戻る"]
@@ -544,7 +543,7 @@ class EarmazonForm extends FormBase {
 
 					if(!$itemtxts){
 						$this->sendErrorModal(
-							"Earmazon まとめて売却",
+							"§a§lEarmazon§r§8 まとめて売却",
 							"売れるアイテムはないようです。", 37
 						);
 					}else{
@@ -558,7 +557,7 @@ class EarmazonForm extends FormBase {
 
 						$data = [
 							'type'    => "modal",
-							'title'   => "Earmazon まとめて売却 > 確認",
+							'title'   => "§a§lEarmazon§r§8 まとめて売却 > 確認",
 							'content' => "{$itemtxt}を売って{$pay}μを得る予定です。\n売りに出しますか？",
 								'button1' => "いいえ",
 								'button2' => "はい",
@@ -577,14 +576,14 @@ class EarmazonForm extends FormBase {
 					Earmazon::playerSell($unitno, $amount, $playerData);
 				}
 				$data = [
-		       'type'    => "form",
-		       'title'   => "Earmazon まとめて売却>完了",
-		       'content' =>	"\n査定は終了です。\n".
-												"またのご利用をお待ちしております。\n",
-		       'buttons' => [
+					'type'    => "form",
+					'title'   => "§a§lEarmazon§r§8 まとめて売却 > 完了",
+					'content' =>	"\n査定は終了です。\n".
+									"またのご利用をお待ちしております。\n",
+					'buttons' => [
 						['text' => "売却へ戻る"]
 					]
-		     ];
+				];
 				$cache = [37];
 
 			break;
@@ -657,7 +656,7 @@ class EarmazonForm extends FormBase {
 
 		// リストにアイテムがあったか？
 		if($unitar){
-			$title = "Earmazon {$modetxt}>検索";
+			$title = "§a§lEarmazon§r§8 {$modetxt} > 検索";
 			// はいってたら
 			$cnt = $mode === 1 ? 20 : 50; // modeによって、メニューgetPageAr()の番号が違うから
 			// まず、複数ページに分ける必要があるか？
@@ -700,7 +699,7 @@ class EarmazonForm extends FormBase {
 			$view->setKeys($keys);
 		}else{
 			// からだったら
-			$title = "Earmazon {$modetxt}>検索";
+			$title = "§a§lEarmazon§r§8 {$modetxt} > 検索";
 			$content = "何もありませんでした";
 
 			if($view->category){
