@@ -542,24 +542,30 @@ class EarmazonForm extends FormBase {
 						}
 					}
 
-					$itemtxt = "";
-					$cnt = 1;
-					foreach($itemtxts as $t){
-						$selector = $cnt % 2 == 0 ? "\n" : " ";
-						$itemtxt .= "{$t}{$selector}";
-						++$cnt;
-					}
+					if(!$itemtxts){
+						$this->sendErrorModal(
+							"Earmazon まとめて売却",
+							"売れるアイテムはないようです。", 37
+						);
+					}else{
+						$itemtxt = "";
+						$cnt = 1;
+						foreach($itemtxts as $t){
+							$selector = $cnt % 2 == 0 ? "\n" : " ";
+							$itemtxt .= "{$t}{$selector}";
+							++$cnt;
+						}
 
-					$data = [
-						'type'    => "modal",
-						'title'   => "Earmazon まとめて売却>確認",
-						'content' => "{$itemtxt}を売って{$pay}μを得る予定です。\n売りに出しますか？",
-							'button1' => "いいえ",
-							'button2' => "はい",
+						$data = [
+							'type'    => "modal",
+							'title'   => "Earmazon まとめて売却 > 確認",
+							'content' => "{$itemtxt}を売って{$pay}μを得る予定です。\n売りに出しますか？",
+								'button1' => "いいえ",
+								'button2' => "はい",
 						];
 						$cache = [37, 81];
 						$view->setData($sellItems);
-
+					}
 			break;
 			case 81:
 
