@@ -33,10 +33,9 @@ class BlockObjectManager {
 	public static function Place(Block $block, Player $player){
 		$objNo = 0;
 		switch($block->getId()){
+			// 廃止する場合はgetObjectへ書くべし
 			case 245: $objNo = 1; break; // ストーンカッター
 			case 247: $objNo = 2; break; // リアクターコア
-			case 379: $objNo = 3; break; // 調合台
-			case 117: $objNo = 3; break; // 調合台
 			case 218: $objNo = 4; break; // シュルカーボックス
 		}
 		// echo $objNo;
@@ -124,7 +123,6 @@ class BlockObjectManager {
 		switch($objNo){
 			case 1: $obj = new BankFront(); break;
 			case 2: $obj = new Shop(); break;
-			case 3: $obj = new EarmazonShop(); break;
 			case 4: $obj = new FreeShop(); break;
 		}
 		return $obj;
@@ -171,6 +169,13 @@ class BlockObjectManager {
 
 					// オブジェクトに関するデータが取得できたら、データからオブジェクトを復元する
 					$objNo = $objData[0];
+
+					// 廃止したものがあればけす
+					if($objNo === 3){
+						self::deleteObject($x, $y, $z);
+						return false;
+					}
+
 					$obj = self::getEmptyObject($objNo);
 					self::$objects[$indexNo] = $obj;
 

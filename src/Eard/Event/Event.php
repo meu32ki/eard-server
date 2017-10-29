@@ -54,6 +54,7 @@ use Eard\Form\GovernmentForm;
 use Eard\Form\PopupForm;
 use Eard\Form\ElevatorForm;
 use Eard\Form\FreemarketForm;
+use Eard\Form\EarmazonForm;
 use Eard\MeuHandler\Account;
 use Eard\MeuHandler\Account\Menu;
 use Eard\MeuHandler\Account\License\License;
@@ -337,12 +338,13 @@ class Event implements Listener{
 				break;
 				default:
 					switch($blockId){
-						case 58: // クラフティングテーブル
-							//$e->setCancelled(false);
-						break;
 						case 120: //エンドポータル
-							new FreemarketForm($playerData);
 							$e->setCancelled(true);
+							new FreemarketForm($playerData);
+						break;
+						case 117: // 醸造台 Earmazon
+							$e->setCancelled(true);
+							new EarmazonForm($playerData, $block);
 						break;
 						case 52: // スポナー (エレベーター)
 							$e->setCancelled(true);
